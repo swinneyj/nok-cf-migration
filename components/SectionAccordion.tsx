@@ -67,10 +67,16 @@ export default function SectionAccordion({
           <span className="text-xl font-medium tracking-wide">{section.title}</span>
         </div>
 
-        {isOpen ? <ChevronDown className="h-6 w-6" /> : <ChevronRight className="h-6 w-6" />}
+        <ChevronDown className={`h-6 w-6 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
       </button>
 
-      {isOpen && (
+      <div
+        className="overflow-hidden transition-all duration-300 ease-in-out"
+        style={{
+          maxHeight: isOpen ? "2000px" : "0px",
+          opacity: isOpen ? 1 : 0,
+        }}
+      >
         <div className="border-t border-white/10 bg-[#50384a] p-4 sm:p-5">
           <div className="space-y-3">
             {section.tiers.map((tier) => {
@@ -123,7 +129,7 @@ export default function SectionAccordion({
                         onSelectTier(tierId, tier.name, tier.price, section.title)
                       }
                       className={[
-                        "min-w-[140px] rounded-md px-5 py-3 text-sm font-semibold transition",
+                        "min-w-[140px] rounded-md px-5 py-3 text-sm font-semibold transition-all duration-200 active:scale-95",
                         tierState.disabled
                           ? "cursor-not-allowed bg-white/10 text-white/40"
                           : isSelected
@@ -139,7 +145,7 @@ export default function SectionAccordion({
             })}
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
