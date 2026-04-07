@@ -260,12 +260,13 @@ export default function EventPricingSelector({
     };
   }, []);
 
+  // ✅ FIX #1: Reset ALL state when event changes
   const handleEventSelected = (event: ParsedEvent) => {
     setSelectedEvent(event);
+    setNumGuys(0);           // ← Reset guest counts
+    setNumGirls(0);          // ← Reset guest counts
     setSelectedTable(null);
-    setOpenSection(
-      event.sections.find((section) => section.tiers.length > 0)?.title ?? null
-    );
+    setOpenSection(null);    // ← Reset accordion
   };
 
   const handleSelectTier = (
@@ -317,311 +318,296 @@ export default function EventPricingSelector({
         />
       </div>
 
-      <div
-        className={`transition-all duration-500 ease-in-out overflow-hidden ${
-          selectedEvent ? "opacity-100 visible max-h-[500px]" : "opacity-0 invisible max-h-0"
-        }`}
-      >
-        {selectedEvent && (
-          <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-            <div className="bg-gradient-to-r from-purple-900 to-black p-6 text-white">
-              <h2 className="text-2xl font-bold">Step 2: Enter Guest Count</h2>
-              <p className="mt-1 text-purple-200">
-                {selectedEvent.eventName} • {selectedEvent.dateString}
-              </p>
-            </div>
-
-            <div className="p-6">
-              <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-                <div>
-                  <label className="mb-3 block text-sm font-medium text-gray-700">
-                    Number of Guys
-                  </label>
-                  <div className="flex items-center gap-4">
-                    <button
-                      type="button"
-                      onClick={() => setNumGuys(Math.max(0, numGuys - 1))}
-                      className="rounded-md bg-gray-200 px-4 py-3 text-lg font-bold text-gray-700 transition hover:bg-gray-300"
-                    >
-                      −
-                    </button>
-                    <input
-                      type="number"
-                      value={numGuys}
-                      onChange={(e) =>
-                        setNumGuys(
-                          Math.max(0, parseInt(e.target.value) || 0)
-                        )
-                      }
-                      className="w-24 rounded-md border-2 border-gray-300 bg-white px-2 py-3 text-center text-2xl font-bold text-gray-900 outline-none focus:border-purple-900"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setNumGuys(numGuys + 1)}
-                      className="rounded-md bg-gray-200 px-4 py-3 text-lg font-bold text-gray-700 transition hover:bg-gray-300"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="mb-3 block text-sm font-medium text-gray-700">
-                    Number of Girls
-                  </label>
-                  <div className="flex items-center gap-4">
-                    <button
-                      type="button"
-                      onClick={() => setNumGirls(Math.max(0, numGirls - 1))}
-                      className="rounded-md bg-gray-200 px-4 py-3 text-lg font-bold text-gray-700 transition hover:bg-gray-300"
-                    >
-                      −
-                    </button>
-                    <input
-                      type="number"
-                      value={numGirls}
-                      onChange={(e) =>
-                        setNumGirls(
-                          Math.max(0, parseInt(e.target.value) || 0)
-                        )
-                      }
-                      className="w-24 rounded-md border-2 border-gray-300 bg-white px-2 py-3 text-center text-2xl font-bold text-gray-900 outline-none focus:border-purple-900"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setNumGirls(numGirls + 1)}
-                      className="rounded-md bg-gray-200 px-4 py-3 text-lg font-bold text-gray-700 transition hover:bg-gray-300"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex flex-col justify-center rounded-xl bg-purple-50 p-4">
-                  <p className="mb-2 text-sm text-gray-600">Total Guests</p>
-                  <div className="flex items-center gap-2">
-                    <Users className="h-6 w-6 text-purple-900" />
-                    <p className="text-3xl font-bold text-purple-900">
-                      {totalGuests}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {selectedEvent.minimumSpendNote && (
-                <div className="mt-6 rounded-lg border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700">
-                  <strong>Note:</strong> {selectedEvent.minimumSpendNote}
-                </div>
-              )}
-            </div>
+      {/* ✅ FIX #2: Remove max-height animation wrapper, use clean conditional render */}
+      {selectedEvent && (
+        <div className="animate-fade-in overflow-hidden rounded-xl border border-gray-200 bg-white">
+          <div className="bg-gradient-to-r from-purple-900 to-black p-6 text-white">
+            <h2 className="text-2xl font-bold">Step 2: Enter Guest Count</h2>
+            <p className="mt-1 text-purple-200">
+              {selectedEvent.eventName} • {selectedEvent.dateString}
+            </p>
           </div>
-        )}
-      </div>
 
-      <div
-        className={`transition-all duration-500 ease-in-out overflow-hidden ${
-          selectedEvent && totalGuests > 0 ? "opacity-100 visible max-h-[2000px]" : "opacity-0 invisible max-h-0"
-        }`}
-      >
-        {selectedEvent && totalGuests > 0 && (
-          <div>
-            <h2 className="mb-4 text-3xl font-bold text-gray-900">
-              Step 3: Select Your Section
-            </h2>
-
-            <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_340px] xl:items-start">
-              <div className="space-y-3">
-                {validSections.map((section) => (
-                  <SectionAccordion
-                    key={section.title}
-                    section={section}
-                    guestCount={totalGuests}
-                    isOpen={openSection === section.title}
-                    onToggle={() =>
-                      setOpenSection((prev) =>
-                        prev === section.title ? null : section.title
+          <div className="p-6">
+            <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
+              <div>
+                <label className="mb-3 block text-sm font-medium text-gray-700">
+                  Number of Guys
+                </label>
+                <div className="flex items-center gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setNumGuys(Math.max(0, numGuys - 1))}
+                    className="rounded-md bg-gray-200 px-4 py-3 text-lg font-bold text-gray-700 transition hover:bg-gray-300"
+                  >
+                    −
+                  </button>
+                  <input
+                    type="number"
+                    value={numGuys}
+                    onChange={(e) =>
+                      setNumGuys(
+                        Math.max(0, parseInt(e.target.value) || 0)
                       )
                     }
-                    selectedTierId={selectedTable?.id}
-                    onSelectTier={handleSelectTier}
+                    className="w-24 rounded-md border-2 border-gray-300 bg-white px-2 py-3 text-center text-2xl font-bold text-gray-900 outline-none focus:border-purple-900"
                   />
-                ))}
+                  <button
+                    type="button"
+                    onClick={() => setNumGuys(numGuys + 1)}
+                    className="rounded-md bg-gray-200 px-4 py-3 text-lg font-bold text-gray-700 transition hover:bg-gray-300"
+                  >
+                    +
+                  </button>
+                </div>
               </div>
 
-              <aside className="space-y-4 xl:sticky xl:top-24">
-                <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-                  {flyer ? (
-                    <div className="aspect-[4/5] w-full overflow-hidden bg-black">
-                      <img
-                        src={flyer.imagePath}
-                        alt={`${selectedEvent.eventName} flyer`}
-                        className="h-full w-full object-cover"
-                      />
+              <div>
+                <label className="mb-3 block text-sm font-medium text-gray-700">
+                  Number of Girls
+                </label>
+                <div className="flex items-center gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setNumGirls(Math.max(0, numGirls - 1))}
+                    className="rounded-md bg-gray-200 px-4 py-3 text-lg font-bold text-gray-700 transition hover:bg-gray-300"
+                  >
+                    −
+                  </button>
+                  <input
+                    type="number"
+                    value={numGirls}
+                    onChange={(e) =>
+                      setNumGirls(
+                        Math.max(0, parseInt(e.target.value) || 0)
+                      )
+                    }
+                    className="w-24 rounded-md border-2 border-gray-300 bg-white px-2 py-3 text-center text-2xl font-bold text-gray-900 outline-none focus:border-purple-900"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setNumGirls(numGirls + 1)}
+                    className="rounded-md bg-gray-200 px-4 py-3 text-lg font-bold text-gray-700 transition hover:bg-gray-300"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex flex-col justify-center rounded-xl bg-purple-50 p-4">
+                <p className="mb-2 text-sm text-gray-600">Total Guests</p>
+                <div className="flex items-center gap-2">
+                  <Users className="h-6 w-6 text-purple-900" />
+                  <p className="text-3xl font-bold text-purple-900">
+                    {totalGuests}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {selectedEvent.minimumSpendNote && (
+              <div className="mt-6 rounded-lg border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700">
+                <strong>Note:</strong> {selectedEvent.minimumSpendNote}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ✅ FIX #2: Remove max-height animation wrapper, use clean conditional render */}
+      {selectedEvent && totalGuests > 0 && (
+        <div className="animate-fade-in">
+          <h2 className="mb-4 text-3xl font-bold text-gray-900">
+            Step 3: Select Your Section
+          </h2>
+
+          <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_340px] xl:items-start">
+            <div className="space-y-3">
+              {validSections.map((section) => (
+                <SectionAccordion
+                  key={section.title}
+                  section={section}
+                  guestCount={totalGuests}
+                  isOpen={openSection === section.title}
+                  onToggle={() =>
+                    setOpenSection((prev) =>
+                      prev === section.title ? null : section.title
+                    )
+                  }
+                  selectedTierId={selectedTable?.id}
+                  onSelectTier={handleSelectTier}
+                />
+              ))}
+            </div>
+
+            <aside className="space-y-4 xl:sticky xl:top-24">
+              <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+                {flyer ? (
+                  <div className="aspect-[4/5] w-full overflow-hidden bg-black">
+                    <img
+                      src={flyer.imagePath}
+                      alt={`${selectedEvent.eventName} flyer`}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex aspect-[4/5] w-full items-center justify-center bg-gradient-to-br from-black via-purple-950 to-black p-8 text-center text-white">
+                    <div>
+                      <ImageIcon className="mx-auto h-10 w-10 text-purple-300" />
+                      <p className="mt-4 text-lg font-semibold">
+                        {selectedEvent.eventName}
+                      </p>
+                      <p className="mt-2 text-sm text-white/70">
+                        {flyerError
+                          ? "Manifest could not be loaded yet."
+                          : "No flyer match found yet for this event."}
+                      </p>
                     </div>
-                  ) : (
-                    <div className="flex aspect-[4/5] w-full items-center justify-center bg-gradient-to-br from-black via-purple-950 to-black p-8 text-center text-white">
-                      <div>
-                        <ImageIcon className="mx-auto h-10 w-10 text-purple-300" />
-                        <p className="mt-4 text-lg font-semibold">
-                          {selectedEvent.eventName}
+                  </div>
+                )}
+
+                <div className="bg-gradient-to-br from-black via-purple-950 to-black p-6 text-white">
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-purple-300">
+                    {venueName}
+                  </p>
+                  <h3 className="text-3xl font-bold leading-tight">
+                    {selectedEvent.eventName}
+                  </h3>
+                  <div className="mt-4 space-y-2 text-white/85">
+                    <div className="flex items-start gap-2">
+                      <CalendarDays className="mt-0.5 h-4 w-4 shrink-0" />
+                      <span>{selectedEvent.dateString}</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
+                      <span>{venueName}</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Users className="mt-0.5 h-4 w-4 shrink-0" />
+                      <span>{totalGuests} total guests</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4 p-5">
+                  <div className="rounded-lg bg-gray-50 p-4">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                      Your Selection
+                    </p>
+                    {selectedSummary ? (
+                      <div className="mt-2">
+                        <p className="font-semibold text-gray-900">
+                          {selectedSummary}
                         </p>
-                        <p className="mt-2 text-sm text-white/70">
-                          {flyerError
-                            ? "Manifest could not be loaded yet."
-                            : "No flyer match found yet for this event."}
+                        <p className="mt-1 text-lg font-bold text-purple-900">
+                          ${selectedTable?.price.toLocaleString()}
                         </p>
+                      </div>
+                    ) : (
+                      <p className="mt-2 text-sm text-gray-600">
+                        Choose a section on the left to continue.
+                      </p>
+                    )}
+                  </div>
+
+                  {flyer?.sourceUrl && (
+                    <div className="rounded-lg border border-gray-200 p-4">
+                      <div className="flex items-start gap-2">
+                        <Ticket className="mt-0.5 h-4 w-4 text-purple-900" />
+                        <div>
+                          <p className="font-medium text-gray-900">
+                            Flyer matched
+                          </p>
+                          <p className="mt-1 text-sm text-gray-600">
+                            This sidebar image was matched automatically from
+                            your local Discotech flyer manifest.
+                          </p>
+                        </div>
                       </div>
                     </div>
                   )}
 
-                  <div className="bg-gradient-to-br from-black via-purple-950 to-black p-6 text-white">
-                    <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-purple-300">
-                      {venueName}
-                    </p>
-                    <h3 className="text-3xl font-bold leading-tight">
-                      {selectedEvent.eventName}
-                    </h3>
-                    <div className="mt-4 space-y-2 text-white/85">
-                      <div className="flex items-start gap-2">
-                        <CalendarDays className="mt-0.5 h-4 w-4 shrink-0" />
-                        <span>{selectedEvent.dateString}</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
-                        <span>{venueName}</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Users className="mt-0.5 h-4 w-4 shrink-0" />
-                        <span>{totalGuests} total guests</span>
-                      </div>
+                  {selectedEvent.pricingNote && (
+                    <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700">
+                      <strong>Pricing:</strong> {selectedEvent.pricingNote}
                     </div>
-                  </div>
-
-                  <div className="space-y-4 p-5">
-                    <div className="rounded-lg bg-gray-50 p-4">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-                        Your Selection
-                      </p>
-                      {selectedSummary ? (
-                        <div className="mt-2">
-                          <p className="font-semibold text-gray-900">
-                            {selectedSummary}
-                          </p>
-                          <p className="mt-1 text-lg font-bold text-purple-900">
-                            ${selectedTable?.price.toLocaleString()}
-                          </p>
-                        </div>
-                      ) : (
-                        <p className="mt-2 text-sm text-gray-600">
-                          Choose a section on the left to continue.
-                        </p>
-                      )}
-                    </div>
-
-                    {flyer?.sourceUrl && (
-                      <div className="rounded-lg border border-gray-200 p-4">
-                        <div className="flex items-start gap-2">
-                          <Ticket className="mt-0.5 h-4 w-4 text-purple-900" />
-                          <div>
-                            <p className="font-medium text-gray-900">
-                              Flyer matched
-                            </p>
-                            <p className="mt-1 text-sm text-gray-600">
-                              This sidebar image was matched automatically from
-                              your local Discotech flyer manifest.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {selectedEvent.pricingNote && (
-                      <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700">
-                        <strong>Pricing:</strong> {selectedEvent.pricingNote}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </aside>
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div
-        className={`transition-all duration-500 ease-in-out overflow-hidden ${
-          selectedEvent && selectedTable ? "opacity-100 visible max-h-[1000px]" : "opacity-0 invisible max-h-0"
-        }`}
-      >
-        {selectedEvent && selectedTable && (
-          <div className="mt-6">
-            <div className="mb-6">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-purple-700">
-                Final Step
-              </p>
-              <h2 className="mt-2 text-3xl font-bold text-gray-900 md:text-4xl">
-                Submit Your Reservation Request
-              </h2>
-              <p className="mt-2 max-w-2xl text-gray-600">
-                Enter your details below and our VIP host will confirm
-                availability, pricing, and next steps.
-              </p>
-            </div>
-
-            <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl">
-              <div className="border-b border-gray-200 bg-gradient-to-r from-purple-900 to-black px-6 py-5 text-white">
-                <div className="grid gap-4 md:grid-cols-4">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.2em] text-purple-200">
-                      Selected Section
-                    </p>
-                    <p className="mt-1 text-lg font-semibold text-white">
-                      {selectedTable.section}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.2em] text-purple-200">
-                      Table Option
-                    </p>
-                    <p className="mt-1 text-lg font-semibold text-white">
-                      {selectedTable.name}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.2em] text-purple-200">
-                      Guest Count
-                    </p>
-                    <p className="mt-1 text-lg font-semibold text-white">
-                      {totalGuests} guests
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.2em] text-purple-200">
-                      Minimum Spend
-                    </p>
-                    <p className="mt-1 text-lg font-semibold text-white">
-                      ${selectedTable.price.toLocaleString()}
-                    </p>
-                  </div>
+                  )}
                 </div>
               </div>
+            </aside>
+          </div>
+        </div>
+      )}
 
-              <div className="bg-gray-50 px-6 py-6 md:px-8">
-                <ReservationForm
-                  venueName={venueName}
-                  eventName={selectedEvent.eventName}
-                  eventDate={selectedEvent.dateString}
-                  selectedTable={selectedTable}
-                  numGuys={numGuys}
-                  numGirls={numGirls}
-                  totalGuests={totalGuests}
-                  onSubmit={handleReservationSubmit}
-                />
+      {/* ✅ FIX #2: Remove max-height animation wrapper, use clean conditional render */}
+      {selectedEvent && selectedTable && (
+        <div className="animate-fade-in mt-6">
+          <div className="mb-6">
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-purple-700">
+              Final Step
+            </p>
+            <h2 className="mt-2 text-3xl font-bold text-gray-900 md:text-4xl">
+              Submit Your Reservation Request
+            </h2>
+            <p className="mt-2 max-w-2xl text-gray-600">
+              Enter your details below and our VIP host will confirm
+              availability, pricing, and next steps.
+            </p>
+          </div>
+
+          <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl">
+            <div className="border-b border-gray-200 bg-gradient-to-r from-purple-900 to-black px-6 py-5 text-white">
+              <div className="grid gap-4 md:grid-cols-4">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-purple-200">
+                    Selected Section
+                  </p>
+                  <p className="mt-1 text-lg font-semibold text-white">
+                    {selectedTable.section}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-purple-200">
+                    Table Option
+                  </p>
+                  <p className="mt-1 text-lg font-semibold text-white">
+                    {selectedTable.name}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-purple-200">
+                    Guest Count
+                  </p>
+                  <p className="mt-1 text-lg font-semibold text-white">
+                    {totalGuests} guests
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-purple-200">
+                    Minimum Spend
+                  </p>
+                  <p className="mt-1 text-lg font-semibold text-white">
+                    ${selectedTable.price.toLocaleString()}
+                  </p>
+                </div>
               </div>
             </div>
+
+            <div className="bg-gray-50 px-6 py-6 md:px-8">
+              <ReservationForm
+                venueName={venueName}
+                eventName={selectedEvent.eventName}
+                eventDate={selectedEvent.dateString}
+                selectedTable={selectedTable}
+                numGuys={numGuys}
+                numGirls={numGirls}
+                totalGuests={totalGuests}
+                onSubmit={handleReservationSubmit}
+              />
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
