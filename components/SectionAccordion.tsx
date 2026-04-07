@@ -70,13 +70,7 @@ export default function SectionAccordion({
         <ChevronDown className={`h-6 w-6 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
       </button>
 
-      <div
-        className="overflow-hidden transition-all duration-300 ease-in-out"
-        style={{
-          maxHeight: isOpen ? "2000px" : "0px",
-          opacity: isOpen ? 1 : 0,
-        }}
-      >
+      {isOpen && (
         <div className="border-t border-white/10 bg-[#50384a] p-4 sm:p-5">
           <div className="space-y-3">
             {section.tiers.map((tier) => {
@@ -145,7 +139,7 @@ export default function SectionAccordion({
             })}
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
