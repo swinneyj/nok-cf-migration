@@ -302,7 +302,7 @@ export default function EventPricingSelector({
   );
 
   return (
-    <div className="w-full space-y-8 pb-12">
+    <div className="event-pricing-container w-full space-y-8 pb-12">
       <div>
         <h2 className="mb-4 text-3xl font-bold text-gray-900">
           Step 1: Select Event
