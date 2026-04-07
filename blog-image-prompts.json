@@ -1,0 +1,144 @@
+{
+  "post-mappings": {
+    "test-post-image-generation": {
+      "title": "Test Post - Image Generation",
+      "image_prompt": "Professional testing and verification scene, quality assurance setup, test environment with success indicators, technical verification checklist, professional QA testing atmosphere, modern tech workspace",
+      "image_keywords": ["testing", "verification", "QA", "quality assurance", "success"]
+    },
+    "top-golf-las-vegas": {
+      "title": "Top Golf Las Vegas",
+      "image_prompt": "Professional golfer at an indoor golf simulator bay, hitting a golf ball with a modern golf simulator screen showing course, well-lit modern golf facility with green turf and hitting bays, Las Vegas style upscale sports entertainment venue, professional photography",
+      "image_keywords": ["top golf", "golf simulator", "driving range", "golf", "indoor golf"]
+    },
+    "las-vegas-birthday-freebies": {
+      "title": "Las Vegas Birthday Freebies",
+      "image_prompt": "People celebrating birthday in Las Vegas with champagne, balloons, and festive decorations, VIP nightlife setting, upscale cocktail bar or nightclub, birthday cake or party setup, professional event photography",
+      "image_keywords": ["birthday", "champagne", "celebration", "Las Vegas", "nightlife"]
+    },
+    "gentlemans-club-guide": {
+      "title": "Gentleman's Club Guide",
+      "image_prompt": "Upscale gentleman's club interior with elegant stage lighting, luxury lounge seating, VIP bottle service setup, professional nightclub atmosphere, sophisticated ambiance, classy decor and lighting",
+      "image_keywords": ["gentleman's club", "nightclub", "VIP lounge", "bottle service", "entertainment venue"]
+    },
+    "what-time-do-vegas-clubs-close": {
+      "title": "What Time Do Vegas Clubs Close",
+      "image_prompt": "Las Vegas nightclub early morning, dancers on stage, neon lights and club lighting, VIP section with bottles, crowd of people partying, nightclub atmosphere at late night or early morning",
+      "image_keywords": ["Las Vegas nightclub", "club hours", "nightlife", "dancing", "VIP"]
+    },
+    "nightclub-attire-for-men": {
+      "title": "Nightclub Attire for Men",
+      "image_prompt": "Well-dressed men in upscale nightclub, stylish cocktail outfits, dress codes at nightclub, men wearing blazers and dress shirts at Las Vegas club, fashion at nightlife venue, professional menswear photography",
+      "image_keywords": ["men's fashion", "nightclub outfit", "dress code", "fashion", "upscale attire"]
+    },
+    "male-strip-clubs-las-vegas": {
+      "title": "Male Strip Clubs Las Vegas",
+      "image_prompt": "Upscale entertainment venue stage with professional lighting, nightclub dance floor atmosphere, VIP seating area, bottle service setup, sophisticated nightclub interior design, Las Vegas nightlife entertainment",
+      "image_keywords": ["nightclub", "entertainment venue", "stage", "VIP", "nightlife"]
+    },
+    "omnia-nightclub-review": {
+      "title": "Omnia Nightclub Review",
+      "image_prompt": "Luxury nightclub interior with premium stage, professional DJ booth, state-of-the-art lighting and sound system, upscale crowd partying, bottle service at VIP table, Caesars Palace luxury nightclub atmosphere",
+      "image_keywords": ["nightclub", "DJ", "VIP", "luxury venue", "Caesars Palace"]
+    },
+    "all-inclusive-packages": {
+      "title": "All-Inclusive Packages",
+      "image_prompt": "Las Vegas resort overview showing multiple venues, nightclub VIP table with bottle service, pool party setting, luxury hotel suite, diverse nightlife experiences included in package, upscale entertainment",
+      "image_keywords": ["Las Vegas resort", "VIP package", "nightlife", "pool party", "hotel"]
+    },
+    "pool-party-season-guide": {
+      "title": "Pool Party Season Guide",
+      "image_prompt": "Luxury hotel pool party in Las Vegas, beautiful people in swimwear enjoying daytime party, DJ booth, bottle service at poolside, summer atmosphere, upscale pool deck, clear blue water and sunshine",
+      "image_keywords": ["pool party", "Las Vegas", "daytime", "VIP", "bottle service"]
+    },
+    "21st-birthday-ideas": {
+      "title": "21st Birthday Ideas",
+      "image_prompt": "Young adults celebrating 21st birthday in Las Vegas nightclub, cocktails and champagne, birthday cake or celebratory setup, VIP section, party atmosphere, festive decorations, nightlife celebration",
+      "image_keywords": ["21st birthday", "nightclub", "celebration", "cocktails", "Las Vegas"]
+    },
+    "nye-packages-vegas": {
+      "title": "NYE Packages Vegas",
+      "image_prompt": "New Year's Eve celebration in Las Vegas nightclub, champagne bottles, confetti and fireworks, packed dance floor, DJ performing, upscale VIP section, midnight countdown atmosphere, luxury nightlife event",
+      "image_keywords": ["New Year's Eve", "nightclub", "celebration", "champagne", "VIP"]
+    },
+    "club-tips-for-first-timers": {
+      "title": "Club Tips for First-Timers",
+      "image_prompt": "Las Vegas nightclub first-timer guide scene showing diverse nightclub environments, VIP bottle service explanation, dress code examples, club etiquette, mixed group of people enjoying nightclub experience",
+      "image_keywords": ["nightclub guide", "first-timer", "club tips", "nightlife", "Las Vegas"]
+    },
+    "bachelorette-party-ideas": {
+      "title": "Bachelorette Party Ideas",
+      "image_prompt": "Bachelorette party celebration in Las Vegas nightclub, group of women celebrating, champagne and cocktails, bride in center of attention, VIP table with bottle service, fun nightlife party atmosphere",
+      "image_keywords": ["bachelorette party", "Las Vegas", "nightclub", "celebration", "women"]
+    },
+    "vip-host-worth-it": {
+      "title": "VIP Host — Worth It?",
+      "image_prompt": "VIP host working with group at upscale Las Vegas nightclub, professional concierge assisting guests at VIP table, bottle service presentation, table management, luxury nightclub interior, professional hospitality",
+      "image_keywords": ["VIP host", "nightclub", "bottle service", "concierge", "Las Vegas"]
+    },
+    "best-hotels-for-bachelor-party": {
+      "title": "Best Hotels for Bachelor Party",
+      "image_prompt": "Luxury Las Vegas resort hotel showing nightclub access, pool area, suite overview, multiple entertainment options, upscale accommodation with nightlife nearby, resort grounds from aerial view",
+      "image_keywords": ["Las Vegas hotel", "resort", "bachelor party", "luxury accommodation", "nightlife"]
+    },
+    "gentlemans-club-guide-pt2": {
+      "title": "Gentleman's Club Guide Pt. 2",
+      "image_prompt": "Upscale gentleman's club VIP lounge area, premium seating, bottle service setup, elegant stage with professional lighting, sophisticated nightclub atmosphere, luxury entertainment venue interior",
+      "image_keywords": ["gentleman's club", "VIP lounge", "nightclub", "luxury", "entertainment"]
+    },
+    "las-vegas-bottle-service-cost": {
+      "title": "Las Vegas Bottle Service Cost",
+      "image_prompt": "Premium bottle service at upscale Las Vegas nightclub, premium liquor bottles on ice at VIP table, professional bottle presentation, mixologist pouring drinks, luxury nightclub setting, crystal glasses",
+      "image_keywords": ["bottle service", "VIP table", "nightclub", "cocktails", "Las Vegas"]
+    },
+    "best-las-vegas-nightclubs-2026": {
+      "title": "Best Las Vegas Nightclubs 2026",
+      "image_prompt": "Collage of top Las Vegas nightclubs showing diverse venues, DJ booths, dance floors, VIP sections, luxury nightclub interiors, premium sound and lighting systems, upscale nightlife experiences",
+      "image_keywords": ["nightclubs", "Las Vegas", "VIP", "entertainment", "nightlife"]
+    },
+    "bachelor-party-planning-guide": {
+      "title": "Bachelor Party Planning Guide",
+      "image_prompt": "Bachelor party celebration at Las Vegas nightclub, groom in center with groomsmen, champagne and cocktails, VIP table with bottle service, excited group celebrating, nightlife party atmosphere",
+      "image_keywords": ["bachelor party", "Las Vegas", "nightclub", "celebration", "men"]
+    },
+    "xs-vs-hakkasan-comparison": {
+      "title": "XS vs Hakkasan Comparison",
+      "image_prompt": "Split-screen comparison of two luxury Las Vegas nightclubs, modern dance floor, professional DJ booths, upscale VIP sections, distinctive interior designs, premium sound and light systems, nightclub architecture",
+      "image_keywords": ["nightclub comparison", "XS", "Hakkasan", "Las Vegas", "nightlife"]
+    },
+    "pool-party-guide": {
+      "title": "Pool Party Guide",
+      "image_prompt": "Las Vegas daytime pool party complete guide scene showing beautiful pool area, DJ platform, cocktails being served, people relaxing and dancing, sunny day, luxury resort pool deck, upscale atmosphere",
+      "image_keywords": ["pool party", "Las Vegas", "daytime", "party guide", "resort"]
+    },
+    "party-bus-guide": {
+      "title": "Party Bus Guide",
+      "image_prompt": "Luxury party bus interior with dancing and celebration, premium sound system, LED lighting, group of people celebrating inside a coach bus, traveling through Las Vegas at night, upscale transportation",
+      "image_keywords": ["party bus", "Las Vegas", "transportation", "nightlife", "group celebration"]
+    },
+    "nightclub-dress-code": {
+      "title": "Nightclub Dress Code",
+      "image_prompt": "Las Vegas nightclub dress code guide showing well-dressed people in appropriate attire, men in blazers and dress shirts, women in upscale outfits, doorman checking dress code, upscale nightclub entrance, fashion examples",
+      "image_keywords": ["dress code", "nightclub", "fashion", "attire", "Las Vegas"]
+    },
+    "pool-party-outfit-guide": {
+      "title": "Pool Party Outfit Guide",
+      "image_prompt": "Fashion guide for pool party outfits at Las Vegas resort pool, people in stylish swimwear and cover-ups, fashionable sunglasses and accessories, sunny pool setting, upscale resort pool deck, summer fashion",
+      "image_keywords": ["pool party outfit", "fashion", "swimwear", "Las Vegas", "style"]
+    },
+    "bachelorette-party-ideas-full": {
+      "title": "Bachelorette Party Ideas",
+      "image_prompt": "Complete bachelorette party celebration in Las Vegas showing multiple venue options, nightclub, pool party, upscale dining, champagne and cocktails, bride in focus, joyful group of women celebrating",
+      "image_keywords": ["bachelorette party", "Las Vegas", "ideas", "celebration", "women's night"]
+    },
+    "nightclub-dress-code-women": {
+      "title": "Nightclub Dress Code for Women",
+      "image_prompt": "Las Vegas nightclub dress code guide for women showing fashionable outfits, elegant dresses, upscale casual wear, high heels, sophisticated look at luxury nightclub, female fashion examples, professional photography",
+      "image_keywords": ["women's dress code", "nightclub fashion", "outfits", "Las Vegas", "upscale attire"]
+    },
+    "birthday-freebies-guide": {
+      "title": "Birthday Freebies Guide",
+      "image_prompt": "Las Vegas birthday celebration showing various freebies and perks, free drinks, complimentary VIP access, birthday cake, champagne toast, excited group celebrating, upscale venue, party atmosphere",
+      "image_keywords": ["birthday freebies", "Las Vegas", "celebration", "discounts", "perks"]
+    }
+  }
+}

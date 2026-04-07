@@ -1,0 +1,108 @@
+name: Publish Scheduled Blog Posts
+
+on:
+  schedule:
+    - cron: '0 14 * * 2,4' # 9AM EST (14 UTC), Tues & Thurs
+  workflow_dispatch:
+
+jobs:
+  publish-posts:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check for scheduled posts
+        id: check_posts
+        shell: bash
+        run: |
+          TODAY=$(date -u +"%Y-%m-%d")
+          echo "today=$TODAY" >> $GITHUB_OUTPUT
+          
+          POSTS=""
+          if [ -d "_scheduled-posts" ]; then
+            for dir in _scheduled-posts/*/; do
+              [ -d "$dir" ] || continue
+              folder=$(basename "$dir")
+              pub_date="${folder:0:10}"
+              
+              if [[ "$pub_date" < "$TODAY" || "$pub_date" == "$TODAY" ]]; then
+                POSTS="$POSTS $dir"
+              fi
+            done
+          fi
+          
+          if [ -z "$POSTS" ]; then
+            echo "found_posts=false" >> $GITHUB_OUTPUT
+          else
+            echo "found_posts=true" >> $GITHUB_OUTPUT
+            echo "posts=$POSTS" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install dependencies
+        if: steps.check_posts.outputs.found_posts == 'true'
+        run: npm install node-fetch
+
+      - name: Generate images for posts
+        if: steps.check_posts.outputs.found_posts == 'true'
+        env:
+          FAL_API_KEY: ${{ secrets.FAL_API_KEY }}
+        shell: bash
+        run: |
+          node scripts/generate-blog-images.js "${{ steps.check_posts.outputs.posts }}" "${{ steps.check_posts.outputs.today }}"
+
+      - name: Publish due posts
+        shell: bash
+        run: |
+          set -e
+
+          TODAY=$(date -u +"%Y-%m-%d")
+          COUNT=0
+
+          for dir in _scheduled-posts/*/; do
+            [ -d "$dir" ] || continue
+
+            folder=$(basename "$dir")
+            pub_date="${folder:0:10}"
+            slug="${folder:11}"
+
+            if [[ "$pub_date" < "$TODAY" || "$pub_date" == "$TODAY" ]]; then
+              echo "Publishing $folder -> app/blog/$slug"
+              rm -rf "app/blog/$slug"
+              mkdir -p "app/blog/$slug"
+              cp -r "${dir}"* "app/blog/$slug/"
+              rm -rf "$dir"
+              COUNT=$((COUNT + 1))
+            fi
+          done
+
+          echo "Published: $COUNT"
+
+      - name: Rebuild blog index
+        run: node scripts/rebuild-blog-index.mjs
+
+      - name: Commit and push changes
+        shell: bash
+        run: |
+          set -e
+
+          if git diff --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+          git config user.email "bot@github.com"
+          git config user.name "Auto-Publisher"
+
+          git add app/blog/ _scheduled-posts/ scripts/rebuild-blog-index.mjs
+          git commit -m "Auto-published $(date -u +%Y-%m-%d)"
+          git push
