@@ -11,6 +11,16 @@ export type GeneratedPost = {
 
 export const posts: GeneratedPost[] = [
   {
+    "slug": "what-time-do-vegas-clubs-close",
+    "title": "What Time Do Las Vegas Clubs Close? (Every Major Venue, 2026)",
+    "excerpt": "Exact closing times for every major Las Vegas nightclub — XS, Hakkasan, Omnia, Marquee, TAO, Zouk, LIV, Drai\\",
+    "date": "April 10, 2026",
+    "readTime": "5 min read",
+    "category": "Nightlife Guide",
+    "image": "/blog/what-time-do-vegas-clubs-close/cover.jpg",
+    "imageAlt": "What time do Las Vegas nightclubs close 2026"
+  },
+  {
     "slug": "las-vegas-gentlemens-club-guide",
     "title": "Las Vegas Gentleman\\",
     "excerpt": "Complete guide to Las Vegas gentleman\\",
