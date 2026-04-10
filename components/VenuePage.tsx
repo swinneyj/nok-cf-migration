@@ -1,3 +1,7 @@
+'use client'
+
+import { useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import InquiryForm from '@/components/InquiryForm'
 import ReviewCard from '@/components/ReviewCard'
@@ -26,35 +30,115 @@ interface VenuePageProps {
 }
 
 const defaultReviews = [
-  { name: 'Marcus T.', date: 'February 2026', location: 'Chicago, IL', rating: 5, text: 'Justin got us the best table in the house. We\'ve been to this venue three times now always through Nokturnal — the difference in table placement vs booking direct is night and day.' },
+  { name: 'Marcus T.', date: 'February 2026', location: 'Chicago, IL', rating: 5, text: "Justin got us the best table in the house. We've been to this venue three times now always through Nokturnal — the difference in table placement vs booking direct is night and day." },
   { name: 'Sarah K.', date: 'January 2026', location: 'New York, NY', rating: 5, text: 'Bachelorette party and our host was waiting for us at the door. VIP entry, amazing table, champagne already chilled. Absolutely flawless experience.' },
-  { name: 'David R.', date: 'December 2025', location: 'Los Angeles, CA', rating: 5, text: 'Thought I could book this venue directly for a better price. Justin beat the direct rate AND got us a better table. Will always go through Nokturnal for Vegas.' },
+  { name: 'David R.', date: 'December 2025', location: 'Los Angeles, CA', rating: 5, text: "Thought I could book this venue directly for a better price. Justin beat the direct rate AND got us a better table. Will always go through Nokturnal for Vegas." },
 ]
 
-export default function VenuePage({ venue, reviews = defaultReviews, relatedVenues = [] }: VenuePageProps) {
+export default function VenuePage({
+  venue,
+  reviews = defaultReviews,
+  relatedVenues = [],
+}: VenuePageProps) {
+  const pathname = usePathname()
   const isNightclub = venue.category === 'Nightclub'
   const isDayclub = venue.category === 'Dayclub'
   const isStripClub = venue.category === 'Strip Club'
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const scrollToBooking = (behavior: ScrollBehavior) => {
+      const target = document.getElementById('event-booking')
+      if (!target) return
+
+      target.scrollIntoView({
+        behavior,
+        block: 'start',
+      })
+    }
+
+    if (window.location.hash === '#event-booking') {
+      requestAnimationFrame(() => {
+        scrollToBooking('auto')
+      })
+      return
+    }
+
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+    })
+  }, [pathname])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const onHashChange = () => {
+      if (window.location.hash !== '#event-booking') return
+
+      const target = document.getElementById('event-booking')
+      if (!target) return
+
+      requestAnimationFrame(() => {
+        target.scrollIntoView({
+          behavior: 'auto',
+          block: 'start',
+        })
+      })
+    }
+
+    window.addEventListener('hashchange', onHashChange)
+    return () => window.removeEventListener('hashchange', onHashChange)
+  }, [])
+
+  const handleViewEvents = () => {
+    if (typeof window === 'undefined') return
+
+    const target = document.getElementById('event-booking')
+    if (!target) return
+
+    if (window.location.hash !== '#event-booking') {
+      window.history.replaceState(null, '', `${window.location.pathname}#event-booking`)
+    }
+
+    target.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    })
+  }
+
   return (
     <>
-      {/* Hero */}
       <section className="relative page-hero overflow-hidden">
         <div className="absolute inset-0">
-          <img src={venue.image} alt={`${venue.name} Las Vegas VIP table bottle service`} className="w-full h-full object-cover" />
+          <img
+            src={venue.image}
+            alt={`${venue.name} Las Vegas VIP table bottle service`}
+            className="w-full h-full object-cover"
+          />
           <div className="hero-overlay absolute inset-0" />
         </div>
+
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 pt-32">
           <div className="max-w-3xl">
             <div className="flex items-center gap-3 mb-4">
-              <Link href={isNightclub ? '/nightclubs' : isDayclub ? '/pool-parties' : '/strip-clubs'} className="section-eyebrow hover:text-gold-300 transition-colors">
+              <Link
+                href={isNightclub ? '/nightclubs' : isDayclub ? '/pool-parties' : '/strip-clubs'}
+                className="section-eyebrow hover:text-gold-300 transition-colors"
+              >
                 ← {isNightclub ? 'Nightclubs' : isDayclub ? 'Pool Parties' : 'Strip Clubs'}
               </Link>
             </div>
-            <h1 className="font-display text-white font-bold mb-4" style={{ fontSize: 'clamp(2rem, 5vw, 3.8rem)' }}>
+
+            <h1
+              className="font-display text-white font-bold mb-4"
+              style={{ fontSize: 'clamp(2rem, 5vw, 3.8rem)' }}
+            >
               {venue.name} Las Vegas
             </h1>
+
             <p className="text-gold-400 font-semibold mb-4">{venue.hotel}</p>
+
             <p className="text-white/70 text-lg leading-relaxed mb-8 max-w-xl">
               {isNightclub
                 ? `VIP table reservations, skip-the-line entry, and personal host at ${venue.name}. Better table placement and pricing than booking direct.`
@@ -62,8 +146,17 @@ export default function VenuePage({ venue, reviews = defaultReviews, relatedVenu
                   ? `VIP cabana and daybed reservations at ${venue.name}. Personal host, bottle service, and skip-the-line access included.`
                   : `VIP entry, free drinks, and best seats at ${venue.name}. Personal host coordinates your group from hotel pickup to VIP access.`}
             </p>
+
             <div className="flex flex-wrap gap-4">
-              <Link href="#book" className="btn-gold">Book VIP Access</Link>
+              <button
+                type="button"
+                onClick={handleViewEvents}
+                className="btn-gold"
+                aria-label="View upcoming events"
+              >
+                View Events
+              </button>
+
               <a href="tel:+17029964884" className="btn-ghost flex items-center gap-2">
                 📞 (702) 996-4884
               </a>
@@ -72,7 +165,6 @@ export default function VenuePage({ venue, reviews = defaultReviews, relatedVenu
         </div>
       </section>
 
-      {/* Venue stats bar */}
       <section className="bg-night-800 border-y border-gold-500/10 py-6 px-4">
         <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
           {[
@@ -93,10 +185,7 @@ export default function VenuePage({ venue, reviews = defaultReviews, relatedVenu
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid lg:grid-cols-3 gap-12">
-          {/* Main content */}
           <div className="lg:col-span-2 space-y-10">
-
-            {/* About */}
             <div>
               <div className="section-eyebrow mb-3">About {venue.name}</div>
               <h2 className="font-display text-white font-bold text-2xl mb-4">
@@ -104,15 +193,15 @@ export default function VenuePage({ venue, reviews = defaultReviews, relatedVenu
               </h2>
               <p className="text-white/70 leading-relaxed mb-6 text-lg">{venue.description}</p>
               <ul className="space-y-2">
-                {venue.highlights.map(h => (
+                {venue.highlights.map((h) => (
                   <li key={h} className="flex items-start gap-3 text-white/65 text-sm">
-                    <span className="text-gold-400 mt-0.5 flex-shrink-0">✓</span>{h}
+                    <span className="text-gold-400 mt-0.5 flex-shrink-0">✓</span>
+                    {h}
                   </li>
                 ))}
               </ul>
             </div>
 
-            {/* Venue details */}
             <div>
               <h2 className="font-display text-white font-bold text-2xl mb-4">Venue Information</h2>
               <div className="card-dark p-6 grid sm:grid-cols-2 gap-4 text-sm">
@@ -134,15 +223,14 @@ export default function VenuePage({ venue, reviews = defaultReviews, relatedVenu
               </div>
             </div>
 
-            {/* Why book through us */}
             <div>
               <h2 className="font-display text-white font-bold text-2xl mb-4">
                 Why Book {venue.name} Through Nokturnal?
               </h2>
               <div className="grid sm:grid-cols-2 gap-4">
                 {[
-                  { title: 'Better Table Location', desc: 'We know exactly which tables have the best sightlines and position. Booking direct gets you whatever\'s available.' },
-                  { title: 'Price Match + Better', desc: 'We regularly beat direct booking prices, and when we can\'t, we add value through better placement or service.' },
+                  { title: 'Better Table Location', desc: "We know exactly which tables have the best sightlines and position. Booking direct gets you whatever's available." },
+                  { title: 'Price Match + Better', desc: "We regularly beat direct booking prices, and when we can't, we add value through better placement or service." },
                   { title: 'Personal Host', desc: 'Justin or one of our team meets you at the door, handles check-in, and stays with your group throughout the night.' },
                   { title: 'Skip the Line', desc: 'Zero waiting. VIP entry direct to your table, no standing in the general admission queue.' },
                 ].map(({ title, desc }) => (
@@ -154,22 +242,20 @@ export default function VenuePage({ venue, reviews = defaultReviews, relatedVenu
               </div>
             </div>
 
-            {/* Reviews */}
             <div>
               <h2 className="font-display text-white font-bold text-2xl mb-4">What Our Clients Say</h2>
               <div className="space-y-4">
-                {reviews.map(r => (
+                {reviews.map((r) => (
                   <ReviewCard key={r.name} {...r} />
                 ))}
               </div>
             </div>
 
-            {/* Related venues */}
             {relatedVenues.length > 0 && (
               <div>
                 <h2 className="font-display text-white font-bold text-xl mb-4">Compare Other Venues</h2>
                 <div className="flex flex-wrap gap-3">
-                  {relatedVenues.map(v => (
+                  {relatedVenues.map((v) => (
                     <Link
                       key={v.href}
                       href={v.href}
@@ -184,8 +270,7 @@ export default function VenuePage({ venue, reviews = defaultReviews, relatedVenu
             )}
           </div>
 
-          {/* Sidebar — Booking form */}
-          <div id="book" className="scroll-mt-24">
+          <div id="reserve-inquiry" className="scroll-mt-24">
             <div className="card-dark p-6 sticky top-24">
               <h3 className="font-display text-white font-bold text-xl mb-2">
                 Reserve at {venue.name}
@@ -199,7 +284,10 @@ export default function VenuePage({ venue, reviews = defaultReviews, relatedVenu
               />
               <div className="mt-6 pt-5 border-t border-white/5 text-center">
                 <div className="text-white/30 text-xs mb-2">Or call directly</div>
-                <a href="tel:+17029964884" className="text-gold-400 font-display font-bold text-lg hover:text-gold-300 transition-colors">
+                <a
+                  href="tel:+17029964884"
+                  className="text-gold-400 font-display font-bold text-lg hover:text-gold-300 transition-colors"
+                >
                   (702) 996-4884
                 </a>
               </div>

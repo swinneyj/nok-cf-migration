@@ -123,6 +123,7 @@ export default function Navbar() {
                               key={child.href}
                               href={child.href}
                               prefetch={false}
+                              scroll={true}
                               className="block px-4 py-2.5 text-sm text-white/70 hover:text-white hover:bg-gold-500/10 transition-colors"
                             >
                               {child.label}
@@ -136,6 +137,7 @@ export default function Navbar() {
                   <Link
                     key={link.label}
                     href={link.href}
+                    scroll={true}
                     className="px-4 py-2 text-sm text-white/80 hover:text-white transition-colors font-medium"
                   >
                     {link.label}
@@ -194,6 +196,7 @@ export default function Navbar() {
                         key={child.href}
                         href={child.href}
                         prefetch={false}
+                        scroll={true}
                         onClick={() => setMobileOpen(false)}
                         className="block py-2.5 pl-3 text-white/70 hover:text-white transition-colors text-sm border-l border-gold-500/20 hover:border-gold-500 mb-1"
                       >
@@ -204,6 +207,7 @@ export default function Navbar() {
                 ) : (
                   <Link
                     href={link.href}
+                    scroll={true}
                     onClick={() => setMobileOpen(false)}
                     className="block py-3 text-white/80 hover:text-white transition-colors font-medium border-b border-white/5"
                   >

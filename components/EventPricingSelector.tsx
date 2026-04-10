@@ -9,9 +9,9 @@ import { CalendarDays, ImageIcon, MapPin, Ticket, Users } from "lucide-react";
 
 interface EventPricingSelectorProps {
   venueName: string;
-  venueSlug?: string;
-  initialMonth?: string;
-  initialEvents?: ParsedEvent[];
+  venueSlug: string;
+  // initialMonth?: string;
+  //initialEvents?: ParsedEvent[];
 }
 
 interface SelectedTable {
@@ -218,18 +218,22 @@ function findBestFlyer(
 export default function EventPricingSelector({
   venueName,
   venueSlug,
-  initialMonth,
-  initialEvents = [],
+  //initialMonth,
+  // initialEvents = [],
 }: EventPricingSelectorProps) {
   const [selectedEvent, setSelectedEvent] = useState<ParsedEvent | null>(null);
   const [numGuys, setNumGuys] = useState(0);
   const [numGirls, setNumGirls] = useState(0);
+  const [showSections, setShowSections] = useState(false);
+  const [committedGuys, setCommittedGuys] = useState(0);
+  const [committedGirls, setCommittedGirls] = useState(0);
   const [selectedTable, setSelectedTable] = useState<SelectedTable | null>(null);
   const [openSection, setOpenSection] = useState<string | null>(null);
   const [flyerManifest, setFlyerManifest] = useState<FlyerManifestEntry[]>([]);
   const [flyerError, setFlyerError] = useState(false);
 
   const totalGuests = numGuys + numGirls;
+  const committedTotalGuests = committedGuys + committedGirls;
 
   useEffect(() => {
     let cancelled = false;
@@ -260,13 +264,15 @@ export default function EventPricingSelector({
     };
   }, []);
 
-  // ✅ FIX #1: Reset ALL state when event changes
   const handleEventSelected = (event: ParsedEvent) => {
     setSelectedEvent(event);
-    setNumGuys(0);           // ← Reset guest counts
-    setNumGirls(0);          // ← Reset guest counts
+    setNumGuys(0);
+    setNumGirls(0);
+    setShowSections(false);
+    setCommittedGuys(0);
+    setCommittedGirls(0);
     setSelectedTable(null);
-    setOpenSection(null);    // ← Reset accordion
+    setOpenSection(null);
   };
 
   const handleSelectTier = (
@@ -302,6 +308,15 @@ export default function EventPricingSelector({
     [flyerManifest, selectedEvent, venueName, venueSlug]
   );
 
+  useEffect(() => {
+    if (totalGuests !== 0) return;
+    setShowSections(false);
+    setSelectedTable(null);
+    setOpenSection(null);
+    setCommittedGuys(0);
+    setCommittedGirls(0);
+  }, [totalGuests]);
+
   return (
     <div className="event-pricing-container w-full space-y-8 pb-12">
       <div>
@@ -309,125 +324,122 @@ export default function EventPricingSelector({
           Step 1: Select Event
         </h2>
         <EventCalendar
-          venueName={venueName}
           venueSlug={venueSlug}
-          initialMonth={initialMonth}
-          initialEvents={initialEvents}
+          // initialMonth={initialMonth}
+          // initialEvents={initialEvents}
           onEventSelected={handleEventSelected}
           selectedEventId={selectedEvent?.id}
         />
       </div>
 
-      {/* ✅ FIX #2: Remove max-height animation wrapper, use clean conditional render */}
       {selectedEvent && (
-        <div className="animate-fade-in overflow-hidden rounded-xl border border-gray-200 bg-white">
+        <div className="scroll-mt-24 overflow-hidden rounded-xl border border-gray-200 bg-white">
           <div className="bg-gradient-to-r from-purple-900 to-black p-6 text-white">
-            <h2 className="text-2xl font-bold">Step 2: Enter Guest Count</h2>
+            <h2 className="text-2xl font-bold">STEP 2 TEST - NEW FILE</h2>
             <p className="mt-1 text-purple-200">
               {selectedEvent.eventName} • {selectedEvent.dateString}
             </p>
           </div>
 
           <div className="p-6">
-            <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-              <div>
-                <label className="mb-3 block text-sm font-medium text-gray-700">
-                  Number of Guys
-                </label>
-                <div className="flex items-center gap-4">
-                  <button
-                    type="button"
-                    onClick={() => setNumGuys(Math.max(0, numGuys - 1))}
-                    className="rounded-md bg-gray-200 px-4 py-3 text-lg font-bold text-gray-700 transition hover:bg-gray-300"
-                  >
-                    −
-                  </button>
-                  <input
-                    type="number"
-                    value={numGuys}
-                    onChange={(e) =>
-                      setNumGuys(
-                        Math.max(0, parseInt(e.target.value) || 0)
-                      )
-                    }
-                    className="w-24 rounded-md border-2 border-gray-300 bg-white px-2 py-3 text-center text-2xl font-bold text-gray-900 outline-none focus:border-purple-900"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setNumGuys(numGuys + 1)}
-                    className="rounded-md bg-gray-200 px-4 py-3 text-lg font-bold text-gray-700 transition hover:bg-gray-300"
-                  >
-                    +
-                  </button>
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+                    <span className="text-sm font-medium text-gray-700">Guys</span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setNumGuys(Math.max(0, numGuys - 1))}
+                        className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-lg font-bold text-gray-700 transition hover:bg-gray-100"
+                      >
+                        −
+                      </button>
+                      <span className="w-8 text-center text-lg font-semibold text-gray-900">
+                        {numGuys}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setNumGuys(numGuys + 1)}
+                        className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-lg font-bold text-gray-700 transition hover:bg-gray-100"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+                    <span className="text-sm font-medium text-gray-700">Girls</span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setNumGirls(Math.max(0, numGirls - 1))}
+                        className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-lg font-bold text-gray-700 transition hover:bg-gray-100"
+                      >
+                        −
+                      </button>
+                      <span className="w-8 text-center text-lg font-semibold text-gray-900">
+                        {numGirls}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setNumGirls(numGirls + 1)}
+                        className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-lg font-bold text-gray-700 transition hover:bg-gray-100"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between rounded-xl bg-purple-50 px-4 py-3">
+                    <span className="text-sm font-medium text-purple-700">Total Guests</span>
+                    <div className="flex items-center gap-2">
+                      <Users className="h-5 w-5 text-purple-900" />
+                      <span className="text-2xl font-bold text-purple-900">
+                        {totalGuests}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div>
-                <label className="mb-3 block text-sm font-medium text-gray-700">
-                  Number of Girls
-                </label>
-                <div className="flex items-center gap-4">
-                  <button
-                    type="button"
-                    onClick={() => setNumGirls(Math.max(0, numGirls - 1))}
-                    className="rounded-md bg-gray-200 px-4 py-3 text-lg font-bold text-gray-700 transition hover:bg-gray-300"
-                  >
-                    −
-                  </button>
-                  <input
-                    type="number"
-                    value={numGirls}
-                    onChange={(e) =>
-                      setNumGirls(
-                        Math.max(0, parseInt(e.target.value) || 0)
-                      )
-                    }
-                    className="w-24 rounded-md border-2 border-gray-300 bg-white px-2 py-3 text-center text-2xl font-bold text-gray-900 outline-none focus:border-purple-900"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setNumGirls(numGirls + 1)}
-                    className="rounded-md bg-gray-200 px-4 py-3 text-lg font-bold text-gray-700 transition hover:bg-gray-300"
-                  >
-                    +
-                  </button>
+              {selectedEvent.minimumSpendNote && (
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700">
+                  <strong>Note:</strong> {selectedEvent.minimumSpendNote}
                 </div>
-              </div>
+              )}
 
-              <div className="flex flex-col justify-center rounded-xl bg-purple-50 p-4">
-                <p className="mb-2 text-sm text-gray-600">Total Guests</p>
-                <div className="flex items-center gap-2">
-                  <Users className="h-6 w-6 text-purple-900" />
-                  <p className="text-3xl font-bold text-purple-900">
-                    {totalGuests}
-                  </p>
-                </div>
-              </div>
+              {totalGuests > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCommittedGuys(numGuys);
+                    setCommittedGirls(numGirls);
+                    setShowSections(true);
+                  }}
+                  className="w-full rounded-xl bg-gradient-to-r from-purple-900 to-black px-6 py-4 font-semibold text-white transition hover:from-purple-800 hover:to-gray-900"
+                >
+                  Continue to sections
+                </button>
+              )}
             </div>
-
-            {selectedEvent.minimumSpendNote && (
-              <div className="mt-6 rounded-lg border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700">
-                <strong>Note:</strong> {selectedEvent.minimumSpendNote}
-              </div>
-            )}
           </div>
         </div>
       )}
 
-      {/* ✅ FIX #2: Remove max-height animation wrapper, use clean conditional render */}
-      {selectedEvent && totalGuests > 0 && (
-        <div className="animate-fade-in">
+      {selectedEvent && showSections && (
+        <div className="scroll-mt-24">
           <h2 className="mb-4 text-3xl font-bold text-gray-900">
             Step 3: Select Your Section
           </h2>
 
           <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_340px] xl:items-start">
-            <div className="space-y-3">
+            <div className="order-2 space-y-3 xl:order-1">
               {validSections.map((section) => (
                 <SectionAccordion
                   key={section.title}
                   section={section}
-                  guestCount={totalGuests}
+                  guestCount={committedTotalGuests}
                   isOpen={openSection === section.title}
                   onToggle={() =>
                     setOpenSection((prev) =>
@@ -440,7 +452,7 @@ export default function EventPricingSelector({
               ))}
             </div>
 
-            <aside className="space-y-4 xl:sticky xl:top-24">
+            <aside className="order-1 space-y-4 xl:order-2 xl:sticky xl:top-24">
               <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
                 {flyer ? (
                   <div className="aspect-[4/5] w-full overflow-hidden bg-black">
@@ -484,7 +496,7 @@ export default function EventPricingSelector({
                     </div>
                     <div className="flex items-start gap-2">
                       <Users className="mt-0.5 h-4 w-4 shrink-0" />
-                      <span>{totalGuests} total guests</span>
+                      <span>{committedTotalGuests} total guests</span>
                     </div>
                   </div>
                 </div>
@@ -539,9 +551,8 @@ export default function EventPricingSelector({
         </div>
       )}
 
-      {/* ✅ FIX #2: Remove max-height animation wrapper, use clean conditional render */}
       {selectedEvent && selectedTable && (
-        <div className="animate-fade-in mt-6">
+        <div className="scroll-mt-24 mt-6">
           <div className="mb-6">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-purple-700">
               Final Step
@@ -579,7 +590,7 @@ export default function EventPricingSelector({
                     Guest Count
                   </p>
                   <p className="mt-1 text-lg font-semibold text-white">
-                    {totalGuests} guests
+                    {committedTotalGuests} guests
                   </p>
                 </div>
                 <div>
@@ -599,9 +610,9 @@ export default function EventPricingSelector({
                 eventName={selectedEvent.eventName}
                 eventDate={selectedEvent.dateString}
                 selectedTable={selectedTable}
-                numGuys={numGuys}
-                numGirls={numGirls}
-                totalGuests={totalGuests}
+                numGuys={committedGuys}
+                numGirls={committedGirls}
+                totalGuests={committedTotalGuests}
                 onSubmit={handleReservationSubmit}
               />
             </div>

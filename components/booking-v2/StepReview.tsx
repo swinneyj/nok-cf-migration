@@ -1,0 +1,96 @@
+"use client";
+
+import ReservationForm, { ReservationData } from "@/components/ReservationForm";
+import type { ParsedEvent } from "@/lib/calendarParser";
+import type { SelectedTable } from "./types";
+
+interface StepReviewProps {
+  venueName: string;
+  event: ParsedEvent;
+  selectedTable: SelectedTable;
+  committedGuys: number;
+  committedGirls: number;
+  onBack: () => void;
+  onSubmit?: (data: ReservationData) => void;
+}
+
+export default function StepReview({
+  venueName,
+  event,
+  selectedTable,
+  committedGuys,
+  committedGirls,
+  onBack,
+  onSubmit,
+}: StepReviewProps) {
+  const totalGuests = committedGuys + committedGirls;
+
+  return (
+    <section className="rounded-[28px] bg-[#a3a3a3] p-3 sm:p-4">
+      <div className="overflow-hidden rounded-[24px] border border-white/10 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.18)]">
+        <div className="bg-gradient-to-r from-[#61208f] via-[#2f0a4f] to-black px-5 py-5 sm:px-6">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-fuchsia-200">
+            Step 4
+          </p>
+          <h2 className="mt-1 text-[2rem] font-bold leading-none text-white">
+            Review &amp; Submit
+          </h2>
+          <p className="mt-2 text-base text-white/80">
+            {event.eventName} • {event.dateString} • {venueName}
+          </p>
+        </div>
+
+        <div className="p-4 sm:p-5">
+          <div className="mb-5 rounded-2xl border border-fuchsia-200 bg-fuchsia-50 p-4 sm:p-5">
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <p className="text-sm text-gray-500">Selected Section</p>
+                <p className="text-2xl font-bold text-fuchsia-900">
+                  {selectedTable.section}
+                </p>
+              </div>
+
+              <div className="md:text-right">
+                <p className="text-sm text-gray-500">Minimum Spend</p>
+                <p className="text-2xl font-bold text-fuchsia-900">
+                  ${selectedTable.price.toLocaleString()}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-500">Table Option</p>
+                <p className="text-lg font-semibold text-gray-900">
+                  {selectedTable.name}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-5">
+            <button
+              type="button"
+              onClick={onBack}
+              className="rounded-2xl border border-gray-200 bg-white px-5 py-3.5 text-base font-semibold text-gray-700 transition hover:bg-gray-50"
+            >
+              Change Section
+            </button>
+          </div>
+
+          <ReservationForm
+            venueName={venueName}
+            eventName={event.eventName}
+            eventDate={event.dateString}
+            selectedTable={{
+              name: selectedTable.name,
+              price: selectedTable.price,
+            }}
+            numGuys={committedGuys}
+            numGirls={committedGirls}
+            totalGuests={totalGuests}
+            onSubmit={onSubmit}
+          />
+        </div>
+      </div>
+    </section>
+  );
+}

@@ -2,6 +2,10 @@ export const dynamic = "force-dynamic";
 
 import type { Metadata } from 'next'
 import VenuePage from '@/components/VenuePage'
+import EventPricingSelector from '@/components/EventPricingSelector'
+import BookingFlowV2 from '@/components/booking-v2/BookingFlowV2'
+
+const useBookingV2 = true
 
 export const metadata: Metadata = {
   title: 'Palm Tree Beach Club Las Vegas | Tropical VIP Cabana Dayclubs',
@@ -11,7 +15,8 @@ export const metadata: Metadata = {
 
 export default function PalmTreeBeachClub() {
   return (
-    <VenuePage
+    <>
+      <VenuePage
       venue={{
         name: 'Palm Tree Beach Club',
         hotel: 'Las Vegas Strip',
@@ -46,5 +51,21 @@ export default function PalmTreeBeachClub() {
         { name: 'LIV Beach Club', href: '/places/liv-beach-club' },
       ]}
     />
+  
+
+<section id="event-booking" className="bg-gray-50 py-12 md:py-16 scroll-mt-24">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 className="text-4xl font-bold text-gray-900 mb-2">Book Your Experience</h2>
+    <p className="text-gray-600 mb-12 text-lg">
+      Browse upcoming events, select your table, and submit a reservation request
+    </p>
+    {useBookingV2 ? (
+      <BookingFlowV2 venueName="Palm Tree Beach Club" venueSlug="palm-tree-beach-club" />
+    ) : (
+      <EventPricingSelector venueName="Palm Tree Beach Club" venueSlug="palm-tree-beach-club" />
+    )}
+  </div>
+</section>
+    </>
   )
 }

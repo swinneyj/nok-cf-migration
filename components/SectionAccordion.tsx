@@ -1,7 +1,7 @@
 "use client";
 
 import { EventSection, PricingTier } from "@/lib/calendarParser";
-import { ChevronDown, ChevronRight, Users } from "lucide-react";
+import { ChevronDown, Users } from "lucide-react";
 
 interface SectionAccordionProps {
   section: EventSection;
