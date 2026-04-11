@@ -103,6 +103,41 @@ export default function EventCalendar({
     };
   }, [venueSlug, monthKey]);
 
+  // Auto-select event from URL parameters
+  useEffect(() => {
+    if (events.length === 0 || selectedEventId) return;
+
+    const pendingParams = sessionStorage.getItem(
+      `booking_${venueSlug}_pendingParams`
+    );
+    if (!pendingParams) return;
+
+    try {
+      const { event: eventParam } = JSON.parse(pendingParams);
+      if (!eventParam) return;
+
+      // Try to find an event matching the event param (slug format)
+      // Since we don't have access to the original slug generation, we'll match by eventName
+      const matchingEvent = events.find((e) => {
+        const eventSlug = e.eventName
+          .toLowerCase()
+          .replace(/[^\w\s-]/g, "")
+          .replace(/\s+/g, "-")
+          .replace(/-+/g, "-")
+          .replace(/^-|-$/g, "");
+        return eventSlug === eventParam;
+      });
+
+      if (matchingEvent) {
+        onEventSelected(matchingEvent);
+        // Clear the params after selecting
+        sessionStorage.removeItem(`booking_${venueSlug}_pendingParams`);
+      }
+    } catch (err) {
+      console.error("Error auto-selecting event from URL:", err);
+    }
+  }, [events, venueSlug, selectedEventId, onEventSelected]);
+
   const eventsByDate = useMemo(() => {
     const map: Record<string, ParsedEvent[]> = {};
     for (const event of events) {

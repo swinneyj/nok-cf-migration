@@ -416,6 +416,56 @@ export default function StepSections({
     setOpenSection((prev) => prev ?? selectedSectionName);
   }, [selectedSectionName]);
 
+  // Auto-select table from URL parameters
+  useEffect(() => {
+    if (selectedTableName) return; // Already selected
+
+    const pendingParams = sessionStorage.getItem(
+      `booking_${venueSlug}_pendingParams`
+    );
+    if (!pendingParams) return;
+
+    try {
+      const { section: sectionParam, table: tableParam } = JSON.parse(
+        pendingParams
+      );
+      if (!sectionParam || !tableParam) return;
+
+      // Find matching section and table
+      for (const sec of sections) {
+        const sectionSlug = String(sec.sectionName || sec.name || "")
+          .toLowerCase()
+          .replace(/[^\w\s-]/g, "")
+          .replace(/\s+/g, "-")
+          .replace(/-+/g, "-")
+          .replace(/^-|-$/g, "");
+
+        if (sectionSlug === sectionParam) {
+          // Found matching section, now find table
+          const tiers = sec.tiers || [];
+          for (const tier of tiers) {
+            if (tier.id === tableParam) {
+              // Found matching table, select it
+              onSelectTable({
+                id: tier.id,
+                name: tier.name,
+                price: tier.price,
+                section: sec.sectionName || sec.name,
+                capacity: tier.capacity,
+                soldOut: tier.soldOut,
+              });
+              // Clear the params after selecting
+              sessionStorage.removeItem(`booking_${venueSlug}_pendingParams`);
+              return;
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Error auto-selecting table from URL:", err);
+    }
+  }, [sections, venueSlug, selectedTableName, onSelectTable]);
+
   useEffect(() => {
     const updateStickyState = () => {
       if (typeof window === "undefined") return;

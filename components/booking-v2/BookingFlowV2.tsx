@@ -107,6 +107,26 @@ export default function BookingFlowV2({
     previousSectionsEventKeyRef.current = selectedEventKey;
   }, [state.step, selectedEventKey]);
 
+  // Initialize from URL parameters on mount
+  useEffect(() => {
+    const eventParam = searchParams.get("event");
+    const sectionParam = searchParams.get("section");
+    const tableParam = searchParams.get("table");
+
+    // Only initialize if we have URL params and haven't already initialized
+    if (eventParam && !state.selectedEvent) {
+      // Store params in sessionStorage to be picked up by EventCalendar
+      sessionStorage.setItem(
+        `booking_${venueSlug}_pendingParams`,
+        JSON.stringify({
+          event: eventParam,
+          section: sectionParam,
+          table: tableParam,
+        })
+      );
+    }
+  }, [searchParams, venueSlug, state.selectedEvent]);
+
   const handleReservationSubmit = (data: ReservationData) => {
     console.log("V2 reservation submitted:", data);
   };
