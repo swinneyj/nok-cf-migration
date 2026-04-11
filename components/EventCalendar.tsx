@@ -64,35 +64,44 @@ export default function EventCalendar({
   const [events, setEvents] = useState<ParsedEvent[]>([]);
   const [visibleMonth, setVisibleMonth] = useState(new Date(2026, 3, 1));
   const [loading, setLoading] = useState(false);
+  const [hasSearchedForEvent, setHasSearchedForEvent] = useState(false);
 
   const monthKey = useMemo(() => formatMonthKey(visibleMonth), [visibleMonth]);
   const venueLabel = useMemo(() => formatVenueLabel(venueSlug), [venueSlug]);
 
-  // Auto-adjust month based on URL parameters when page loads
+  // Auto-adjust month based on URL parameters (only on initial load)
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (typeof window !== "undefined" && !hasSearchedForEvent && events.length > 0) {
       const params = new URLSearchParams(window.location.search);
       const eventParam = params.get("event");
       
-      // If we have an event param but can't find it in current month,
-      // we'll need to search other months. For now, we'll try a wider range.
-      // Try to load multiple months ahead to find the event
-      if (eventParam && !events.some(e => {
-        const eventSlug = e.eventName
-          .toLowerCase()
-          .replace(/[^\w\s-]/g, "")
-          .replace(/\s+/g, "-")
-          .replace(/-+/g, "-")
-          .replace(/^-|-$/g, "");
-        return eventSlug === eventParam;
-      })) {
-        // Event not found in current month, try next month
-        const nextMonth = new Date(visibleMonth);
-        nextMonth.setMonth(nextMonth.getMonth() + 1);
-        setVisibleMonth(nextMonth);
+      // Only search if we have an event param and haven't found it in current month
+      if (eventParam) {
+        const foundEvent = events.some(e => {
+          const eventSlug = e.eventName
+            .toLowerCase()
+            .replace(/[^\w\s-]/g, "")
+            .replace(/\s+/g, "-")
+            .replace(/-+/g, "-")
+            .replace(/^-|-$/g, "");
+          return eventSlug === eventParam;
+        });
+        
+        if (!foundEvent) {
+          // Event not found in current month, try next month (but only once)
+          const nextMonth = new Date(visibleMonth);
+          nextMonth.setMonth(nextMonth.getMonth() + 1);
+          setVisibleMonth(nextMonth);
+        }
+        
+        // Mark that we've tried searching so we don't loop infinitely
+        setHasSearchedForEvent(true);
+      } else {
+        // No event param, so no need to search
+        setHasSearchedForEvent(true);
       }
     }
-  }, [events]);
+  }, [hasSearchedForEvent, visibleMonth]);
 
   useEffect(() => {
     let cancelled = false;
