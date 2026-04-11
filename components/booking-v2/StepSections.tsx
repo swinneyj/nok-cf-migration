@@ -7,9 +7,12 @@ import {
   ChevronDown,
   ImageIcon,
   MapPin,
+  Map as MapIcon,
   Sparkles,
   Users,
 } from "lucide-react";
+import VenueMapModal from "./VenueMapModal";
+import { getVenueMapConfig } from "@/lib/venueMaps";
 
 type LegacySectionOption = {
   name?: string;
@@ -375,6 +378,7 @@ export default function StepSections({
   const [flyerManifest, setFlyerManifest] = useState<FlyerManifestEntry[]>([]);
   const [flyerError, setFlyerError] = useState(false);
   const [showStickyFlyer, setShowStickyFlyer] = useState(false);
+  const [showVenueMap, setShowVenueMap] = useState(false);
   const stepContainerRef = useRef<HTMLDivElement | null>(null);
   const flyerCardRef = useRef<HTMLDivElement | null>(null);
 
@@ -457,6 +461,8 @@ export default function StepSections({
     [flyerManifest, venueSlug, eventName, eventDate]
   );
 
+  const venueMapConfig = useMemo(() => getVenueMapConfig(venueSlug), [venueSlug]);
+
   const currentPrice = useMemo(() => {
     if (typeof selectedTablePrice === "number") return selectedTablePrice;
 
@@ -479,6 +485,16 @@ export default function StepSections({
 
   return (
     <div ref={stepContainerRef} className="scroll-mt-24">
+      <VenueMapModal
+        open={showVenueMap}
+        onClose={() => setShowVenueMap(false)}
+        venueName={venueName}
+        config={venueMapConfig}
+        sections={validSections.map((section, index) =>
+          getDisplaySectionName(getSectionName(section), index, eventName, venueName)
+        )}
+        selectedSectionName={selectedSectionName}
+      />
       <div
         className={[
           "fixed inset-x-4 top-[72px] z-40 xl:hidden",
@@ -537,9 +553,17 @@ export default function StepSections({
         </button>
       </div>
 
-      <h2 className="mb-4 text-3xl font-bold text-gray-900">
-        Step 2: Select Your Section
-      </h2>
+      <div className="mb-4">
+        <h2 className="text-3xl font-bold text-gray-900">Step 2: Select Your Section</h2>
+        <button
+          type="button"
+          onClick={() => setShowVenueMap(true)}
+          className="mt-3 inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50"
+        >
+          <MapIcon className="h-4 w-4" />
+          View Venue Map
+        </button>
+      </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_340px] xl:items-start">
         <aside className="order-1 space-y-4 xl:order-2 xl:sticky xl:top-24">
