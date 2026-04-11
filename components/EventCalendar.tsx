@@ -164,8 +164,13 @@ export default function EventCalendar({
   useEffect(() => {
     if (events.length === 0 || selectedEventId) return;
 
+    // Extract venue slug from URL path (e.g., /places/hakkasan -> hakkasan)
+    const pathSlug = typeof window !== "undefined" 
+      ? window.location.pathname.split("/")[2] || venueSlug
+      : venueSlug;
+
     const pendingParams = sessionStorage.getItem(
-      `booking_${venueSlug}_pendingParams`
+      `booking_${pathSlug}_pendingParams`
     );
     if (!pendingParams) return;
 

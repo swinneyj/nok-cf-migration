@@ -115,9 +115,14 @@ export default function BookingFlowV2({
 
     // Only initialize if we have URL params and haven't already initialized
     if (eventParam && !state.selectedEvent) {
+      // Extract venue slug from URL path (e.g., /places/hakkasan -> hakkasan)
+      const pathSlug = typeof window !== "undefined" 
+        ? window.location.pathname.split("/")[2] || venueSlug
+        : venueSlug;
+
       // Store params in sessionStorage to be picked up by EventCalendar
       sessionStorage.setItem(
-        `booking_${venueSlug}_pendingParams`,
+        `booking_${pathSlug}_pendingParams`,
         JSON.stringify({
           event: eventParam,
           section: sectionParam,

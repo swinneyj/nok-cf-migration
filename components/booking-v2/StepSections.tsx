@@ -420,8 +420,13 @@ export default function StepSections({
   useEffect(() => {
     if (selectedTableName) return; // Already selected
 
+    // Extract venue slug from URL path (e.g., /places/hakkasan -> hakkasan)
+    const pathSlug = typeof window !== "undefined" 
+      ? window.location.pathname.split("/")[2] || venueSlug
+      : venueSlug;
+
     const pendingParams = sessionStorage.getItem(
-      `booking_${venueSlug}_pendingParams`
+      `booking_${pathSlug}_pendingParams`
     );
     if (!pendingParams) return;
 
@@ -467,7 +472,7 @@ export default function StepSections({
                   soldOut: tier.soldOut,
                 });
                 // Clear the params after selecting
-                sessionStorage.removeItem(`booking_${venueSlug}_pendingParams`);
+                sessionStorage.removeItem(`booking_${pathSlug}_pendingParams`);
                 return;
               }
             }
@@ -476,7 +481,7 @@ export default function StepSections({
           // Even if table didn't match, we found the section and opened it
           // Clear params if we found section but not table
           if (foundSection && !foundTable && tableParam) {
-            sessionStorage.removeItem(`booking_${venueSlug}_pendingParams`);
+            sessionStorage.removeItem(`booking_${pathSlug}_pendingParams`);
           }
           return;
         }
