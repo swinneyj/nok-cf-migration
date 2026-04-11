@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { AlertTriangle, Mail, Phone, Users } from "lucide-react";
 
 interface ReservationFormProps {
@@ -34,8 +34,6 @@ export interface ReservationData {
   phone: string;
 }
 
-type GuestField = "numGuys" | "numGirls";
-
 export default function ReservationForm({
   venueName,
   eventName,
@@ -43,7 +41,6 @@ export default function ReservationForm({
   selectedTable,
   onSubmit,
 }: ReservationFormProps) {
-  const successRef = useRef<HTMLDivElement | null>(null);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -76,29 +73,14 @@ export default function ReservationForm({
     }));
   };
 
-  const setGuestValue = (name: GuestField, nextValue: number) => {
+  const handleGuestChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    const parsed = Math.max(0, Math.floor(Number(value) || 0));
+
     setGuestData((prev) => ({
       ...prev,
-      [name]: Math.max(0, Math.floor(nextValue) || 0),
+      [name]: parsed,
     }));
-  };
-
-  const handleGuestInputChange = (
-    name: GuestField,
-    value: string,
-  ) => {
-    const digitsOnly = value.replace(/\D/g, "");
-    setGuestValue(name, digitsOnly === "" ? 0 : Number(digitsOnly));
-  };
-
-  const adjustGuestValue = (name: GuestField, delta: number) => {
-    setGuestValue(name, guestData[name] + delta);
-  };
-
-  const selectGuestInputValue = (input: HTMLInputElement) => {
-    requestAnimationFrame(() => {
-      input.select();
-    });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -140,15 +122,21 @@ export default function ReservationForm({
         ...formData,
       };
 
-      onSubmit?.(data);
+      if (onSubmit) {
+        onSubmit(data);
+      }
 
-      const formId = process.env.NEXT_PUBLIC_FORMSPREE_FORM_ID || "mvzvobod";
+      const formId = process.env.NEXT_PUBLIC_FORMSPREE_FORM_ID;
+      if (!formId) {
+        setError("Form configuration error. Please contact support.");
+        setLoading(false);
+        return;
+      }
 
       const response = await fetch(`https://formspree.io/f/${formId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Accept: "application/json",
         },
         body: JSON.stringify({
           ...data,
@@ -174,7 +162,7 @@ export default function ReservationForm({
       }
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "An error occurred. Please try again.",
+        err instanceof Error ? err.message : "An error occurred. Please try again."
       );
     } finally {
       setLoading(false);
@@ -184,21 +172,9 @@ export default function ReservationForm({
   const inputClassName =
     "w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-base text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-purple-900 focus:ring-2 focus:ring-purple-200";
 
-
-  useEffect(() => {
-    if (!submitted) return;
-
-    requestAnimationFrame(() => {
-      successRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    });
-  }, [submitted]);
-
   if (submitted) {
     return (
-      <div ref={successRef} className="rounded-lg border-2 border-green-200 bg-green-50 p-6 text-center">
+      <div className="rounded-lg border-2 border-green-200 bg-green-50 p-6 text-center">
         <div className="mb-3 text-5xl">✓</div>
         <h3 className="mb-2 text-2xl font-bold text-green-900">
           Reservation Request Submitted!
@@ -288,59 +264,47 @@ export default function ReservationForm({
         <div className="space-y-4">
           <h4 className="font-bold text-gray-900">Group Breakdown</h4>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {[
-              { key: "numGirls", label: "Girls", value: guestData.numGirls },
-              { key: "numGuys", label: "Guys", value: guestData.numGuys },
-            ].map((field) => (
-              <div
-                key={field.key}
-                className="rounded-2xl border border-gray-200 bg-gray-50 p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
-              >
-                <p className="mb-3 text-sm font-semibold text-gray-700">{field.label}</p>
-                <div className="flex items-center justify-between gap-3">
-                  <button
-                    type="button"
-                    onClick={() => adjustGuestValue(field.key as GuestField, -1)}
-                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-gray-100 text-2xl font-bold text-gray-700 transition hover:bg-gray-200"
-                    aria-label={`Decrease ${field.label.toLowerCase()}`}
-                  >
-                    −
-                  </button>
-
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    name={field.key}
-                    value={field.value}
-                    onChange={(e) => handleGuestInputChange(field.key as GuestField, e.target.value)}
-                    onFocus={(e) => selectGuestInputValue(e.currentTarget)}
-                    onClick={(e) => selectGuestInputValue(e.currentTarget)}
-                    className="h-11 min-w-0 flex-1 border-0 bg-transparent px-0 text-center text-4xl font-bold leading-none text-gray-950 outline-none focus:ring-0"
-                    aria-label={`Number of ${field.label.toLowerCase()}`}
-                  />
-
-                  <button
-                    type="button"
-                    onClick={() => adjustGuestValue(field.key as GuestField, 1)}
-                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-gray-100 text-2xl font-bold text-gray-700 transition hover:bg-gray-200"
-                    aria-label={`Increase ${field.label.toLowerCase()}`}
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="flex items-center justify-between rounded-2xl border border-fuchsia-100 bg-fuchsia-50 px-5 py-4">
-            <div className="flex items-center gap-2 text-sm font-semibold text-gray-700">
-              <Users className="h-4 w-4 text-gray-500" />
-              Total Guests
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Number of Guys *
+              </label>
+              <input
+                type="number"
+                min={0}
+                name="numGuys"
+                value={guestData.numGuys}
+                onChange={handleGuestChange}
+                className={inputClassName}
+                inputMode="numeric"
+                required
+              />
             </div>
-            <div className="text-4xl font-bold leading-none text-fuchsia-900">
-              {totalGuests}
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Number of Girls *
+              </label>
+              <input
+                type="number"
+                min={0}
+                name="numGirls"
+                value={guestData.numGirls}
+                onChange={handleGuestChange}
+                className={inputClassName}
+                inputMode="numeric"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                <Users className="mr-1 inline h-4 w-4" />
+                Total Guests
+              </label>
+              <div className="flex h-[50px] items-center rounded-lg border border-gray-200 bg-gray-50 px-4 text-lg font-bold text-purple-900">
+                {totalGuests}
+              </div>
             </div>
           </div>
         </div>
