@@ -1,11 +1,13 @@
 "use client";
 
 import ReservationForm, { ReservationData } from "@/components/ReservationForm";
+import ShareButton from "./ShareButton";
 import type { ParsedEvent } from "@/lib/calendarParser";
 import type { SelectedTable } from "./types";
 
 interface StepReviewProps {
   venueName: string;
+  venueSlug: string;
   event: ParsedEvent;
   selectedTable: SelectedTable;
   onBack: () => void;
@@ -14,6 +16,7 @@ interface StepReviewProps {
 
 export default function StepReview({
   venueName,
+  venueSlug,
   event,
   selectedTable,
   onBack,
@@ -67,6 +70,16 @@ export default function StepReview({
                 </div>
               )}
             </div>
+          </div>
+
+          <div className="mb-5">
+            <ShareButton
+              venueName={venueName}
+              venueSlug={venueSlug}
+              eventName={event.eventName}
+              sectionName={selectedTable.section}
+              tableName={selectedTable.name}
+            />
           </div>
 
           <div className="mb-5">

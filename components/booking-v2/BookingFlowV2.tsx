@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useReducer, useRef } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import type { ReservationData } from "@/components/ReservationForm";
 import { bookingReducer, initialBookingState } from "./reducer";
 import StepEvent from "./StepEvent";
@@ -17,6 +18,8 @@ export default function BookingFlowV2({
   venueSlug,
 }: BookingFlowV2Props) {
   const [state, dispatch] = useReducer(bookingReducer, initialBookingState);
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const eventRef = useRef<HTMLDivElement | null>(null);
   const sectionsRef = useRef<HTMLDivElement | null>(null);
   const reviewRef = useRef<HTMLDivElement | null>(null);
@@ -108,6 +111,68 @@ export default function BookingFlowV2({
     console.log("V2 reservation submitted:", data);
   };
 
+  // Helper function to slugify text for URLs
+  const slugify = (text: string) => {
+    return String(text || "")
+      .normalize("NFKD")
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "");
+  };
+
+  // Update URL when event is selected
+  const handleSelectEvent = (event: any) => {
+    dispatch({ type: "SELECT_EVENT", event });
+    // Update URL after event selection
+    setTimeout(() => {
+      const params = new URLSearchParams(searchParams);
+      const eventSlug = slugify(event.eventName);
+      params.set("event", eventSlug);
+      params.delete("section");
+      params.delete("table");
+      const queryString = params.toString();
+      const newUrl = queryString
+        ? `/places/${venueSlug}?${queryString}`
+        : `/places/${venueSlug}`;
+      router.push(newUrl, { scroll: false });
+    }, 0);
+  };
+
+  // Update URL when table is selected
+  const handleSelectTable = (table: any) => {
+    dispatch({
+      type: "SELECT_TABLE",
+      table: {
+        id: table.id,
+        name: table.name,
+        price: Number(table.price ?? 0),
+        section: table.section,
+        capacity: table.capacity,
+        soldOut: table.soldOut,
+      },
+    });
+    // Update URL after table selection
+    setTimeout(() => {
+      const params = new URLSearchParams(searchParams);
+      const eventSlug = state.selectedEvent?.eventName
+        ? slugify(state.selectedEvent.eventName)
+        : "";
+      if (eventSlug) params.set("event", eventSlug);
+
+      const sectionSlug = slugify(table.section);
+      params.set("section", sectionSlug);
+      params.set("table", table.id);
+
+      const queryString = params.toString();
+      const newUrl = queryString
+        ? `/places/${venueSlug}?${queryString}`
+        : `/places/${venueSlug}`;
+      router.push(newUrl, { scroll: false });
+    }, 0);
+  };
+
   return (
     <div className="space-y-6">
       <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
@@ -144,7 +209,7 @@ export default function BookingFlowV2({
           venueName={venueName}
           venueSlug={venueSlug}
           selectedEvent={state.selectedEvent}
-          onSelectEvent={(event) => dispatch({ type: "SELECT_EVENT", event })}
+          onSelectEvent={handleSelectEvent}
         />
       </div>
 
@@ -161,19 +226,7 @@ export default function BookingFlowV2({
             selectedTableName={state.selectedTable?.name}
             selectedTablePrice={state.selectedTable?.price}
             onBack={() => dispatch({ type: "BACK_TO_EVENT" })}
-            onSelectTable={(table) => {
-              dispatch({
-                type: "SELECT_TABLE",
-                table: {
-                  id: table.id,
-                  name: table.name,
-                  price: Number(table.price ?? 0),
-                  section: table.section,
-                  capacity: table.capacity,
-                  soldOut: table.soldOut,
-                },
-              });
-            }}
+            onSelectTable={handleSelectTable}
           />
         </div>
       )}
@@ -182,6 +235,7 @@ export default function BookingFlowV2({
         <div ref={reviewRef} className="scroll-mt-24">
           <StepReview
             venueName={venueName}
+            venueSlug={venueSlug}
             event={state.selectedEvent}
             selectedTable={state.selectedTable}
             onBack={() => dispatch({ type: "BACK_TO_SECTIONS" })}
