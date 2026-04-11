@@ -431,22 +431,18 @@ export default function StepSections({
       );
       if (!sectionParam || !tableParam) return;
 
-      // Find matching section and table
+      // Find matching section and table by slugifying both
       for (const sec of sections) {
         // Handle both EventSection (title) and LegacySectionOption (sectionName/name)
         const sectionName = (sec as any).sectionName || (sec as any).name || (sec as any).title || "";
-        const sectionSlug = String(sectionName)
-          .toLowerCase()
-          .replace(/[^\w\s-]/g, "")
-          .replace(/\s+/g, "-")
-          .replace(/-+/g, "-")
-          .replace(/^-|-$/g, "");
+        const sectionSlug = slugify(sectionName);
 
         if (sectionSlug === sectionParam) {
           // Found matching section, now find table
+          // The tableParam contains the tier ID which is based on section name and tier name
           const tiers = sec.tiers || [];
           for (const tier of tiers) {
-            // Generate table ID same way it's done in the render code
+            // Generate table ID the same way StepSections does it
             const tierId = `${sectionName}__${tier.name}`
               .toLowerCase()
               .replace(/[^a-z0-9]+/g, "-")

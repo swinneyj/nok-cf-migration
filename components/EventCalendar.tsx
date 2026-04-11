@@ -130,8 +130,8 @@ export default function EventCalendar({
 
       if (matchingEvent) {
         onEventSelected(matchingEvent);
-        // Clear the params after selecting
-        sessionStorage.removeItem(`booking_${venueSlug}_pendingParams`);
+        // Don't clear params yet - we still need section/table for StepSections
+        // Only clear event param, keep section/table for later
       }
     } catch (err) {
       console.error("Error auto-selecting event from URL:", err);
