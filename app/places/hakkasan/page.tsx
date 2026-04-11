@@ -56,9 +56,9 @@ export default async function Hakkasan() {
       Browse upcoming events, select your table, and submit a reservation request
     </p>
     {useBookingV2 ? (
-      <BookingFlowV2 venueName="Hakkasan Nightclub" venueSlug="hakkasan-nightclub" />
+      <BookingFlowV2 venueName="Hakkasan Nightclub" venueSlug="hakkasan" />
     ) : (
-      <EventPricingSelector venueName="Hakkasan Nightclub" venueSlug="hakkasan-nightclub" />
+      <EventPricingSelector venueName="Hakkasan Nightclub" venueSlug="hakkasan" />
     )}
   </div>
 </section>

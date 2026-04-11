@@ -56,9 +56,9 @@ export default async function Omnia() {
       Browse upcoming events, select your table, and submit a reservation request
     </p>
     {useBookingV2 ? (
-      <BookingFlowV2 venueName="Omnia Nightclub" venueSlug="omnia-nightclub" />
+      <BookingFlowV2 venueName="Omnia Nightclub" venueSlug="omnia" />
     ) : (
-      <EventPricingSelector venueName="Omnia Nightclub" venueSlug="omnia-nightclub" />
+      <EventPricingSelector venueName="Omnia Nightclub" venueSlug="omnia" />
     )}
   </div>
 </section>
