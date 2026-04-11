@@ -14,6 +14,13 @@ import {
 import VenueMapModal from "./VenueMapModal";
 import { getVenueMapConfig } from "@/lib/venueMaps";
 
+// Helper to extract venue slug from URL path
+function getUrlPathSlug(): string {
+  if (typeof window === "undefined") return "";
+  const pathParts = window.location.pathname.split("/");
+  return pathParts[2] || ""; // /places/{slug}
+}
+
 type LegacySectionOption = {
   name?: string;
   sectionName?: string;
@@ -420,10 +427,9 @@ export default function StepSections({
   useEffect(() => {
     if (selectedTableName) return; // Already selected
 
-    // Extract venue slug from URL path (e.g., /places/hakkasan -> hakkasan)
-    const pathSlug = typeof window !== "undefined" 
-      ? window.location.pathname.split("/")[2] || venueSlug
-      : venueSlug;
+    // Extract venue slug from URL path
+    const pathSlug = getUrlPathSlug();
+    if (!pathSlug) return;
 
     const pendingParams = sessionStorage.getItem(
       `booking_${pathSlug}_pendingParams`

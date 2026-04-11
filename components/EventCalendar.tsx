@@ -9,6 +9,13 @@ interface Props {
   selectedEventId?: string;
 }
 
+// Helper to extract venue slug from URL path
+function getUrlPathSlug(): string {
+  if (typeof window === "undefined") return "";
+  const pathParts = window.location.pathname.split("/");
+  return pathParts[2] || ""; // /places/{slug}
+}
+
 function formatMonthKey(date: Date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -164,10 +171,9 @@ export default function EventCalendar({
   useEffect(() => {
     if (events.length === 0 || selectedEventId) return;
 
-    // Extract venue slug from URL path (e.g., /places/hakkasan -> hakkasan)
-    const pathSlug = typeof window !== "undefined" 
-      ? window.location.pathname.split("/")[2] || venueSlug
-      : venueSlug;
+    // Extract venue slug from URL path
+    const pathSlug = getUrlPathSlug();
+    if (!pathSlug) return;
 
     const pendingParams = sessionStorage.getItem(
       `booking_${pathSlug}_pendingParams`

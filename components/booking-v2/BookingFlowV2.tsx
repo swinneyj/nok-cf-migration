@@ -8,6 +8,13 @@ import StepEvent from "./StepEvent";
 import StepReview from "./StepReview";
 import StepSections from "./StepSections";
 
+// Helper to extract venue slug from URL path
+function getUrlPathSlug(): string {
+  if (typeof window === "undefined") return "";
+  const pathParts = window.location.pathname.split("/");
+  return pathParts[2] || ""; // /places/{slug}
+}
+
 interface BookingFlowV2Props {
   venueName: string;
   venueSlug: string;
@@ -115,10 +122,9 @@ export default function BookingFlowV2({
 
     // Only initialize if we have URL params and haven't already initialized
     if (eventParam && !state.selectedEvent) {
-      // Extract venue slug from URL path (e.g., /places/hakkasan -> hakkasan)
-      const pathSlug = typeof window !== "undefined" 
-        ? window.location.pathname.split("/")[2] || venueSlug
-        : venueSlug;
+      // Extract venue slug from URL path
+      const pathSlug = getUrlPathSlug();
+      if (!pathSlug) return;
 
       // Store params in sessionStorage to be picked up by EventCalendar
       sessionStorage.setItem(
