@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useReducer, useRef } from "react";
+import type { ReservationData } from "@/components/ReservationForm";
 import { bookingReducer, initialBookingState } from "./reducer";
 import StepEvent from "./StepEvent";
-import StepGuests from "./StepGuests";
-import StepSections from "./StepSections";
 import StepReview from "./StepReview";
-import type { ReservationData } from "@/components/ReservationForm";
+import StepSections from "./StepSections";
 
 interface BookingFlowV2Props {
   venueName: string;
@@ -19,7 +18,6 @@ export default function BookingFlowV2({
 }: BookingFlowV2Props) {
   const [state, dispatch] = useReducer(bookingReducer, initialBookingState);
   const eventRef = useRef<HTMLDivElement | null>(null);
-  const guestsRef = useRef<HTMLDivElement | null>(null);
   const sectionsRef = useRef<HTMLDivElement | null>(null);
   const reviewRef = useRef<HTMLDivElement | null>(null);
   const previousStepRef = useRef(state.step);
@@ -28,12 +26,10 @@ export default function BookingFlowV2({
     switch (state.step) {
       case "event":
         return 1;
-      case "guests":
-        return 2;
       case "sections":
-        return 3;
+        return 2;
       case "review":
-        return 4;
+        return 3;
       default:
         return 1;
     }
@@ -49,15 +45,6 @@ export default function BookingFlowV2({
     if (state.step === "event") {
       requestAnimationFrame(() => {
         eventRef.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      });
-    }
-
-    if (state.step === "guests") {
-      requestAnimationFrame(() => {
-        guestsRef.current?.scrollIntoView({
           behavior: "smooth",
           block: "start",
         });
@@ -95,9 +82,8 @@ export default function BookingFlowV2({
         <div className="flex flex-wrap gap-2">
           {[
             { n: 1, label: "Event" },
-            { n: 2, label: "Guests" },
-            { n: 3, label: "Sections" },
-            { n: 4, label: "Review" },
+            { n: 2, label: "Sections" },
+            { n: 3, label: "Reservation" },
           ].map((item) => {
             const active = progress === item.n;
             const complete = progress > item.n;
@@ -130,22 +116,6 @@ export default function BookingFlowV2({
         />
       </div>
 
-      {state.selectedEvent && state.step !== "event" && (
-        <div ref={guestsRef} className="scroll-mt-24">
-          <StepGuests
-            eventName={state.selectedEvent.eventName}
-            eventDate={state.selectedEvent.dateString}
-            guys={state.draftGuys}
-            girls={state.draftGirls}
-            autoAdvanceEnabled={state.step === "guests"}
-            onChangeGuys={(value) => dispatch({ type: "SET_DRAFT_GUYS", value })}
-            onChangeGirls={(value) => dispatch({ type: "SET_DRAFT_GIRLS", value })}
-            onBack={() => dispatch({ type: "BACK_TO_EVENT" })}
-            onContinue={() => dispatch({ type: "CONTINUE_FROM_GUESTS" })}
-          />
-        </div>
-      )}
-
       {state.selectedEvent && state.step === "sections" && (
         <div ref={sectionsRef} className="scroll-mt-24">
           <StepSections
@@ -154,12 +124,11 @@ export default function BookingFlowV2({
             eventName={state.selectedEvent.eventName}
             eventDate={state.selectedEvent.dateString}
             pricingNote={state.selectedEvent.pricingNote}
-            committedTotalGuests={state.committedGuys + state.committedGirls}
             sections={state.selectedEvent.sections ?? []}
             selectedSectionName={state.selectedTable?.section}
             selectedTableName={state.selectedTable?.name}
             selectedTablePrice={state.selectedTable?.price}
-            onBack={() => dispatch({ type: "BACK_TO_GUESTS" })}
+            onBack={() => dispatch({ type: "BACK_TO_EVENT" })}
             onSelectTable={(table) => {
               dispatch({
                 type: "SELECT_TABLE",
@@ -168,6 +137,8 @@ export default function BookingFlowV2({
                   name: table.name,
                   price: Number(table.price ?? 0),
                   section: table.section,
+                  capacity: table.capacity,
+                  soldOut: table.soldOut,
                 },
               });
             }}
@@ -181,8 +152,6 @@ export default function BookingFlowV2({
             venueName={venueName}
             event={state.selectedEvent}
             selectedTable={state.selectedTable}
-            committedGuys={state.committedGuys}
-            committedGirls={state.committedGirls}
             onBack={() => dispatch({ type: "BACK_TO_SECTIONS" })}
             onSubmit={handleReservationSubmit}
           />

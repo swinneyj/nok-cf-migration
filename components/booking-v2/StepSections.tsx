@@ -50,7 +50,6 @@ interface StepSectionsProps {
   eventName: string;
   eventDate: string;
   pricingNote?: string;
-  committedTotalGuests: number;
   sections: StepSection[];
   selectedSectionName?: string;
   selectedTableName?: string;
@@ -341,7 +340,7 @@ function makeTableId(sectionName: string, tierName: string) {
     .replace(/^-+|-+$/g, "");
 }
 
-function getTierState(tier: PricingTier, guestCount: number) {
+function getTierState(tier: PricingTier) {
   if (tier.soldOut) {
     return {
       disabled: true,
@@ -350,22 +349,12 @@ function getTierState(tier: PricingTier, guestCount: number) {
     };
   }
 
-  if (
-    Number.isFinite(tier.capacity) &&
-    tier.capacity > 0 &&
-    guestCount > tier.capacity
-  ) {
-    return {
-      disabled: true,
-      buttonText: "Too Small",
-      message: `Best for up to ${tier.capacity} guests`,
-    };
-  }
-
   return {
     disabled: false,
     buttonText: "Select",
-    message: null as string | null,
+    message: Number.isFinite(tier.capacity) && tier.capacity > 0
+      ? `Best for up to ${tier.capacity} guests`
+      : null,
   };
 }
 
@@ -375,7 +364,6 @@ export default function StepSections({
   eventName,
   eventDate,
   pricingNote,
-  committedTotalGuests,
   sections,
   selectedSectionName,
   selectedTableName,
@@ -457,7 +445,7 @@ export default function StepSections({
       window.removeEventListener("scroll", updateStickyState);
       window.removeEventListener("resize", updateStickyState);
     };
-  }, [eventName, eventDate, committedTotalGuests, openSection, sections.length]);
+  }, [eventName, eventDate, openSection, sections.length]);
 
   const validSections = useMemo(
     () => sections.filter((section) => getTiers(section).length > 0),
@@ -537,7 +525,7 @@ export default function StepSections({
                 </span>
                 <span className="inline-flex items-center gap-1 whitespace-nowrap">
                   <Users className="h-3 w-3" />
-                  {committedTotalGuests} guests
+                  Select a table
                 </span>
               </div>
             </div>
@@ -550,7 +538,7 @@ export default function StepSections({
       </div>
 
       <h2 className="mb-4 text-3xl font-bold text-gray-900">
-        Step 3: Select Your Section
+        Step 2: Select Your Section
       </h2>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_340px] xl:items-start">
@@ -597,7 +585,7 @@ export default function StepSections({
                 </div>
                 <div className="flex items-start gap-2">
                   <Users className="mt-0.5 h-4 w-4 shrink-0" />
-                  <span>{committedTotalGuests} total guests</span>
+                  <span>Choose a section to continue</span>
                 </div>
               </div>
             </div>
@@ -697,10 +685,7 @@ export default function StepSections({
                           const isSelected =
                             selectedTableName === tier.name &&
                             selectedSectionName === sectionName;
-                          const tierState = getTierState(
-                            tier,
-                            committedTotalGuests
-                          );
+                          const tierState = getTierState(tier);
 
                           return (
                             <div
@@ -804,7 +789,7 @@ export default function StepSections({
             <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
               <p className="text-sm text-gray-700">
                 Pricing is being updated for this event. You can still submit a
-                request after choosing your event and guest count.
+                request after choosing your section.
               </p>
             </div>
           )}
@@ -815,7 +800,7 @@ export default function StepSections({
               onClick={onBack}
               className="rounded-xl border border-gray-200 bg-white px-5 py-4 text-base font-semibold text-gray-700 transition hover:bg-gray-50"
             >
-              Change Guests
+              Change Event
             </button>
           </div>
         </div>
