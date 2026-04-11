@@ -65,6 +65,7 @@ export default function EventCalendar({
   const [visibleMonth, setVisibleMonth] = useState(new Date(2026, 3, 1));
   const [loading, setLoading] = useState(false);
   const [hasSearchedForEvent, setHasSearchedForEvent] = useState(false);
+  const [maxSearchMonth, setMaxSearchMonth] = useState<Date | null>(null);
 
   const monthKey = useMemo(() => formatMonthKey(visibleMonth), [visibleMonth]);
   const venueLabel = useMemo(() => formatVenueLabel(venueSlug), [venueSlug]);
@@ -88,20 +89,35 @@ export default function EventCalendar({
         });
         
         if (!foundEvent) {
-          // Event not found in current month, try next month (but only once)
+          // Event not found in current month, try next month
+          // but only if we haven't reached the max search month
           const nextMonth = new Date(visibleMonth);
           nextMonth.setMonth(nextMonth.getMonth() + 1);
-          setVisibleMonth(nextMonth);
+          
+          // Set max search as 6 months ahead to prevent infinite searching
+          if (!maxSearchMonth) {
+            const maxMonth = new Date(visibleMonth);
+            maxMonth.setMonth(maxMonth.getMonth() + 6);
+            setMaxSearchMonth(maxMonth);
+          }
+          
+          // Only advance if we haven't exceeded the search limit
+          if (!maxSearchMonth || nextMonth <= maxSearchMonth) {
+            setVisibleMonth(nextMonth);
+          } else {
+            // Reached max search, stop trying
+            setHasSearchedForEvent(true);
+          }
+        } else {
+          // Found the event, stop searching
+          setHasSearchedForEvent(true);
         }
-        
-        // Mark that we've tried searching so we don't loop infinitely
-        setHasSearchedForEvent(true);
       } else {
         // No event param, so no need to search
         setHasSearchedForEvent(true);
       }
     }
-  }, [hasSearchedForEvent, visibleMonth]);
+  }, [hasSearchedForEvent, visibleMonth, maxSearchMonth]);
 
   useEffect(() => {
     let cancelled = false;
@@ -118,6 +134,12 @@ export default function EventCalendar({
 
         if (!cancelled) {
           setEvents(nextEvents);
+          
+          // If no events returned, we've likely reached the end of calendar data
+          // Mark that we should stop searching
+          if (nextEvents.length === 0 && hasSearchedForEvent === false) {
+            setHasSearchedForEvent(true);
+          }
         }
       } catch (err) {
         console.error("Error fetching events:", err);
