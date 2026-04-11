@@ -433,7 +433,9 @@ export default function StepSections({
 
       // Find matching section and table
       for (const sec of sections) {
-        const sectionSlug = String(sec.sectionName || sec.name || "")
+        // Handle both EventSection (title) and LegacySectionOption (sectionName/name)
+        const sectionName = (sec as any).sectionName || (sec as any).name || (sec as any).title || "";
+        const sectionSlug = String(sectionName)
           .toLowerCase()
           .replace(/[^\w\s-]/g, "")
           .replace(/\s+/g, "-")
@@ -450,7 +452,7 @@ export default function StepSections({
                 id: tier.id,
                 name: tier.name,
                 price: tier.price,
-                section: sec.sectionName || sec.name,
+                section: sectionName,
                 capacity: tier.capacity,
                 soldOut: tier.soldOut,
               });
