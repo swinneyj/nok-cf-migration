@@ -446,10 +446,16 @@ export default function StepSections({
           // Found matching section, now find table
           const tiers = sec.tiers || [];
           for (const tier of tiers) {
-            if (tier.id === tableParam) {
+            // Generate table ID same way it's done in the render code
+            const tierId = `${sectionName}__${tier.name}`
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, "-")
+              .replace(/^-+|-+$/g, "");
+
+            if (tierId === tableParam) {
               // Found matching table, select it
               onSelectTable({
-                id: tier.id,
+                id: tierId,
                 name: tier.name,
                 price: tier.price,
                 section: sectionName,
