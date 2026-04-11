@@ -11,6 +11,16 @@ interface ShareButtonProps {
   tableName?: string;
 }
 
+function slugify(text: string) {
+  return String(text || "")
+    .normalize("NFKD")
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 export default function ShareButton({
   venueName,
   venueSlug,
@@ -26,20 +36,26 @@ export default function ShareButton({
     if (typeof window !== "undefined") {
       const params = new URLSearchParams();
       
-      // Get current URL params
-      const currentParams = new URLSearchParams(window.location.search);
-      const event = currentParams.get("event");
-      const section = currentParams.get("section");
-      const table = currentParams.get("table");
-      
-      if (event) params.set("event", event);
-      if (section) params.set("section", section);
-      if (table) params.set("table", table);
+      // Build URL from the passed props (actual selected values)
+      if (eventName) {
+        params.set("event", slugify(eventName));
+      }
+      if (sectionName) {
+        params.set("section", slugify(sectionName));
+      }
+      if (tableName && sectionName) {
+        // Generate table ID the same way StepSections does it
+        const tableId = `${sectionName}__${tableName}`
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "");
+        params.set("table", tableId);
+      }
 
       const url = `${window.location.origin}/places/${venueSlug}?${params.toString()}`;
       setShareUrl(url);
     }
-  }, [venueSlug]);
+  }, [venueSlug, eventName, sectionName, tableName]);
 
   const handleCopyToClipboard = async () => {
     try {
