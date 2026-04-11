@@ -38,6 +38,7 @@ const navLinks = [
     children: [
       { label: 'Encore Beach Club', href: '/places/encore-beach-club' },
       { label: 'Marquee Dayclub', href: '/places/marquee-dayclub' },
+      { label: 'Tao Beach', href: '/places/tao-beach' },
       { label: 'Omnia Dayclub', href: '/places/omnia-dayclub' },
       { label: 'LIV Beach Club', href: '/places/liv-beach-club' },
       { label: 'AYU Dayclub', href: '/places/ayu-dayclub' },
