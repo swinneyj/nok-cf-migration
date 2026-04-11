@@ -95,6 +95,12 @@ export default function ReservationForm({
     setGuestValue(name, guestData[name] + delta);
   };
 
+  const selectGuestInputValue = (input: HTMLInputElement) => {
+    requestAnimationFrame(() => {
+      input.select();
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -309,6 +315,8 @@ export default function ReservationForm({
                     name={field.key}
                     value={field.value}
                     onChange={(e) => handleGuestInputChange(field.key as GuestField, e.target.value)}
+                    onFocus={(e) => selectGuestInputValue(e.currentTarget)}
+                    onClick={(e) => selectGuestInputValue(e.currentTarget)}
                     className="h-11 min-w-0 flex-1 border-0 bg-transparent px-0 text-center text-4xl font-bold leading-none text-gray-950 outline-none focus:ring-0"
                     aria-label={`Number of ${field.label.toLowerCase()}`}
                   />
