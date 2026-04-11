@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AlertTriangle, Mail, Phone, Users } from "lucide-react";
 
 interface ReservationFormProps {
@@ -43,6 +43,7 @@ export default function ReservationForm({
   selectedTable,
   onSubmit,
 }: ReservationFormProps) {
+  const successRef = useRef<HTMLDivElement | null>(null);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -177,9 +178,21 @@ export default function ReservationForm({
   const inputClassName =
     "w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-base text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-purple-900 focus:ring-2 focus:ring-purple-200";
 
+
+  useEffect(() => {
+    if (!submitted) return;
+
+    requestAnimationFrame(() => {
+      successRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
+  }, [submitted]);
+
   if (submitted) {
     return (
-      <div className="rounded-lg border-2 border-green-200 bg-green-50 p-6 text-center">
+      <div ref={successRef} className="rounded-lg border-2 border-green-200 bg-green-50 p-6 text-center">
         <div className="mb-3 text-5xl">✓</div>
         <h3 className="mb-2 text-2xl font-bold text-green-900">
           Reservation Request Submitted!
