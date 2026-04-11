@@ -429,7 +429,10 @@ export default function StepSections({
       const { section: sectionParam, table: tableParam } = JSON.parse(
         pendingParams
       );
-      if (!sectionParam || !tableParam) return;
+      if (!sectionParam) return; // Need at least section param
+
+      let foundSection = false;
+      let foundTable = false;
 
       // Find matching section and table by slugifying both
       for (const sec of sections) {
@@ -438,31 +441,44 @@ export default function StepSections({
         const sectionSlug = slugify(sectionName);
 
         if (sectionSlug === sectionParam) {
-          // Found matching section, now find table
-          // The tableParam contains the tier ID which is based on section name and tier name
-          const tiers = sec.tiers || [];
-          for (const tier of tiers) {
-            // Generate table ID the same way StepSections does it
-            const tierId = `${sectionName}__${tier.name}`
-              .toLowerCase()
-              .replace(/[^a-z0-9]+/g, "-")
-              .replace(/^-+|-+$/g, "");
+          foundSection = true;
+          // Open/expand the section
+          setOpenSection(sectionName);
 
-            if (tierId === tableParam) {
-              // Found matching table, select it
-              onSelectTable({
-                id: tierId,
-                name: tier.name,
-                price: tier.price,
-                section: sectionName,
-                capacity: tier.capacity,
-                soldOut: tier.soldOut,
-              });
-              // Clear the params after selecting
-              sessionStorage.removeItem(`booking_${venueSlug}_pendingParams`);
-              return;
+          // If we have a table param, try to find and select it
+          if (tableParam) {
+            const tiers = sec.tiers || [];
+            for (const tier of tiers) {
+              // Generate table ID the same way StepSections does it
+              const tierId = `${sectionName}__${tier.name}`
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/^-+|-+$/g, "");
+
+              if (tierId === tableParam) {
+                foundTable = true;
+                // Found matching table, select it
+                onSelectTable({
+                  id: tierId,
+                  name: tier.name,
+                  price: tier.price,
+                  section: sectionName,
+                  capacity: tier.capacity,
+                  soldOut: tier.soldOut,
+                });
+                // Clear the params after selecting
+                sessionStorage.removeItem(`booking_${venueSlug}_pendingParams`);
+                return;
+              }
             }
           }
+
+          // Even if table didn't match, we found the section and opened it
+          // Clear params if we found section but not table
+          if (foundSection && !foundTable && tableParam) {
+            sessionStorage.removeItem(`booking_${venueSlug}_pendingParams`);
+          }
+          return;
         }
       }
     } catch (err) {
