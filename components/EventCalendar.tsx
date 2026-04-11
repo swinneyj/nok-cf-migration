@@ -68,6 +68,32 @@ export default function EventCalendar({
   const monthKey = useMemo(() => formatMonthKey(visibleMonth), [visibleMonth]);
   const venueLabel = useMemo(() => formatVenueLabel(venueSlug), [venueSlug]);
 
+  // Auto-adjust month based on URL parameters when page loads
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const eventParam = params.get("event");
+      
+      // If we have an event param but can't find it in current month,
+      // we'll need to search other months. For now, we'll try a wider range.
+      // Try to load multiple months ahead to find the event
+      if (eventParam && !events.some(e => {
+        const eventSlug = e.eventName
+          .toLowerCase()
+          .replace(/[^\w\s-]/g, "")
+          .replace(/\s+/g, "-")
+          .replace(/-+/g, "-")
+          .replace(/^-|-$/g, "");
+        return eventSlug === eventParam;
+      })) {
+        // Event not found in current month, try next month
+        const nextMonth = new Date(visibleMonth);
+        nextMonth.setMonth(nextMonth.getMonth() + 1);
+        setVisibleMonth(nextMonth);
+      }
+    }
+  }, [events]);
+
   useEffect(() => {
     let cancelled = false;
 

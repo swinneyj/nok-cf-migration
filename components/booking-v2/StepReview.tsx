@@ -14,6 +14,20 @@ interface StepReviewProps {
   onSubmit?: (data: ReservationData) => void;
 }
 
+function toTitleCase(str: string): string {
+  return str
+    .toLowerCase()
+    .split(/\s+/)
+    .map((word) => {
+      // Skip short words
+      if (["of", "and", "the", "in", "at", "by", "for"].includes(word)) {
+        return word;
+      }
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
+}
+
 export default function StepReview({
   venueName,
   venueSlug,
@@ -22,6 +36,8 @@ export default function StepReview({
   onBack,
   onSubmit,
 }: StepReviewProps) {
+  const displaySectionName = toTitleCase(selectedTable.section);
+
   return (
     <section className="rounded-[28px] bg-[#a3a3a3] p-3 sm:p-4">
       <div className="overflow-hidden rounded-[24px] border border-white/10 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.18)]">
@@ -43,7 +59,7 @@ export default function StepReview({
               <div>
                 <p className="text-sm text-gray-500">Selected Section</p>
                 <p className="text-2xl font-bold text-fuchsia-900">
-                  {selectedTable.section}
+                  {displaySectionName}
                 </p>
               </div>
 
@@ -77,7 +93,8 @@ export default function StepReview({
               venueName={venueName}
               venueSlug={venueSlug}
               eventName={event.eventName}
-              sectionName={selectedTable.section}
+              sectionName={displaySectionName}
+
               tableName={selectedTable.name}
             />
           </div>
