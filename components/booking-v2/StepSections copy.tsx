@@ -171,34 +171,37 @@ function findBestFlyer(
   if (!manifest.length) return null;
 
   const targetDate = getTargetDate(eventDate);
-  const scored = manifest
-    .map((entry) => ({
-      entry,
-      score: scoreFlyerMatch(entry, targetVenueSlug, targetDate, eventName),
-      sameVenue: entry.venueSlug === targetVenueSlug,
-      sameDate: entry.date === targetDate,
-      entrySlug: slugify(normalizeEventName(entry.eventName)),
-      targetSlug: slugify(normalizeEventName(eventName)),
-    }))
-    .filter((item) => item.sameVenue)
-    .sort((a, b) => b.score - a.score);
 
-  const exactSameDate = scored.find(
-    (item) => item.sameDate && item.entrySlug === item.targetSlug
+  // Only return flyers with exact date matches
+  // This prevents old flyers from showing for future events
+  // GitHub Actions will sync new flyers weekly
+  const sameDateFlyers = manifest.filter(
+    (entry) => entry.venueSlug === targetVenueSlug && entry.date === targetDate
   );
-  if (exactSameDate) return exactSameDate.entry;
 
-  const looseSameDate = scored.find(
-    (item) =>
-      item.sameDate &&
-      item.entrySlug &&
-      item.targetSlug &&
-      (item.entrySlug.includes(item.targetSlug) ||
-        item.targetSlug.includes(item.entrySlug))
+  if (!sameDateFlyers.length) return null;
+
+  const targetSlug = slugify(normalizeEventName(eventName));
+
+  // Prefer exact event name match
+  const exactMatch = sameDateFlyers.find(
+    (entry) => slugify(normalizeEventName(entry.eventName)) === targetSlug
   );
-  if (looseSameDate) return looseSameDate.entry;
+  if (exactMatch) return exactMatch;
 
-  return scored[0]?.entry ?? null;
+  // Otherwise prefer loose name match (substring overlap)
+  const looseMatch = sameDateFlyers.find((entry) => {
+    const entrySlug = slugify(normalizeEventName(entry.eventName));
+    return (
+      entrySlug &&
+      targetSlug &&
+      (entrySlug.includes(targetSlug) || targetSlug.includes(entrySlug))
+    );
+  });
+  if (looseMatch) return looseMatch;
+
+  // No name match on exact date - return null to show placeholder
+  return null;
 }
 
 function formatCurrency(value?: string | number | null) {
