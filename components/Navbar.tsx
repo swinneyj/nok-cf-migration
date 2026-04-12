@@ -21,8 +21,8 @@ const navLinks = [
     href: '/nightclubs',
     children: [
       { label: 'XS Nightclub', href: '/places/xs-nightclub' },
-      { label: 'Hakkasan', href: '/places/hakkasan' },
-      { label: 'Omnia', href: '/places/omnia' },
+      { label: 'Hakkasan', href: '/places/hakkasan-nightclub' },
+      { label: 'Omnia', href: '/places/omnia-nightclub' },
       { label: 'Marquee Nightclub', href: '/places/marquee-nightclub' },
       { label: 'TAO Nightclub', href: '/places/tao-nightclub' },
       { label: 'Zouk', href: '/places/zouk-nightclub' },
