@@ -73,6 +73,7 @@ export default function EventCalendar({
   const [loading, setLoading] = useState(false);
   const [hasSearchedForEvent, setHasSearchedForEvent] = useState(false);
   const [maxSearchMonth, setMaxSearchMonth] = useState<Date | null>(null);
+  const [monthHasBeenLoaded, setMonthHasBeenLoaded] = useState(false);
 
   const monthKey = useMemo(() => formatMonthKey(visibleMonth), [visibleMonth]);
   const venueLabel = useMemo(() => formatVenueLabel(venueSlug), [venueSlug]);
@@ -124,7 +125,7 @@ export default function EventCalendar({
         setHasSearchedForEvent(true);
       }
     }
-  }, [hasSearchedForEvent, visibleMonth, maxSearchMonth]);
+  }, [hasSearchedForEvent, visibleMonth, maxSearchMonth, events]);
 
   useEffect(() => {
     let cancelled = false;
@@ -141,17 +142,23 @@ export default function EventCalendar({
 
         if (!cancelled) {
           setEvents(nextEvents);
+          setMonthHasBeenLoaded(true);
           
-          // If no events returned, we've likely reached the end of calendar data
-          // Mark that we should stop searching
+          // Only mark as searched if we actually got results or if no event param
           if (nextEvents.length === 0 && hasSearchedForEvent === false) {
-            setHasSearchedForEvent(true);
+            const params = new URLSearchParams(window.location.search);
+            const eventParam = params.get("event");
+            if (!eventParam) {
+              // No search needed, no events expected
+              setHasSearchedForEvent(true);
+            }
           }
         }
       } catch (err) {
         console.error("Error fetching events:", err);
         if (!cancelled) {
           setEvents([]);
+          setMonthHasBeenLoaded(true);
         }
       } finally {
         if (!cancelled) {
@@ -165,7 +172,7 @@ export default function EventCalendar({
     return () => {
       cancelled = true;
     };
-  }, [venueSlug, monthKey]);
+  }, [venueSlug, monthKey, hasSearchedForEvent]);
 
   // Auto-select event from URL parameters
   useEffect(() => {
