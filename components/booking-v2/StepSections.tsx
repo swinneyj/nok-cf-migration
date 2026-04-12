@@ -103,9 +103,9 @@ function normalizeVenueSections(
           title: "Main",
           tiers: (section.tiers || []).map((tier) => ({
             ...tier,
-            // Remove "Stage - By Approval Only• " prefix from tier names (case-insensitive)
+            // Remove "Stage - By Approval Only" prefix and any separators from tier names
             name: String(tier.name || "")
-              .replace(/^stage\s*-\s*by\s*approval\s*only\s*[•\s]*/i, "")
+              .replace(/^stage\s*-\s*by\s*approval\s*only[^a-z]*/i, "")
               .trim(),
           })),
         };
