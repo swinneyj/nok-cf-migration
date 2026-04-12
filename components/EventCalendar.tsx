@@ -78,6 +78,13 @@ export default function EventCalendar({
   const monthKey = useMemo(() => formatMonthKey(visibleMonth), [visibleMonth]);
   const venueLabel = useMemo(() => formatVenueLabel(venueSlug), [venueSlug]);
 
+  const today = new Date();
+  const todayKey = formatDateKey(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate()
+  );
+
   // Auto-adjust month based on URL parameters (only on initial load)
   useEffect(() => {
     if (typeof window !== "undefined" && !hasSearchedForEvent && events.length > 0) {
@@ -240,13 +247,6 @@ export default function EventCalendar({
     setVisibleMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
   };
 
-  const today = new Date();
-  const todayKey = formatDateKey(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate()
-  );
-
   return (
     <div className="mt-6 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
       <div className="bg-gradient-to-r from-purple-900 to-black px-5 py-4 text-white">
@@ -299,9 +299,15 @@ export default function EventCalendar({
                 }
 
                 const dateKey = formatDateKey(year, monthIndex, day);
+                const isPastDate = dateKey < todayKey;
                 const dayEvents = eventsByDate[dateKey] || [];
-                const hasEvents = dayEvents.length > 0;
+                const hasEvents = dayEvents.length > 0 && !isPastDate;
                 const isToday = dateKey === todayKey;
+
+                // Hide past dates completely
+                if (isPastDate) {
+                  return <div key={dateKey} className="aspect-square w-full" />;
+                }
 
                 return (
                   <div
