@@ -8,6 +8,7 @@ const CITY = "las-vegas";
 
 const VENUE_ALIASES = [
   { slug: "encore-beach-club", aliases: ["Encore Beach Club (EBC)", "Encore Beach Club"] },
+  { slug: "ebc-at-night", aliases: ["EBC at Night", "Encore Beach Club at Night"] },
   { slug: "marquee-dayclub", aliases: ["Marquee Dayclub: North Strip", "Marquee Dayclub"] },
   { slug: "marquee-nightclub", aliases: ["Marquee Nightclub: North Strip", "Marquee Nightclub"] },
   { slug: "hakkasan-nightclub", aliases: ["Hakkasan: South Strip", "Hakkasan Nightclub", "Hakkasan"] },
