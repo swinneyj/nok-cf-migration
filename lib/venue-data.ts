@@ -17,7 +17,7 @@ export const venues = {
     highlights: ['Outdoor pool area lit with thousands of lights', 'World-class DJ residencies year-round', 'Multiple bar areas indoor and outdoor', 'Premium Wynn service standards', 'Celebrity sightings every weekend'],
     slug: 'xs-nightclub',
   },
-  'hakkasan': {
+  'hakkasan-nightclub': {
     name: 'Hakkasan Nightclub',
     hotel: 'MGM Grand',
     address: '3799 S Las Vegas Blvd, Las Vegas, NV 89109',
@@ -33,9 +33,9 @@ export const venues = {
     image: 'https://images.unsplash.com/photo-1566417713940-fe7c737a9ef2?w=800&q=80',
     description: 'Hakkasan at MGM Grand is the largest nightclub in Las Vegas, spanning six unique rooms across 80,000 square feet. From the intimate Ling Ling Lounge to the massive main floor, Hakkasan offers a complete nightlife experience under one roof.',
     highlights: ['Six distinct rooms and atmospheres', 'Multi-level layout with mezzanine and main floor', 'Intimate Ling Ling Club for smaller groups', 'World-renowned DJ residencies', 'Best venue for large groups in Vegas'],
-    slug: 'hakkasan',
+    slug: 'hakkasan-nightclub',
   },
-  'omnia': {
+  'omnia-nightclub': {
     name: 'Omnia Nightclub',
     hotel: 'Caesars Palace',
     address: '3570 S Las Vegas Blvd, Las Vegas, NV 89109',
@@ -51,7 +51,7 @@ export const venues = {
     image: 'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=800&q=80',
     description: "Omnia Nightclub at Caesars Palace is home to one of the most spectacular production shows in Las Vegas. The venue's iconic kinetic chandelier descends and transforms throughout the night, creating a light show synchronized with the music that has to be seen to be believed.",
     highlights: ['Iconic kinetic LED chandelier centerpiece', 'Rooftop terrace with Strip views', 'Three-level layout with distinct areas', 'Best production show in Las Vegas nightlife', 'Heart nightclub for smaller gatherings'],
-    slug: 'omnia',
+    slug: 'omnia-nightclub',
   },
   'marquee-nightclub': {
     name: 'Marquee Nightclub',
