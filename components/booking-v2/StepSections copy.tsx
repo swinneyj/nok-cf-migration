@@ -78,6 +78,27 @@ function normalizeEventName(value: string) {
     .trim();
 }
 
+function normalizeVenueSections(
+  sections: StepSection[],
+  venueSlug: string
+): StepSection[] {
+  // For XS Nightclub, rename STAGE sections to "Main"
+  if (venueSlug === "xs-nightclub") {
+    return sections.map((section) => {
+      const sectionTitle = String(section.title || "").toLowerCase();
+      if (sectionTitle.includes("stage") && sectionTitle.includes("approval")) {
+        return {
+          ...section,
+          title: "Main",
+        };
+      }
+      return section;
+    });
+  }
+
+  return sections;
+}
+
 function monthNumber(name: string) {
   const months = [
     "january",
@@ -398,8 +419,11 @@ export default function StepSections({
   }, [eventName, eventDate, committedTotalGuests, openSection, sections.length]);
 
   const validSections = useMemo(
-    () => sections.filter((section) => getTiers(section).length > 0),
-    [sections]
+    () => {
+      const normalized = normalizeVenueSections(sections, venueSlug);
+      return normalized.filter((section) => getTiers(section).length > 0);
+    },
+    [sections, venueSlug]
   );
 
   const flyer = useMemo(
