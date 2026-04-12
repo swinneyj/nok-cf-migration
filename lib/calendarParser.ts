@@ -156,10 +156,17 @@ function normalizeSectionTitle(text: string): string {
 
 function parseTierLine(line: string): PricingTier | null {
   const cleaned = normalizeWhitespace(line.replace(/^•\s*/, ""));
-  if (!cleaned || !/\$\s?\d/.test(cleaned)) return null;
+  if (!cleaned) return null;
 
-  const soldOut = isSoldOut(cleaned);
-  const withoutSoldOut = normalizeWhitespace(cleaned.replace(/\bSOLD\s*OUT\b/gi, ""));
+  // Check for N/A pricing (treat as sold out)
+  const isNA = /N\/A\s*$|\bN\/A\b/i.test(cleaned);
+
+  // Check for actual price
+  const hasPrice = /\$\s?\d/.test(cleaned);
+  if (!hasPrice && !isNA) return null;
+
+  const soldOut = isSoldOut(cleaned) || isNA;
+  const withoutSoldOut = normalizeWhitespace(cleaned.replace(/\bSOLD\s*OUT\b/gi, "").replace(/\bN\/A\b/gi, ""));
 
   const patterns = [
     /^(.+?)\s*-\s*(\$\s?[\d,]+)\s*\(\s*(\d+)\s*(?:ppl|people|guests?)\s*\)$/i,
