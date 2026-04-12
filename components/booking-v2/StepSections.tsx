@@ -95,8 +95,10 @@ function normalizeVenueSections(
   if (venueSlug === "xs-nightclub") {
     return sections.map((section) => {
       const sectionTitle = String(section.title || "").toLowerCase();
+      const sectionDesc = String(section.description || "").toLowerCase();
 
-      if (sectionTitle.includes("stage") && sectionTitle.includes("approval")) {
+      // Check for STAGE sections (title is "STAGE" or contains "stage", and description has "approval")
+      if (sectionTitle === "stage" || (sectionTitle.includes("stage") && sectionDesc.includes("approval"))) {
         // Rename section to Main and clean tier names
         return {
           ...section,
