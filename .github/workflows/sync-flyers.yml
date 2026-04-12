@@ -1,0 +1,51 @@
+name: Sync Discotech Flyers
+
+on:
+  schedule:
+    # Run every Monday at 2 AM UTC (10 PM ET Sunday)
+    - cron: '0 2 * * 1'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  sync-flyers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Calculate date range
+        id: dates
+        run: |
+          # Start from today, go forward 30 days
+          START_DATE=$(date -u +%Y-%m-%d)
+          END_DATE=$(date -u -d '+30 days' +%Y-%m-%d)
+          echo "start=$START_DATE" >> $GITHUB_OUTPUT
+          echo "end=$END_DATE" >> $GITHUB_OUTPUT
+          echo "Syncing flyers from $START_DATE to $END_DATE"
+
+      - name: Run flyer sync script
+        run: node scripts/sync-discotech-flyers.mjs ${{ steps.dates.outputs.start }} ${{ steps.dates.outputs.end }}
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add public/event-flyers/manifest.json public/event-flyers/**/*.{jpg,png,gif,webp}
+          # Only commit if there are changes
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: sync Discotech flyers for $(date -u +%Y-%m-%d)"
+            git push
+          fi

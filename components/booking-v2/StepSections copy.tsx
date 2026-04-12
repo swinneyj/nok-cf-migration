@@ -122,7 +122,25 @@ function scoreFlyerMatch(
   let score = 0;
 
   if (entry.venueSlug === targetVenueSlug) score += 10;
-  if (entry.date === targetDate) score += 10;
+
+  // Strong date matching: reward exact match, penalize mismatches
+  if (entry.date === targetDate) {
+    score += 100; // Much higher reward for exact date match
+  } else {
+    // Calculate days difference and apply penalty
+    try {
+      const entryDateObj = new Date(entry.date);
+      const targetDateObj = new Date(targetDate);
+      if (!isNaN(entryDateObj.getTime()) && !isNaN(targetDateObj.getTime())) {
+        const daysOff = Math.abs(entryDateObj.getTime() - targetDateObj.getTime()) / (1000 * 60 * 60 * 24);
+        // Penalize heavily for date mismatches - prevents old flyers from matching future events
+        score -= Math.min(100, daysOff * 3);
+      }
+    } catch {
+      // If date parsing fails, apply a significant penalty
+      score -= 50;
+    }
+  }
 
   const entrySlug = slugify(normalizeEventName(entry.eventName));
   const targetSlug = slugify(normalizeEventName(targetEventName));
