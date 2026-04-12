@@ -85,6 +85,9 @@ export default function EventCalendar({
     today.getDate()
   );
 
+  const currentMonthKey = formatMonthKey(today);
+  const canGoToPrevMonth = monthKey > currentMonthKey;
+
   // Auto-adjust month based on URL parameters (only on initial load)
   useEffect(() => {
     if (typeof window !== "undefined" && !hasSearchedForEvent && events.length > 0) {
@@ -240,7 +243,9 @@ export default function EventCalendar({
   ];
 
   const goToPrevMonth = () => {
-    setVisibleMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+    if (canGoToPrevMonth) {
+      setVisibleMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+    }
   };
 
   const goToNextMonth = () => {
@@ -259,7 +264,12 @@ export default function EventCalendar({
           <button
             type="button"
             onClick={goToPrevMonth}
-            className="rounded-md px-3 py-2 text-xl text-white/80 transition hover:bg-white/10 hover:text-white"
+            disabled={!canGoToPrevMonth}
+            className={`rounded-md px-3 py-2 text-xl transition ${
+              canGoToPrevMonth
+                ? "text-white/80 hover:bg-white/10 hover:text-white"
+                : "text-white/30 cursor-not-allowed"
+            }`}
           >
             ‹
           </button>
@@ -300,14 +310,9 @@ export default function EventCalendar({
 
                 const dateKey = formatDateKey(year, monthIndex, day);
                 const isPastDate = dateKey < todayKey;
-                const dayEvents = eventsByDate[dateKey] || [];
-                const hasEvents = dayEvents.length > 0 && !isPastDate;
+                const dayEvents = isPastDate ? [] : (eventsByDate[dateKey] || []);
+                const hasEvents = dayEvents.length > 0;
                 const isToday = dateKey === todayKey;
-
-                // Hide past dates completely
-                if (isPastDate) {
-                  return <div key={dateKey} className="aspect-square w-full" />;
-                }
 
                 return (
                   <div
@@ -320,10 +325,14 @@ export default function EventCalendar({
                         ? "border-purple-800 ring-2 ring-purple-300 bg-purple-50"
                         : hasEvents
                           ? "cursor-pointer border-purple-700 bg-purple-50 hover:bg-purple-100"
-                          : "border-gray-100 bg-gray-50"
+                          : isPastDate
+                            ? "border-gray-100 bg-gray-50 opacity-40"
+                            : "border-gray-100 bg-gray-50"
                     }`}
                   >
-                    <div className="text-sm font-semibold text-gray-700">{day}</div>
+                    <div className={`text-sm font-semibold ${isPastDate ? "text-gray-400" : "text-gray-700"}`}>
+                      {day}
+                    </div>
 
                     {hasEvents && (
                       <div className="mt-2 flex flex-wrap items-center gap-1">
