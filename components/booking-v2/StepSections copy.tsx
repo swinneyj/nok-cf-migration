@@ -87,17 +87,9 @@ function normalizeVenueSections(
     return sections.map((section) => {
       const sectionTitle = String(section.title || "").toLowerCase();
       if (sectionTitle.includes("stage") && sectionTitle.includes("approval")) {
-        // Rename section to Main and clean tier names
         return {
           ...section,
           title: "Main",
-          tiers: (section.tiers || []).map((tier) => ({
-            ...tier,
-            // Remove "Stage - By Approval Only• " prefix from tier names
-            name: String(tier.name || "")
-              .replace(/^Stage\s*-\s*By Approval Only\s*[•\s]*/, "")
-              .trim(),
-          })),
         };
       }
       return section;

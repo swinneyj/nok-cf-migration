@@ -91,25 +91,14 @@ function normalizeVenueSections(
   sections: StepSection[],
   venueSlug: string
 ): StepSection[] {
-  // For XS Nightclub, rename STAGE sections to "Main" and clean tier names
+  // For XS Nightclub, rename STAGE sections to "Main"
   if (venueSlug === "xs-nightclub") {
     return sections.map((section) => {
       const sectionTitle = String(section.title || "").toLowerCase();
-      const sectionDesc = String(section.description || "").toLowerCase();
-
-      // Check for STAGE sections (title is "STAGE" or contains "stage", and description has "approval")
-      if (sectionTitle === "stage" || (sectionTitle.includes("stage") && sectionDesc.includes("approval"))) {
-        // Rename section to Main and clean tier names
+      if (sectionTitle.includes("stage") && sectionTitle.includes("approval")) {
         return {
           ...section,
           title: "Main",
-          tiers: (section.tiers || []).map((tier) => ({
-            ...tier,
-            // Remove "Stage - By Approval Only" prefix and any separators from tier names
-            name: String(tier.name || "")
-              .replace(/^stage\s*-\s*by\s*approval\s*only[^a-z]*/i, "")
-              .trim(),
-          })),
         };
       }
       return section;
@@ -904,7 +893,7 @@ export default function StepSections({
                                     Minimum Spend
                                   </p>
                                   <p className="text-3xl font-bold leading-none text-white sm:text-4xl">
-                                    {tier.soldOut && tier.price === 0 ? "-" : formatCurrency(tier.price)}
+                                    {formatCurrency(tier.price)}
                                   </p>
                                 </div>
                               </div>
