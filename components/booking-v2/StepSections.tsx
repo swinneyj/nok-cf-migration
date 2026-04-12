@@ -103,9 +103,9 @@ function normalizeVenueSections(
           title: "Main",
           tiers: (section.tiers || []).map((tier) => ({
             ...tier,
-            // Remove "Stage - By Approval Only• " prefix from tier names
+            // Remove "Stage - By Approval Only• " prefix from tier names (case-insensitive)
             name: String(tier.name || "")
-              .replace(/^Stage\s*-\s*By Approval Only\s*[•\s]*/, "")
+              .replace(/^stage\s*-\s*by\s*approval\s*only\s*[•\s]*/i, "")
               .trim(),
           })),
         };
@@ -902,7 +902,7 @@ export default function StepSections({
                                     Minimum Spend
                                   </p>
                                   <p className="text-3xl font-bold leading-none text-white sm:text-4xl">
-                                    {formatCurrency(tier.price)}
+                                    {tier.soldOut && tier.price === 0 ? "-" : formatCurrency(tier.price)}
                                   </p>
                                 </div>
                               </div>
