@@ -197,10 +197,13 @@ function parseTierLine(line: string): PricingTier | null {
 
   const fallbackPrice = extractPrice(withoutSoldOut);
   const fallbackCapacity = extractCapacity(withoutSoldOut);
-  if (fallbackPrice > 0 && fallbackCapacity > 0) {
+
+  // For N/A tiers with no price/capacity, still create a tier object
+  if (isNA || (fallbackPrice > 0 && fallbackCapacity > 0)) {
     const fallbackName = normalizeWhitespace(
       withoutSoldOut
         .replace(/\bSOLD\s*OUT\b/gi, "")
+        .replace(/\bN\/A\b/gi, "")
         .replace(/\$\s?[\d,]+/g, "")
         .replace(/\(\s*\d+\s*(?:ppl|people|guests?)\s*\)/gi, "")
         .replace(/\b\d+\s*(?:ppl|people|guests?)\b/gi, "")
