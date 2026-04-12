@@ -31,6 +31,8 @@ export const CALENDAR_IDS: Record<string, string> = {
   "ghostbar": process.env.GOOGLE_CALENDAR_ID_GHOSTBAR || "",
   "crazy-horse-3": process.env.GOOGLE_CALENDAR_ID_CRAZY_HORSE_3 || "",
   "sapphire": process.env.GOOGLE_CALENDAR_ID_SAPPHIRE || "",
+  "palm-tree-beach-club": process.env.GOOGLE_CALENDAR_ID_PALM_TREE_BEACH_CLUB || "",
+  "tao-beach": process.env.GOOGLE_CALENDAR_ID_TAO_BEACH || "",
 };
 
 interface GoogleCalendarEvent {
