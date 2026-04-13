@@ -119,6 +119,7 @@ export default function BookingFlowV2({
     const eventParam = searchParams.get("event");
     const sectionParam = searchParams.get("section");
     const tableParam = searchParams.get("table");
+    const dateParam = searchParams.get("date");
 
     // Only initialize if we have URL params and haven't already initialized
     if (eventParam && !state.selectedEvent) {
@@ -131,6 +132,7 @@ export default function BookingFlowV2({
         `booking_${pathSlug}_pendingParams`,
         JSON.stringify({
           event: eventParam,
+          date: dateParam,
           section: sectionParam,
           table: tableParam,
         })

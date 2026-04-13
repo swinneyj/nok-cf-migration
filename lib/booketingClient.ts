@@ -164,6 +164,32 @@ function dateKeyToLocalNoon(dateKey: string) {
   return new Date(year, month - 1, day, 12, 0, 0, 0);
 }
 
+function normalizeBooketingTime(value: string | undefined) {
+  const cleaned = String(value || "").trim().toLowerCase();
+  const match = cleaned.match(/(\d{1,2}):(\d{2})\s*([ap]m)/i);
+  if (!match) {
+    return {
+      timeLabel: undefined as string | undefined,
+      timeSortKey: "12:00",
+    };
+  }
+
+  const [, hourString, minuteString, meridiem] = match;
+  const hour = Number(hourString);
+  const minute = Number(minuteString);
+  const normalizedHour =
+    meridiem.toLowerCase() === "pm" && hour !== 12
+      ? hour + 12
+      : meridiem.toLowerCase() === "am" && hour === 12
+        ? 0
+        : hour;
+
+  return {
+    timeLabel: `${hour}${minute ? `:${String(minute).padStart(2, "0")}` : ""} ${meridiem.toUpperCase()}`,
+    timeSortKey: `${String(normalizedHour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`,
+  };
+}
+
 async function fetchBooketingText(url: string) {
   const response = await fetch(url, {
     headers: {
@@ -357,6 +383,7 @@ async function buildParsedBooketingEvent(summary: BooketingEventSummary): Promis
       day: "numeric",
       year: "numeric",
     }),
+    ...normalizeBooketingTime(initialResponse.eventdata?.dstarttime),
     sections,
     flyerImagePath:
       initialResponse.eventdata?.flyers?.share?.url ||

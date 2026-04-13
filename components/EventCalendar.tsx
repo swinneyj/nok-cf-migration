@@ -68,8 +68,23 @@ export default function EventCalendar({
   onEventSelected,
   selectedEventId,
 }: Props) {
+  const initialMonth = useMemo(() => {
+    if (typeof window === "undefined") {
+      return new Date(2026, 3, 1);
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const dateParam = params.get("date");
+    if (dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam)) {
+      const [year, month] = dateParam.split("-").map(Number);
+      return new Date(year, month - 1, 1);
+    }
+
+    return new Date(2026, 3, 1);
+  }, []);
+
   const [events, setEvents] = useState<ParsedEvent[]>([]);
-  const [visibleMonth, setVisibleMonth] = useState(new Date(2026, 3, 1));
+  const [visibleMonth, setVisibleMonth] = useState(initialMonth);
   const [loading, setLoading] = useState(false);
   const [hasSearchedForEvent, setHasSearchedForEvent] = useState(false);
   const [maxSearchMonth, setMaxSearchMonth] = useState<Date | null>(null);
@@ -93,6 +108,7 @@ export default function EventCalendar({
     if (typeof window !== "undefined" && !hasSearchedForEvent && events.length > 0) {
       const params = new URLSearchParams(window.location.search);
       const eventParam = params.get("event");
+      const dateParam = params.get("date");
       
       // Only search if we have an event param and haven't found it in current month
       if (eventParam) {
@@ -103,7 +119,8 @@ export default function EventCalendar({
             .replace(/\s+/g, "-")
             .replace(/-+/g, "-")
             .replace(/^-|-$/g, "");
-          return eventSlug === eventParam;
+          const dateMatches = !dateParam || e.dateKey === dateParam;
+          return eventSlug === eventParam && dateMatches;
         });
         
         if (!foundEvent) {
@@ -156,7 +173,7 @@ export default function EventCalendar({
           
           // Only mark as searched if we actually got results or if no event param
           if (nextEvents.length === 0 && hasSearchedForEvent === false) {
-            const params = new URLSearchParams(window.location.search);
+           const params = new URLSearchParams(window.location.search);
             const eventParam = params.get("event");
             if (!eventParam) {
               // No search needed, no events expected
@@ -198,7 +215,15 @@ export default function EventCalendar({
     if (!pendingParams) return;
 
     try {
-      const { event: eventParam } = JSON.parse(pendingParams);
+      const parsedParams = JSON.parse(pendingParams) as {
+        event?: string;
+        date?: string;
+      };
+      const eventParam = parsedParams.event;
+      const pendingDate =
+        parsedParams.date && /^\d{4}-\d{2}-\d{2}$/.test(parsedParams.date)
+          ? parsedParams.date
+          : null;
       if (!eventParam) return;
 
       // Try to find an event matching the event param (slug format)
@@ -210,7 +235,8 @@ export default function EventCalendar({
           .replace(/\s+/g, "-")
           .replace(/-+/g, "-")
           .replace(/^-|-$/g, "");
-        return eventSlug === eventParam;
+        const dateMatches = !pendingDate || e.dateKey === pendingDate;
+        return eventSlug === eventParam && dateMatches;
       });
 
       if (matchingEvent) {

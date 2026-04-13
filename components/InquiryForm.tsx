@@ -102,6 +102,7 @@ export default function InquiryForm({ defaultPackage = '', compact = false }: In
             <option value="bottle">Bottle Service</option>
             <option value="nightclub">Nightclub Package</option>
             <option value="pool">Pool Party / Dayclub</option>
+            <option value="partybus">Party Bus / Transportation</option>
             <option value="strip">Strip Club Package</option>
             <option value="custom">Custom Package</option>
           </select>

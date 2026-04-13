@@ -27,6 +27,8 @@ export interface ParsedEvent {
   date: Date;
   dateKey: string;
   dateString: string;
+  timeLabel?: string;
+  timeSortKey?: string;
   sections: EventSection[];
   flyerImagePath?: string;
   minimumSpendNote?: string;
@@ -332,7 +334,9 @@ export function parseEventDescription(
   eventId: string,
   eventSummary: string,
   startTime: Date,
-  dateKey: string
+  dateKey: string,
+  timeLabel?: string,
+  timeSortKey?: string
 ): ParsedEvent | null {
   const cleaned = cleanHtml(description);
 
@@ -363,6 +367,8 @@ export function parseEventDescription(
     date: startTime,
     dateKey,
     dateString,
+    timeLabel,
+    timeSortKey,
     sections,
     minimumSpendNote,
     pricingNote,

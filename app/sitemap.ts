@@ -8,6 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: '/', priority: 1.0, changeFrequency: 'weekly' as const },
     { url: '/bachelor', priority: 0.9, changeFrequency: 'weekly' as const },
     { url: '/bachelorette', priority: 0.9, changeFrequency: 'weekly' as const },
+    { url: '/party-buses', priority: 0.8, changeFrequency: 'weekly' as const },
     { url: '/bottle-service', priority: 0.8, changeFrequency: 'weekly' as const },
     { url: '/nightclubs', priority: 0.8, changeFrequency: 'weekly' as const },
     { url: '/pool-parties', priority: 0.8, changeFrequency: 'weekly' as const },

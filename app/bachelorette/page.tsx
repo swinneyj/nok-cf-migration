@@ -16,7 +16,7 @@ const packages = [
     title: 'Girls Night Out',
     price: '$149',
     priceLabel: '/person',
-    image: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600&q=80',
+    image: '/images/venues/bachelorette-package-1.png',
     imageAlt: 'Las Vegas bachelorette party nightclub VIP',
     badge: 'Best Value',
     includes: [
@@ -33,7 +33,7 @@ const packages = [
     title: 'Bachelorette Glam Package',
     price: '$249',
     priceLabel: '/person',
-    image: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600&q=80',
+    image: '/images/venues/bachelorette-package-2.png',
     imageAlt: 'Las Vegas bachelorette party luxury limo champagne',
     badge: 'Most Popular',
     includes: [
@@ -52,7 +52,7 @@ const packages = [
     title: 'Vegas Queen Weekend',
     price: '$399',
     priceLabel: '/person',
-    image: 'https://images.unsplash.com/photo-1545431781-3e1b506e9a37?w=600&q=80',
+    image: '/images/venues/bachelorette-package-3.png',
     imageAlt: 'Las Vegas bachelorette VIP weekend package',
     badge: 'Premium',
     includes: [

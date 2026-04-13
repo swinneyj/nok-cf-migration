@@ -57,6 +57,18 @@ interface GoogleCalendarResponse {
   items?: GoogleCalendarEvent[];
 }
 
+function formatTimeParts(date: Date) {
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const period = hours >= 12 ? "PM" : "AM";
+  const displayHour = hours % 12 || 12;
+
+  return {
+    timeLabel: `${displayHour}${minutes ? `:${String(minutes).padStart(2, "0")}` : ""} ${period}`,
+    timeSortKey: `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`,
+  };
+}
+
 const WEEKDAY_INDEX: Record<string, number> = {
   sunday: 0,
   monday: 1,
@@ -144,6 +156,21 @@ function getDescriptionDateParts(description: string): {
 function dateKeyToLocalNoon(dateKey: string): Date {
   const [year, month, day] = dateKey.split("-").map(Number);
   return new Date(year, month - 1, day, 12, 0, 0, 0);
+}
+
+function getEventStartDetails(event: GoogleCalendarEvent, fallbackDateKey: string) {
+  if (event.start?.dateTime) {
+    const startDate = new Date(event.start.dateTime);
+    if (!Number.isNaN(startDate.getTime())) {
+      return formatTimeParts(startDate);
+    }
+  }
+
+  const fallbackDate = dateKeyToLocalNoon(fallbackDateKey);
+  return {
+    timeLabel: undefined,
+    timeSortKey: `${String(fallbackDate.getHours()).padStart(2, "0")}:${String(fallbackDate.getMinutes()).padStart(2, "0")}`,
+  };
 }
 
 function dateToKey(date: Date): string {
@@ -268,13 +295,16 @@ export async function fetchVenueEvents(
       if (!finalDateKey) continue;
 
       const eventDate = dateKeyToLocalNoon(finalDateKey);
+      const { timeLabel, timeSortKey } = getEventStartDetails(event, finalDateKey);
 
       const parsed = parseEventDescription(
         description,
         event.id,
         event.summary || "Untitled Event",
         eventDate,
-        finalDateKey
+        finalDateKey,
+        timeLabel,
+        timeSortKey
       );
 
       if (parsed && parsed.sections.length > 0) {
@@ -293,6 +323,8 @@ export async function fetchVenueEvents(
           day: "numeric",
           year: "numeric",
         }),
+        timeLabel,
+        timeSortKey,
         sections: [],
       });
     }

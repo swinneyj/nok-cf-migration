@@ -1,26 +1,15 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Phone } from 'lucide-react'
+import CategoryEventsBrowser from '@/components/CategoryEventsBrowser'
 import InquiryForm from '@/components/InquiryForm'
+import { nightclubVenues as clubs } from '@/lib/categoryVenueData'
 
 export const metadata: Metadata = {
   title: 'Las Vegas Nightclubs | VIP Table & Skip-The-Line Access 2026',
   description: "VIP access to all top Las Vegas nightclubs — XS, Hakkasan, Omnia, Marquee, TAO, Zouk, LIV, Drai's, Jewel & EBC at Night. Skip lines, best tables, personal host. (702) 996-4884.",
   alternates: { canonical: 'https://www.nokturnallifestyle.com/nightclubs' },
 }
-
-const clubs = [
-  { name: 'XS Nightclub', venue: 'Encore at Wynn', desc: '#1 in Las Vegas. World-class DJs, iconic outdoor pool area, Wynn-level service.', img: '/images/venues/xs-nightclub.jpg', alt: 'XS Nightclub Las Vegas VIP table', href: '/places/xs-nightclub' },
-  { name: 'Hakkasan', venue: 'MGM Grand', desc: "80,000 sq ft, six rooms. Vegas's largest nightclub — best for groups who want variety.", img: '/images/venues/hakkasan.jpg', alt: 'Hakkasan Las Vegas VIP', href: '/places/hakkasan-nightclub' },
-  { name: 'Omnia', venue: 'Caesars Palace', desc: 'Iconic kinetic chandelier, rooftop terrace — the best production show in Las Vegas nightlife.', img: '/images/venues/omnia.jpg', alt: 'Omnia Caesars Palace Las Vegas VIP', href: '/places/omnia-nightclub' },
-  { name: 'Marquee Nightclub', venue: 'The Cosmopolitan', desc: 'Rooftop bungalows with private pools, Boombox Room hip-hop, central Strip location.', img: '/images/venues/marquee-nightclub.jpg', alt: 'Marquee nightclub Las Vegas VIP', href: '/places/marquee-nightclub' },
-  { name: 'TAO Nightclub', venue: 'Venetian', desc: 'A-list celebrity venue, 40-foot Strip terrace, 8 private skyboxes, stunning décor.', img: '/images/venues/tao-nightclub.jpg', alt: 'TAO nightclub Venetian Las Vegas VIP', href: '/places/tao-nightclub' },
-  { name: 'Zouk Nightclub', venue: 'Resorts World', desc: "Vegas's most technologically advanced nightclub. Best sound system, tech house focus.", img: '/images/venues/zouk.jpg', alt: 'Zouk Resorts World Las Vegas VIP', href: '/places/zouk-nightclub' },
-  { name: 'LIV Nightclub', venue: 'Fontainebleau', desc: 'Legendary Miami club brings its celebrity programming and energy to the Las Vegas Strip.', img: '/images/venues/liv-nightclub.jpg', alt: 'LIV Nightclub Fontainebleau Las Vegas VIP', href: '/places/liv-nightclub' },
-  { name: "Drai's Nightclub", venue: 'The Cromwell', desc: 'Only rooftop nightclub on the Strip. Best hip-hop programming in Las Vegas, epic views.', img: '/images/venues/drais.jpg', alt: "Drai's rooftop Las Vegas VIP", href: '/places/drais-nightclub' },
-  { name: 'Jewel Nightclub', venue: 'ARIA', desc: 'Intimate 24,000 sq ft. LED Grand Staircase, private skyboxes — best small-group luxury.', img: '/images/venues/jewel.jpg', alt: 'Jewel nightclub ARIA Las Vegas VIP', href: '/places/jewel-nightclub' },
-  { name: 'EBC at Night', venue: 'Encore at Wynn', desc: "Encore Beach Club as an open-air nightclub. The world's best outdoor nightclub experience.", img: '/images/venues/ebc-at-night.jpg', alt: 'EBC at Night Las Vegas outdoor nightclub VIP', href: '/places/ebc-at-night' },
-]
 
 export default function NightclubsPage() {
   return (
@@ -41,7 +30,8 @@ export default function NightclubsPage() {
               pay less than booking direct — with a personal VIP host at every venue.
             </p>
             <div className="flex flex-wrap gap-4">
-              <Link href="#clubs" className="btn-gold">Browse All 10 Nightclubs</Link>
+              <Link href="#events" className="btn-gold">View Events</Link>
+              <Link href="#clubs" className="btn-ghost">Browse All {clubs.length} Nightclubs</Link>
               <a href="tel:+17029964884" className="btn-ghost flex items-center gap-2"><Phone size={14} /> (702) 996-4884</a>
             </div>
           </div>
@@ -50,11 +40,18 @@ export default function NightclubsPage() {
 
       <section className="bg-night-800 border-y border-gold-500/10 py-6 px-4">
         <div className="max-w-5xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
-          {[{ value: '10', label: 'Active Venues' }, { value: 'Skip', label: 'Every Line' }, { value: '$0', label: 'Booking Fees' }, { value: '30 min', label: 'Response Time' }].map(({ value, label }) => (
+          {[{ value: String(clubs.length), label: 'Active Venues' }, { value: 'Skip', label: 'Every Line' }, { value: '$0', label: 'Booking Fees' }, { value: '30 min', label: 'Response Time' }].map(({ value, label }) => (
             <div key={label}><div className="stat-number text-2xl">{value}</div><div className="text-white/40 text-xs uppercase tracking-wider mt-1">{label}</div></div>
           ))}
         </div>
       </section>
+
+      <CategoryEventsBrowser
+        category="nightclubs"
+        anchorId="events"
+        title="What’s Happening Each Night"
+        description="Pick your date and browse the nightclub calendar for that night and the days right after it. Clicking any event takes you to the exact venue page with that event preselected."
+      />
 
       <section id="clubs" className="py-20 px-4 scroll-mt-20">
         <div className="max-w-7xl mx-auto">

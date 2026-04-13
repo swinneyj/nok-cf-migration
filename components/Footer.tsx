@@ -8,6 +8,7 @@ const packageLinks = [
   { label: 'Bottle Service', href: '/bottle-service' },
   { label: 'Nightclubs', href: '/nightclubs' },
   { label: 'Pool Parties', href: '/pool-parties' },
+  { label: 'Party Buses', href: '/party-buses' },
   { label: 'Strip Clubs', href: '/strip-clubs' },
   { label: 'Lounges', href: '/lounges' },
 ]

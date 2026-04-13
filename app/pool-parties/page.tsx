@@ -1,26 +1,15 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Phone } from 'lucide-react'
+import CategoryEventsBrowser from '@/components/CategoryEventsBrowser'
 import InquiryForm from '@/components/InquiryForm'
+import { poolPartyVenues as dayclubs } from '@/lib/categoryVenueData'
 
 export const metadata: Metadata = {
   title: 'Las Vegas Pool Parties & Dayclubs | VIP Cabana Reservations 2026',
   description: "VIP cabanas and daybeds at Encore Beach Club, Marquee Dayclub, Omnia Dayclub, LIV Beach Club, AYU, Kassi, Liquid & Stadium Swim. Personal host included. (702) 996-4884.",
   alternates: { canonical: 'https://www.nokturnallifestyle.com/pool-parties' },
 }
-
-const dayclubs = [
-  { name: 'Encore Beach Club', venue: 'Encore at Wynn', desc: 'The gold standard of Las Vegas dayclubs. World-class DJs, private bungalows with plunge pools, Wynn service.', img: '/images/venues/encore-beach-club.jpg', alt: 'Encore Beach Club Las Vegas VIP cabana dayclub', href: '/places/encore-beach-club', badge: '#1 Rated' },
-  { name: 'Marquee Dayclub', venue: 'The Cosmopolitan', desc: 'Infinity-edge pools, rooftop bungalows with Strip views, strong hip-hop and EDM programming.', img: '/images/venues/marquee-dayclub.jpg', alt: 'Marquee Dayclub Las Vegas pool party VIP', href: '/places/marquee-dayclub', badge: 'Fan Favorite' },
-  { name: 'Tao Beach', venue: 'The Venetian', desc: 'Asian-inspired luxury poolside experience with multiple pool levels, premium cabanas, and world-class DJ programming.', img: '/images/venues/tao-beach.jpg', alt: 'Tao Beach Las Vegas VIP cabana dayclub Venetian', href: '/places/tao-beach', badge: 'Premium' },
-  { name: 'Omnia Dayclub', venue: 'Caesars Palace', desc: 'Brand new dayclub from Hakkasan Group. Omnia-level production brought to the Las Vegas pool scene.', img: '/images/venues/omnia-dayclub.jpg', alt: 'Omnia Dayclub Caesars Palace Las Vegas VIP', href: '/places/omnia-dayclub', badge: 'New' },
-  { name: 'LIV Beach Club', venue: 'Fontainebleau', desc: 'The iconic Miami brand brings its poolside energy to Las Vegas. Multi-level complex, hip-hop driven.', img: '/images/venues/liv-beach-club.jpg', alt: 'LIV Beach Club Fontainebleau Las Vegas VIP', href: '/places/liv-beach-club', badge: 'New' },
-  { name: 'AYU Dayclub', venue: 'Resorts World', desc: 'Multi-pool outdoor complex with world-class DJ programming. More accessible pricing than EBC.', img: '/images/venues/ayu.jpg', alt: 'AYU Dayclub Resorts World Las Vegas VIP cabana', href: '/places/ayu-dayclub', badge: null },
-  { name: 'Palm Tree Beach Club', venue: 'Las Vegas Strip', desc: 'Mediterranean-inspired aesthetic, deep house programming, sophisticated alternative to mega-dayclubs.', img: '/images/venues/palm-tree.jpg', alt: 'Palm Tree Beach Club Las Vegas pool party VIP', href: '/places/palm-tree-beach-club', badge: 'New' },
-  { name: 'Kassi Beach Club', venue: 'Las Vegas Strip', desc: 'Mediterranean-inspired aesthetic, deep house programming, sophisticated alternative to mega-dayclubs.', img: '/images/venues/kassi.jpg', alt: 'Kassi Beach Club Las Vegas pool party VIP', href: '/places/kassi-beach-club', badge: 'New' },
-  { name: 'Liquid Pool Lounge', venue: 'ARIA Resort', desc: 'Adults-only boutique pool. Only 8 VIP cabanas, private dipping pools — the most exclusive dayclub in Vegas.', img: '/images/venues/liquid.jpg', alt: 'Liquid Pool Lounge ARIA Las Vegas VIP cabana', href: '/places/liquid-pool-lounge', badge: 'Adults Only' },
-  { name: 'Stadium Swim', venue: 'Circa Resort', desc: "Five-story amphitheater pool with a 143-foot LED screen. Watch the game from the pool — uniquely Vegas.", img: '/images/venues/stadium-swim.jpg', alt: 'Stadium Swim Circa Las Vegas pool party VIP', href: '/places/stadium-swim', badge: null },
-]
 
 export default function PoolPartiesPage() {
   return (
@@ -37,11 +26,12 @@ export default function PoolPartiesPage() {
               Las Vegas Pool Party VIP Access
             </h1>
             <p className="text-white/70 text-lg leading-relaxed mb-8 max-w-xl">
-              VIP cabanas and daybeds at all 8 major Las Vegas dayclubs — Encore Beach Club, Marquee,
+              VIP cabanas and daybeds at all major Las Vegas dayclubs — Encore Beach Club, Marquee,
               Omnia Dayclub, LIV Beach Club and more. Personal host included in every booking.
             </p>
             <div className="flex flex-wrap gap-4">
-              <Link href="#dayclubs" className="btn-gold">Browse All 8 Dayclubs</Link>
+              <Link href="#events" className="btn-gold">View Events</Link>
+              <Link href="#dayclubs" className="btn-ghost">Browse All {dayclubs.length} Dayclubs</Link>
               <a href="tel:+17029964884" className="btn-ghost flex items-center gap-2"><Phone size={14} /> (702) 996-4884</a>
             </div>
           </div>
@@ -50,11 +40,18 @@ export default function PoolPartiesPage() {
 
       <section className="bg-night-800 border-y border-gold-500/10 py-6 px-4">
         <div className="max-w-5xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
-          {[{ value: '8', label: 'Dayclubs' }, { value: 'May–Oct', label: 'Peak Season' }, { value: 'Skip', label: 'Every Line' }, { value: '$0', label: 'Booking Fees' }].map(({ value, label }) => (
+          {[{ value: String(dayclubs.length), label: 'Dayclubs' }, { value: 'May–Oct', label: 'Peak Season' }, { value: 'Skip', label: 'Every Line' }, { value: '$0', label: 'Booking Fees' }].map(({ value, label }) => (
             <div key={label}><div className="stat-number text-2xl">{value}</div><div className="text-white/40 text-xs uppercase tracking-wider mt-1">{label}</div></div>
           ))}
         </div>
       </section>
+
+      <CategoryEventsBrowser
+        category="pool-parties"
+        anchorId="events"
+        title="What’s Happening Poolside"
+        description="Pick your date and see what’s going on across Las Vegas pool parties and dayclubs. Clicking an event opens the exact venue page with that event ready to book."
+      />
 
       <section id="dayclubs" className="py-20 px-4 scroll-mt-20">
         <div className="max-w-7xl mx-auto">

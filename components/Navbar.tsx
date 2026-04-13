@@ -5,17 +5,7 @@ import Link from 'next/link'
 import { Phone, Menu, X, ChevronDown } from 'lucide-react'
 
 const navLinks = [
-  {
-    label: 'Packages',
-    href: '#',
-    children: [
-      { label: 'Bachelor Parties', href: '/bachelor' },
-      { label: 'Bachelorette Parties', href: '/bachelorette' },
-      { label: 'Birthday Parties', href: '/services/birthday-party-las-vegas' },
-      { label: 'Bottle Service', href: '/bottle-service' },
-      { label: 'Club Crawl', href: '/services/club-crawl-las-vegas' },
-    ],
-  },
+  { label: 'Events', href: '/events' },
   {
     label: 'Nightclubs',
     href: '/nightclubs',
@@ -49,16 +39,27 @@ const navLinks = [
     ],
   },
   {
+    label: 'Packages',
+    href: '#',
+    children: [
+      { label: 'Bachelor Parties', href: '/bachelor' },
+      { label: 'Bachelorette Parties', href: '/bachelorette' },
+      { label: 'Birthday Parties', href: '/services/birthday-party-las-vegas' },
+      { label: 'Bottle Service', href: '/bottle-service' },
+      { label: 'Club Crawl', href: '/services/club-crawl-las-vegas' },
+    ],
+  },
+  {
     label: 'More',
     href: '#',
     children: [
       { label: 'Strip Clubs', href: '/strip-clubs' },
       { label: 'Lounges', href: '/lounges' },
-      { label: 'Party Buses', href: '/bachelor' },
+      { label: 'Party Buses', href: '/party-buses' },
       { label: 'Club Crawl', href: '/services/club-crawl-las-vegas' },
+      { label: 'Blog', href: '/blog' },
     ],
   },
-  { label: 'Blog', href: '/blog' },
   { label: 'Contact', href: '/contact' },
 ]
 
@@ -66,12 +67,31 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
+  const [openMobileSection, setOpenMobileSection] = useState<string | null>(null)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40)
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  useEffect(() => {
+    if (!mobileOpen) {
+      setOpenMobileSection(null)
+    }
+  }, [mobileOpen])
+
+  const mobilePrimaryLinks = navLinks.filter((link) =>
+    ['Events', 'Contact'].includes(link.label)
+  )
+
+  const mobileAccordionLinks = navLinks.filter((link) =>
+    ['Nightclubs', 'Pool Parties', 'Packages', 'More'].includes(link.label)
+  )
+
+  const mobileSecondaryLinks = navLinks.filter((link) =>
+    ['Blog'].includes(link.label)
+  )
 
   return (
     <>
@@ -99,7 +119,7 @@ export default function Navbar() {
             </Link>
 
             {/* Desktop Nav */}
-            <nav className="hidden lg:flex items-center gap-1">
+            <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1">
               {navLinks.map((link) =>
                 link.children ? (
                   <div
@@ -108,14 +128,30 @@ export default function Navbar() {
                     onMouseEnter={() => setOpenDropdown(link.label)}
                     onMouseLeave={() => setOpenDropdown(null)}
                   >
-                    <button className="flex items-center gap-1 px-4 py-2 text-sm text-white/80 hover:text-white transition-colors font-medium">
-                      {link.label}
-                      <ChevronDown
-                        size={14}
-                        className={`transition-transform duration-200 ${openDropdown === link.label ? 'rotate-180' : ''
-                          }`}
-                      />
-                    </button>
+                    <div className="flex items-center">
+                      <Link
+                        href={link.href}
+                        scroll={true}
+                        className="whitespace-nowrap px-3 py-2 text-sm text-white/80 hover:text-white transition-colors font-medium xl:px-4"
+                      >
+                        {link.label}
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setOpenDropdown((current) => (current === link.label ? null : link.label))
+                        }
+                        aria-label={`Toggle ${link.label} menu`}
+                        aria-expanded={openDropdown === link.label}
+                        className="py-2 pr-3 pl-0.5 text-white/70 hover:text-white transition-colors xl:pr-4"
+                      >
+                        <ChevronDown
+                          size={14}
+                          className={`transition-transform duration-200 ${openDropdown === link.label ? 'rotate-180' : ''
+                            }`}
+                        />
+                      </button>
+                    </div>
                     {openDropdown === link.label && (
                       <div className="absolute top-full left-0 pt-2">
                         <div className="bg-night-800 border border-gold-500/15 rounded-lg py-2 min-w-[200px] shadow-2xl">
@@ -139,7 +175,7 @@ export default function Navbar() {
                     key={link.label}
                     href={link.href}
                     scroll={true}
-                    className="px-4 py-2 text-sm text-white/80 hover:text-white transition-colors font-medium"
+                    className="whitespace-nowrap px-3 py-2 text-sm text-white/80 hover:text-white transition-colors font-medium xl:px-4"
                   >
                     {link.label}
                   </Link>
@@ -186,37 +222,88 @@ export default function Navbar() {
           className={`absolute right-0 top-0 h-screen w-80 bg-night-800 border-l border-gold-500/10 pt-20 px-6 transition-transform duration-300 overflow-y-auto ${mobileOpen ? 'translate-x-0' : 'translate-x-full'
             }`}
         >
-          <nav className="flex flex-col gap-1 pb-8">
-            {navLinks.map((link) => (
-              <div key={link.label}>
-                {link.children ? (
-                  <>
-                    <div className="section-eyebrow pt-4 pb-2">{link.label}</div>
-                    {link.children.map((child) => (
-                      <Link
-                        key={child.href}
-                        href={child.href}
-                        prefetch={false}
-                        scroll={true}
-                        onClick={() => setMobileOpen(false)}
-                        className="block py-2.5 pl-3 text-white/70 hover:text-white transition-colors text-sm border-l border-gold-500/20 hover:border-gold-500 mb-1"
+          <nav className="flex flex-col gap-3 pb-8">
+            <div className="space-y-2 border-b border-white/5 pb-5">
+              {mobilePrimaryLinks.map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  scroll={true}
+                  onClick={() => setMobileOpen(false)}
+                  className={`block rounded-xl border px-4 py-3 text-sm font-semibold uppercase tracking-[0.14em] transition ${
+                    link.label === 'Events'
+                      ? 'border-gold-500/30 bg-gold-500 text-black shadow-[0_8px_24px_rgba(214,158,15,0.2)]'
+                      : 'border-white/10 bg-white/5 text-white/85 hover:border-gold-500/20 hover:text-white'
+                  }`}
+                >
+                  {link.label === 'Events' ? 'View Events' : link.label}
+                </Link>
+              ))}
+            </div>
+
+            <div className="space-y-3">
+              {mobileAccordionLinks.map((link) => (
+                <div key={link.label} className="rounded-2xl border border-white/8 bg-white/[0.03]">
+                  <div className="flex items-center justify-between px-4 py-3.5">
+                    <Link
+                      href={link.href}
+                      scroll={true}
+                      onClick={() => setMobileOpen(false)}
+                      className="section-eyebrow hover:text-gold-300 transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                    {link.children ? (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setOpenMobileSection((current) => (current === link.label ? null : link.label))
+                        }
+                        aria-label={`Toggle ${link.label}`}
+                        aria-expanded={openMobileSection === link.label}
+                        className="rounded-full border border-white/10 p-2 text-white/70 hover:border-gold-500/30 hover:text-white transition-colors"
                       >
-                        {child.label}
-                      </Link>
-                    ))}
-                  </>
-                ) : (
-                  <Link
-                    href={link.href}
-                    scroll={true}
-                    onClick={() => setMobileOpen(false)}
-                    className="block py-3 text-white/80 hover:text-white transition-colors font-medium border-b border-white/5"
-                  >
-                    {link.label}
-                  </Link>
-                )}
-              </div>
-            ))}
+                        <ChevronDown
+                          size={16}
+                          className={`transition-transform duration-200 ${openMobileSection === link.label ? 'rotate-180' : ''}`}
+                        />
+                      </button>
+                    ) : null}
+                  </div>
+
+                  {link.children && openMobileSection === link.label ? (
+                    <div className="border-t border-white/8 px-4 pb-4 pt-2">
+                      {link.children.map((child) => (
+                        <Link
+                          key={child.href}
+                          href={child.href}
+                          prefetch={false}
+                          scroll={true}
+                          onClick={() => setMobileOpen(false)}
+                          className="block rounded-lg px-3 py-2.5 text-sm text-white/70 transition-colors hover:bg-gold-500/10 hover:text-white"
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+
+            <div className="space-y-1 border-t border-white/5 pt-3">
+              {mobileSecondaryLinks.map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  scroll={true}
+                  onClick={() => setMobileOpen(false)}
+                  className="block py-3 text-white/65 hover:text-white transition-colors text-sm"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
           </nav>
 
           <div className="mt-8 space-y-3">
