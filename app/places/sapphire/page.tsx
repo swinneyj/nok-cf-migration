@@ -2,10 +2,6 @@ export const dynamic = "force-dynamic";
 
 import type { Metadata } from 'next'
 import VenuePage from '@/components/VenuePage'
-import EventPricingSelector from '@/components/EventPricingSelector'
-import BookingFlowV2 from '@/components/booking-v2/BookingFlowV2'
-
-const useBookingV2 = true
 
 export const metadata: Metadata = {
   title: 'Sapphire Las Vegas | VIP Entry & Strip Club Packages',
@@ -42,26 +38,12 @@ export default function Sapphire() {
         ],
         slug: 'sapphire',
       }}
+      useReserveInquiryCta
       relatedVenues={[
         { name: 'Crazy Horse 3', href: '/places/crazy-horse-3' },
         { name: 'All Strip Club Packages', href: '/strip-clubs' },
       ]}
     />
-  
-
-<section id="event-booking" className="bg-gray-50 py-12 md:py-16 scroll-mt-24">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h2 className="text-4xl font-bold text-gray-900 mb-2">Book Your Experience</h2>
-    <p className="text-gray-600 mb-12 text-lg">
-      Browse upcoming events, select your table, and submit a reservation request
-    </p>
-    {useBookingV2 ? (
-      <BookingFlowV2 venueName="Sapphire Las Vegas" venueSlug="sapphire" />
-    ) : (
-      <EventPricingSelector venueName="Sapphire Las Vegas" venueSlug="sapphire" />
-    )}
-  </div>
-</section>
     </>
   )
 }

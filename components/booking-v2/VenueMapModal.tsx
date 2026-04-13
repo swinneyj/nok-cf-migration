@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { X, ZoomIn, ZoomOut } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut } from "lucide-react";
 import type { VenueMapConfig } from "@/lib/venueMaps";
 
 interface VenueMapModalProps {
@@ -27,10 +27,12 @@ export default function VenueMapModal({
 }: VenueMapModalProps) {
   const [zoom, setZoom] = useState(1);
   const [activeViewId, setActiveViewId] = useState(config.views[0]?.id ?? "default");
+  const [activePageIndex, setActivePageIndex] = useState(0);
 
   useEffect(() => {
     setActiveViewId(config.views[0]?.id ?? "default");
     setZoom(1);
+    setActivePageIndex(0);
   }, [config]);
 
   useEffect(() => {
@@ -57,6 +59,8 @@ export default function VenueMapModal({
     () => config.views.find((view) => view.id === activeViewId) ?? config.views[0],
     [config.views, activeViewId]
   );
+  const activePages = activeView?.pages ?? [{ imagePath: activeView.imagePath, alt: activeView.alt }];
+  const activePage = activePages[Math.min(activePageIndex, activePages.length - 1)];
 
   const visibleSections = useMemo(
     () => sections.filter(Boolean).slice(0, 10),
@@ -66,7 +70,11 @@ export default function VenueMapModal({
   const zoomIn = () => setZoom((current) => Math.min(MAX_ZOOM, current + ZOOM_STEP));
   const zoomOut = () => setZoom((current) => Math.max(MIN_ZOOM, current - ZOOM_STEP));
 
-  if (!open || !activeView) {
+  useEffect(() => {
+    setActivePageIndex(0);
+  }, [activeViewId]);
+
+  if (!open || !activeView || !activePage) {
     return null;
   }
 
@@ -124,6 +132,7 @@ export default function VenueMapModal({
                           onClick={() => {
                             setActiveViewId(view.id);
                             setZoom(1);
+                            setActivePageIndex(0);
                           }}
                           className={[
                             "rounded-xl border px-3 py-2 text-left text-sm font-semibold transition",
@@ -181,10 +190,40 @@ export default function VenueMapModal({
               <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3 sm:px-6">
                 <div>
                   <p className="text-sm font-semibold text-gray-900">{activeView.label}</p>
-                  <p className="text-xs text-gray-500">Zoom in for a closer look. This layout is ready for future section hotspots.</p>
+                  <p className="text-xs text-gray-500">
+                    {activePages.length > 1
+                      ? `Page ${activePageIndex + 1} of ${activePages.length}`
+                      : "Zoom in for a closer look. This layout is ready for future section hotspots."}
+                  </p>
                 </div>
 
                 <div className="flex items-center gap-2">
+                  {activePages.length > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setActivePageIndex((current) => Math.max(0, current - 1))
+                        }
+                        disabled={activePageIndex === 0}
+                        className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setActivePageIndex((current) =>
+                            Math.min(activePages.length - 1, current + 1)
+                          )
+                        }
+                        disabled={activePageIndex >= activePages.length - 1}
+                        className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </button>
+                    </>
+                  )}
                   <button
                     type="button"
                     onClick={zoomOut}
@@ -207,13 +246,16 @@ export default function VenueMapModal({
                 </div>
               </div>
 
-              <div className="min-h-0 flex-1 overflow-auto bg-[#f7f7f8] p-3 sm:p-5">
-                <div className="mx-auto flex min-h-full min-w-max items-start justify-center">
+              <div className="min-h-[48dvh] flex-1 overflow-auto bg-[#f7f7f8] p-2 sm:min-h-0 sm:p-5">
+                <div className="flex min-h-full min-w-full items-start justify-start">
                   <img
-                    src={activeView.imagePath}
-                    alt={activeView.alt}
-                    className="max-w-none rounded-2xl border border-gray-200 bg-white shadow-sm"
-                    style={{ width: `${Math.max(100, zoom * 100)}%`, height: "auto" }}
+                    src={activePage.imagePath}
+                    alt={activePage.alt}
+                    className="h-auto min-w-full shrink-0 rounded-2xl border border-gray-200 bg-white shadow-sm"
+                    style={{
+                      width: `${zoom * 100}%`,
+                      maxWidth: "none",
+                    }}
                   />
                 </div>
               </div>

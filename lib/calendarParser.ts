@@ -28,6 +28,7 @@ export interface ParsedEvent {
   dateKey: string;
   dateString: string;
   sections: EventSection[];
+  flyerImagePath?: string;
   minimumSpendNote?: string;
   pricingNote?: string;
 }

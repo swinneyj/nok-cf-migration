@@ -27,6 +27,7 @@ interface VenuePageProps {
   }
   reviews?: Array<{ name: string; date: string; location: string; rating: number; text: string }>
   relatedVenues?: Array<{ name: string; href: string }>
+  useReserveInquiryCta?: boolean
 }
 
 const defaultReviews = [
@@ -39,17 +40,22 @@ export default function VenuePage({
   venue,
   reviews = defaultReviews,
   relatedVenues = [],
+  useReserveInquiryCta = false,
 }: VenuePageProps) {
   const pathname = usePathname()
   const isNightclub = venue.category === 'Nightclub'
   const isDayclub = venue.category === 'Dayclub'
   const isStripClub = venue.category === 'Strip Club'
+  const primaryTargetId = useReserveInquiryCta ? 'reserve-inquiry' : 'event-booking'
+  const primaryHash = `#${primaryTargetId}`
+  const primaryCtaLabel = useReserveInquiryCta ? 'Reserve Now' : 'View Events'
+  const primaryCtaAriaLabel = useReserveInquiryCta ? 'Jump to reservation form' : 'View upcoming events'
 
   useEffect(() => {
     if (typeof window === 'undefined') return
 
     const scrollToBooking = (behavior: ScrollBehavior) => {
-      const target = document.getElementById('event-booking')
+      const target = document.getElementById(primaryTargetId)
       if (!target) return
 
       target.scrollIntoView({
@@ -58,7 +64,7 @@ export default function VenuePage({
       })
     }
 
-    if (window.location.hash === '#event-booking') {
+    if (window.location.hash === primaryHash) {
       requestAnimationFrame(() => {
         scrollToBooking('auto')
       })
@@ -68,15 +74,15 @@ export default function VenuePage({
     requestAnimationFrame(() => {
       window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
     })
-  }, [pathname])
+  }, [pathname, primaryHash, primaryTargetId])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
 
     const onHashChange = () => {
-      if (window.location.hash !== '#event-booking') return
+      if (window.location.hash !== primaryHash) return
 
-      const target = document.getElementById('event-booking')
+      const target = document.getElementById(primaryTargetId)
       if (!target) return
 
       requestAnimationFrame(() => {
@@ -89,16 +95,16 @@ export default function VenuePage({
 
     window.addEventListener('hashchange', onHashChange)
     return () => window.removeEventListener('hashchange', onHashChange)
-  }, [])
+  }, [primaryHash, primaryTargetId])
 
   const handleViewEvents = () => {
     if (typeof window === 'undefined') return
 
-    const target = document.getElementById('event-booking')
+    const target = document.getElementById(primaryTargetId)
     if (!target) return
 
-    if (window.location.hash !== '#event-booking') {
-      window.history.replaceState(null, '', `${window.location.pathname}#event-booking`)
+    if (window.location.hash !== primaryHash) {
+      window.history.replaceState(null, '', `${window.location.pathname}${primaryHash}`)
     }
 
     target.scrollIntoView({
@@ -152,9 +158,9 @@ export default function VenuePage({
                 type="button"
                 onClick={handleViewEvents}
                 className="btn-gold"
-                aria-label="View upcoming events"
+                aria-label={primaryCtaAriaLabel}
               >
-                View Events
+                {primaryCtaLabel}
               </button>
 
               <a href="tel:+17029964884" className="btn-ghost flex items-center gap-2">

@@ -12,7 +12,10 @@ import {
   Users,
 } from "lucide-react";
 import VenueMapModal from "./VenueMapModal";
-import { getVenueMapConfig } from "@/lib/venueMaps";
+import {
+  getFallbackVenueMapConfig,
+  type VenueMapConfig,
+} from "@/lib/venueMaps";
 
 // Helper to extract venue slug from URL path
 function getUrlPathSlug(): string {
@@ -59,6 +62,7 @@ interface StepSectionsProps {
   venueSlug: string;
   eventName: string;
   eventDate: string;
+  eventFlyerPath?: string;
   pricingNote?: string;
   sections: StepSection[];
   selectedSectionName?: string;
@@ -415,6 +419,7 @@ export default function StepSections({
   venueSlug,
   eventName,
   eventDate,
+  eventFlyerPath,
   pricingNote,
   sections,
   selectedSectionName,
@@ -587,7 +592,52 @@ export default function StepSections({
     [flyerManifest, venueSlug, eventName, eventDate]
   );
 
-  const venueMapConfig = useMemo(() => getVenueMapConfig(venueSlug), [venueSlug]);
+  const resolvedFlyer = useMemo(() => {
+    if (eventFlyerPath) {
+      return {
+        imagePath: eventFlyerPath,
+      };
+    }
+
+    return flyer;
+  }, [eventFlyerPath, flyer]);
+
+  const [venueMapConfig, setVenueMapConfig] = useState<VenueMapConfig>(
+    getFallbackVenueMapConfig()
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadVenueMaps = async () => {
+      try {
+        const response = await fetch(`/api/venue-maps/${venueSlug}`, {
+          cache: "no-store",
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to load venue maps for ${venueSlug}`);
+        }
+
+        const config = (await response.json()) as VenueMapConfig;
+
+        if (!cancelled) {
+          setVenueMapConfig(config);
+        }
+      } catch (error) {
+        console.error("Unable to load venue maps:", error);
+        if (!cancelled) {
+          setVenueMapConfig(getFallbackVenueMapConfig());
+        }
+      }
+    };
+
+    loadVenueMaps();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [venueSlug]);
 
   const currentPrice = useMemo(() => {
     if (typeof selectedTablePrice === "number") return selectedTablePrice;
@@ -643,9 +693,9 @@ export default function StepSections({
         >
           <div className="flex items-center gap-3 px-3 py-2.5 text-left text-white">
             <div className="h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-white/10 ring-1 ring-white/10">
-              {flyer ? (
+              {resolvedFlyer ? (
                 <img
-                  src={flyer.imagePath}
+                  src={resolvedFlyer.imagePath}
                   alt={`${eventName} flyer thumbnail`}
                   className="h-full w-full object-cover"
                 />
@@ -697,10 +747,10 @@ export default function StepSections({
             ref={flyerCardRef}
             className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
           >
-            {flyer ? (
+            {resolvedFlyer ? (
               <div className="flex h-[260px] items-center justify-center overflow-hidden bg-black p-2 sm:h-[320px] sm:p-3 xl:block xl:aspect-[4/5] xl:h-auto xl:p-0">
                 <img
-                  src={flyer.imagePath}
+                  src={resolvedFlyer.imagePath}
                   alt={`${eventName} flyer`}
                   className="h-full w-full rounded-md object-contain xl:rounded-none xl:object-cover xl:object-top"
                 />

@@ -1,4 +1,5 @@
 import { unstable_cache } from "next/cache";
+import { fetchBooketingVenueEvents } from "@/lib/booketingClient";
 import { fetchVenueEvents } from "@/lib/googleCalendarClient";
 
 export async function getCachedVenueEvents(
@@ -27,7 +28,10 @@ export async function getCachedVenueEvents(
         }
       }
 
-      let events = await fetchVenueEvents(venue, startDate, endDate);
+      let events =
+        venue === "stadium-swim"
+          ? await fetchBooketingVenueEvents(venue, startDate, endDate)
+          : await fetchVenueEvents(venue, startDate, endDate);
 
       if (month) {
         events = events.filter((event) => event.dateKey?.startsWith(month));
