@@ -45,6 +45,7 @@ export default function TurnstileField({
 }: TurnstileFieldProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const widgetIdRef = useRef<string | null>(null)
+  const pollTimerRef = useRef<number | null>(null)
   const [scriptReady, setScriptReady] = useState(false)
   const [siteKey, setSiteKey] = useState('')
   const [loadError, setLoadError] = useState<string | null>(null)
@@ -108,6 +109,42 @@ export default function TurnstileField({
   }, [])
 
   useEffect(() => {
+    return () => {
+      if (pollTimerRef.current) {
+        window.clearTimeout(pollTimerRef.current)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!siteKey || scriptReady) {
+      return
+    }
+
+    let attempts = 0
+
+    const waitForTurnstile = () => {
+      if (window.turnstile) {
+        setScriptReady(true)
+        updateStatus('loading', 'Preparing spam protection...')
+        return
+      }
+
+      attempts += 1
+      if (attempts >= 20) {
+        setLoadError('Spam protection script did not finish loading.')
+        console.error('[Turnstile] Cloudflare script never exposed window.turnstile.')
+        updateStatus('error', 'Spam protection script did not finish loading. Please refresh and try again.')
+        return
+      }
+
+      pollTimerRef.current = window.setTimeout(waitForTurnstile, 250)
+    }
+
+    waitForTurnstile()
+  }, [scriptReady, siteKey])
+
+  useEffect(() => {
     if (!scriptReady || !siteKey || !containerRef.current || widgetIdRef.current) {
       return
     }
@@ -163,7 +200,6 @@ export default function TurnstileField({
         src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
         strategy="afterInteractive"
         onLoad={() => {
-          setScriptReady(true)
           updateStatus('loading', 'Preparing spam protection...')
         }}
         onError={() => {
