@@ -7,6 +7,19 @@ import { google } from "googleapis";
 import { ParsedEvent, parseEventDescription } from "./calendarParser";
 import { setOAuthCredentialsFromRefreshToken } from "./googleOAuthClient";
 
+const isProduction = process.env.NODE_ENV === "production";
+
+function debugLog(message: string, data?: unknown) {
+  if (isProduction) return;
+
+  if (typeof data === "undefined") {
+    console.log(message);
+    return;
+  }
+
+  console.log(message, data);
+}
+
 // Calendar IDs mapping for each venue
 export const CALENDAR_IDS: Record<string, string> = {
   "xs-nightclub": process.env.GOOGLE_CALENDAR_ID_XS_NIGHTCLUB || "",
@@ -223,7 +236,7 @@ export async function fetchVenueEvents(
   const calendarId = CALENDAR_IDS[venueSlug];
 
   if (!calendarId) {
-    console.log("fetchVenueEvents: missing calendar ID", { venueSlug });
+    debugLog("fetchVenueEvents: missing calendar ID", { venueSlug });
     return [];
   }
 
@@ -238,7 +251,7 @@ export async function fetchVenueEvents(
   const timeMin = start.toISOString();
   const timeMax = end.toISOString();
 
-  console.log("fetchVenueEvents", {
+  debugLog("fetchVenueEvents", {
     venueSlug,
     calendarId,
     start: timeMin,
@@ -258,7 +271,7 @@ export async function fetchVenueEvents(
       maxResults: 100,
     });
 
-    console.log(
+    debugLog(
       "google items",
       (response.data.items || []).map((item) => ({
         summary: item.summary,
@@ -285,7 +298,7 @@ export async function fetchVenueEvents(
         finalDateKey = descriptionDateKey;
       }
 
-      console.log("date resolution", {
+      debugLog("date resolution", {
         summary: event.summary,
         googleDateKey,
         descriptionDateKey,
@@ -329,7 +342,7 @@ export async function fetchVenueEvents(
       });
     }
 
-    console.log(
+    debugLog(
       "parsed events",
       parsedEvents.map((event) => ({
         eventName: event.eventName,
@@ -340,7 +353,7 @@ export async function fetchVenueEvents(
     );
 
     if (parsedEvents.length === 0) {
-      console.log("No events found for this venue/time range", {
+      debugLog("No events found for this venue/time range", {
         venueSlug,
         timeMin,
         timeMax,
@@ -350,7 +363,14 @@ export async function fetchVenueEvents(
 
     return parsedEvents;
   } catch (error) {
-    console.error("Error fetching calendar events with OAuth:", error);
+    if (isProduction) {
+      console.error("Error fetching calendar events with OAuth.", {
+        venueSlug,
+        hasCalendarId: Boolean(calendarId),
+      });
+    } else {
+      console.error("Error fetching calendar events with OAuth:", error);
+    }
     throw error;
   }
 }
