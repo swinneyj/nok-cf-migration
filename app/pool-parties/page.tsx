@@ -1,8 +1,10 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { Suspense } from 'react'
 import { Phone } from 'lucide-react'
-import CategoryEventsBrowser from '@/components/CategoryEventsBrowser'
+import CategoryEventsBrowserFallback from '@/components/CategoryEventsBrowserFallback'
 import InquiryForm from '@/components/InquiryForm'
+import PreloadedCategoryEventsBrowser from '@/components/PreloadedCategoryEventsBrowser'
 import { poolPartyVenues as dayclubs } from '@/lib/categoryVenueData'
 
 export const metadata: Metadata = {
@@ -46,12 +48,14 @@ export default function PoolPartiesPage() {
         </div>
       </section>
 
-      <CategoryEventsBrowser
-        category="pool-parties"
-        anchorId="events"
-        title="What’s Happening Poolside"
-        description="Pick your date and see what’s going on across Las Vegas pool parties and dayclubs. Clicking an event opens the exact venue page with that event ready to book."
-      />
+      <Suspense fallback={<CategoryEventsBrowserFallback />}>
+        <PreloadedCategoryEventsBrowser
+          category="pool-parties"
+          anchorId="events"
+          title="What’s Happening Poolside"
+          description="Pick your date and see what’s going on across Las Vegas pool parties and dayclubs. Clicking an event opens the exact venue page with that event ready to book."
+        />
+      </Suspense>
 
       <section id="dayclubs" className="py-20 px-4 scroll-mt-20">
         <div className="max-w-7xl mx-auto">

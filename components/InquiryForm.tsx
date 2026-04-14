@@ -1,15 +1,49 @@
 'use client'
 
 import { useState } from 'react'
+import { Check, ChevronDown, X } from 'lucide-react'
 
 interface InquiryFormProps {
   defaultPackage?: string
   compact?: boolean
+  hideGroupSize?: boolean
 }
 
-export default function InquiryForm({ defaultPackage = '', compact = false }: InquiryFormProps) {
+export default function InquiryForm({
+  defaultPackage = '',
+  compact = false,
+  hideGroupSize = false,
+}: InquiryFormProps) {
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [eventType, setEventType] = useState(defaultPackage)
+  const [groupSize, setGroupSize] = useState('')
+  const [mobilePicker, setMobilePicker] = useState<'event_type' | 'group_size' | null>(null)
+
+  const eventTypeOptions = [
+    { value: '', label: 'Select a package...' },
+    { value: 'bachelor', label: 'Bachelor Party' },
+    { value: 'bachelorette', label: 'Bachelorette Party' },
+    { value: 'birthday', label: 'Birthday Celebration' },
+    { value: 'bottle', label: 'Bottle Service' },
+    { value: 'nightclub', label: 'Nightclub Package' },
+    { value: 'pool', label: 'Pool Party / Dayclub' },
+    { value: 'partybus', label: 'Party Bus / Transportation' },
+    { value: 'strip', label: 'Strip Club Package' },
+    { value: 'custom', label: 'Custom Package' },
+  ]
+
+  const groupSizeOptions = [
+    { value: '', label: 'How many people?' },
+    { value: '2-4', label: '2–4 people' },
+    { value: '5-8', label: '5–8 people' },
+    { value: '9-15', label: '9–15 people' },
+    { value: '16-25', label: '16–25 people' },
+    { value: '25+', label: '25+ people' },
+  ]
+
+  const selectedEventTypeLabel = eventTypeOptions.find((option) => option.value === eventType)?.label ?? 'Select a package...'
+  const selectedGroupSizeLabel = groupSizeOptions.find((option) => option.value === groupSize)?.label ?? 'How many people?'
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -49,6 +83,8 @@ export default function InquiryForm({ defaultPackage = '', compact = false }: In
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <input type="hidden" name="event_type" value={eventType} />
+      {hideGroupSize ? <input type="hidden" name="group_size" value={groupSize} /> : null}
       <div className={`grid gap-4 ${compact ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2'}`}>
         <div>
           <label className="block text-white/50 text-xs uppercase tracking-wider mb-1.5">
@@ -89,37 +125,57 @@ export default function InquiryForm({ defaultPackage = '', compact = false }: In
         />
       </div>
 
-      <div className={`grid gap-4 ${compact ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2'}`}>
+      <div className={`grid gap-4 ${compact || hideGroupSize ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2'}`}>
         <div>
           <label className="block text-white/50 text-xs uppercase tracking-wider mb-1.5">
             Event Type
           </label>
-          <select name="event_type" defaultValue={defaultPackage} className="form-input">
-            <option value="">Select a package...</option>
-            <option value="bachelor">Bachelor Party</option>
-            <option value="bachelorette">Bachelorette Party</option>
-            <option value="birthday">Birthday Celebration</option>
-            <option value="bottle">Bottle Service</option>
-            <option value="nightclub">Nightclub Package</option>
-            <option value="pool">Pool Party / Dayclub</option>
-            <option value="partybus">Party Bus / Transportation</option>
-            <option value="strip">Strip Club Package</option>
-            <option value="custom">Custom Package</option>
+          <button
+            type="button"
+            onClick={() => setMobilePicker('event_type')}
+            className="form-input flex items-center justify-between text-left md:hidden"
+          >
+            <span className="truncate pr-3">{selectedEventTypeLabel}</span>
+            <ChevronDown className="h-4 w-4 shrink-0 text-white/55" />
+          </button>
+          <select
+            value={eventType}
+            onChange={(event) => setEventType(event.target.value)}
+            className="form-input hidden md:block"
+          >
+            {eventTypeOptions.map((option) => (
+              <option key={option.value || 'placeholder'} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </select>
         </div>
-        <div>
-          <label className="block text-white/50 text-xs uppercase tracking-wider mb-1.5">
-            Group Size
-          </label>
-          <select name="group_size" className="form-input">
-            <option value="">How many people?</option>
-            <option value="2-4">2–4 people</option>
-            <option value="5-8">5–8 people</option>
-            <option value="9-15">9–15 people</option>
-            <option value="16-25">16–25 people</option>
-            <option value="25+">25+ people</option>
-          </select>
-        </div>
+        {!hideGroupSize ? (
+          <div>
+            <label className="block text-white/50 text-xs uppercase tracking-wider mb-1.5">
+              Group Size
+            </label>
+            <button
+              type="button"
+              onClick={() => setMobilePicker('group_size')}
+              className="form-input flex items-center justify-between text-left md:hidden"
+            >
+              <span>{selectedGroupSizeLabel}</span>
+              <ChevronDown className="h-4 w-4 shrink-0 text-white/55" />
+            </button>
+            <select
+              value={groupSize}
+              onChange={(event) => setGroupSize(event.target.value)}
+              className="form-input hidden md:block"
+            >
+              {groupSizeOptions.map((option) => (
+                <option key={option.value || 'placeholder'} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        ) : null}
       </div>
 
       <div>
@@ -158,6 +214,59 @@ export default function InquiryForm({ defaultPackage = '', compact = false }: In
       <p className="text-white/25 text-xs text-center">
         No commitment required · Typically respond in under 30 min
       </p>
+
+      {mobilePicker ? (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 p-3 md:hidden">
+          <div className="flex max-h-[min(80vh,680px)] w-full max-w-sm flex-col overflow-hidden rounded-[24px] border border-white/10 bg-night-900 shadow-[0_24px_80px_rgba(0,0,0,0.45)]">
+            <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+              <div>
+                <p className="text-sm font-semibold text-white">
+                  {mobilePicker === 'event_type' ? 'Choose Event Type' : 'Choose Group Size'}
+                </p>
+                <p className="mt-1 text-xs text-white/45">Tap one option to update the form.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setMobilePicker(null)}
+                className="rounded-full border border-white/10 p-2 text-white/55 transition hover:text-white"
+                aria-label="Close picker"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="overflow-y-auto p-3">
+              {(mobilePicker === 'event_type' ? eventTypeOptions : groupSizeOptions).map((option) => {
+                const isActive =
+                  mobilePicker === 'event_type' ? option.value === eventType : option.value === groupSize
+
+                return (
+                  <button
+                    key={`${mobilePicker}-${option.value || 'placeholder'}`}
+                    type="button"
+                    onClick={() => {
+                      if (mobilePicker === 'event_type') {
+                        setEventType(option.value)
+                      } else {
+                        setGroupSize(option.value)
+                      }
+                      setMobilePicker(null)
+                    }}
+                    className={`mb-2 flex w-full items-center justify-between rounded-2xl border px-4 py-4 text-left transition ${
+                      isActive
+                        ? 'border-gold-500/40 bg-gold-500/10'
+                        : 'border-white/10 bg-white/[0.03]'
+                    }`}
+                  >
+                    <span className="text-base font-semibold text-white">{option.label}</span>
+                    {isActive ? <Check className="h-5 w-5 shrink-0 text-gold-300" /> : null}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      ) : null}
     </form>
   )
 }

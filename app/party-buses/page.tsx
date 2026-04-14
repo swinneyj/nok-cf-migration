@@ -3,10 +3,7 @@ import Link from 'next/link'
 import { CalendarDays, CarFront, Phone, ShieldCheck, Sparkles, Users } from 'lucide-react'
 import InquiryForm from '@/components/InquiryForm'
 import PartyBusPricingCalculator from '@/components/PartyBusPricingCalculator'
-import {
-  PARTY_BUS_SURCHARGE_RULES_2026,
-  PARTY_BUS_VEHICLES,
-} from '@/lib/partyBusPricing'
+import { PARTY_BUS_VEHICLES } from '@/lib/partyBusPricing'
 
 export const metadata: Metadata = {
   title: 'Las Vegas Party Bus Rentals | VIP Group Transportation',
@@ -43,10 +40,6 @@ const bookingSteps = [
   'Pick your date to see holiday and major-event surcharges automatically applied.',
   'Send your route details and we will confirm the final quote, timing, and pickup plan.',
 ]
-
-const surchargePreview = PARTY_BUS_SURCHARGE_RULES_2026.filter((rule) =>
-  ['CES 2026', 'WrestleMania at Allegiant Stadium', 'EDC', 'Formula 1 Race Day'].includes(rule.title)
-)
 
 function formatRate(vehicle: (typeof PARTY_BUS_VEHICLES)[number]) {
   if (!vehicle.hourlyRate) return 'Call for quote'
@@ -116,7 +109,7 @@ export default function PartyBusesPage() {
             <h2 className="font-display text-3xl font-bold text-white">Choose the Right Vehicle</h2>
             <p className="mx-auto mt-3 max-w-3xl text-sm leading-relaxed text-white/52">
               These cards now reflect the cleaned rate-sheet data you sent over, including minimums,
-              booking fee behavior, fuel line items, and the event-date adjustments layered in below.
+              airport-aware pricing behavior, and event-date adjustments applied inside the estimator below.
             </p>
           </div>
 
@@ -190,47 +183,18 @@ export default function PartyBusesPage() {
         <div className="mx-auto max-w-7xl space-y-12">
           <PartyBusPricingCalculator />
 
-          <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-            <div className="card-dark p-6 lg:p-8">
-              <div className="section-eyebrow mb-3">How It Works</div>
-              <h2 className="font-display text-2xl font-bold text-white">A Cleaner Booking Flow for Transportation</h2>
-              <div className="mt-6 space-y-4">
-                {bookingSteps.map((step, index) => (
-                  <div key={step} className="flex gap-4 rounded-2xl border border-white/8 bg-white/[0.03] p-4">
-                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-gold-500/25 bg-gold-500/10 text-sm font-semibold text-gold-300">
-                      {index + 1}
-                    </div>
-                    <p className="pt-1 text-sm leading-relaxed text-white/60">{step}</p>
+          <div className="card-dark p-6 lg:p-8">
+            <div className="section-eyebrow mb-3">How It Works</div>
+            <h2 className="font-display text-2xl font-bold text-white">A Cleaner Booking Flow for Transportation</h2>
+            <div className="mt-6 grid gap-4 lg:grid-cols-3">
+              {bookingSteps.map((step, index) => (
+                <div key={step} className="flex gap-4 rounded-2xl border border-white/8 bg-white/[0.03] p-4">
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-gold-500/25 bg-gold-500/10 text-sm font-semibold text-gold-300">
+                    {index + 1}
                   </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="card-dark p-6 lg:p-8">
-              <div className="section-eyebrow mb-3">2026 Date Rules</div>
-              <h2 className="font-display text-2xl font-bold text-white">Major Event Surcharges We Already Apply</h2>
-              <div className="mt-6 space-y-3">
-                {surchargePreview.map((rule) => (
-                  <div key={rule.date} className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <div>
-                        <div className="text-sm font-semibold text-white">{rule.title}</div>
-                        <div className="mt-1 text-xs uppercase tracking-[0.16em] text-white/35">{rule.date}</div>
-                      </div>
-                      <div className="rounded-full border border-gold-500/25 bg-gold-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-gold-300">
-                        +{Math.round(rule.increase * 100)}%
-                      </div>
-                    </div>
-                    {rule.minimumNote ? (
-                      <p className="mt-3 text-sm leading-relaxed text-white/55">{rule.minimumNote}</p>
-                    ) : null}
-                  </div>
-                ))}
-              </div>
-              <p className="mt-4 text-xs leading-relaxed text-white/35">
-                This pricing logic currently uses the surcharge workbook snapshot you provided. If the vendor
-                publishes a fresh calendar later, we can update the rules without redesigning the page.
-              </p>
+                  <p className="pt-1 text-sm leading-relaxed text-white/60">{step}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -274,7 +238,7 @@ export default function PartyBusesPage() {
           </div>
 
           <div className="card-dark p-8">
-            <InquiryForm defaultPackage="partybus" />
+            <InquiryForm defaultPackage="partybus" hideGroupSize />
           </div>
         </div>
       </section>

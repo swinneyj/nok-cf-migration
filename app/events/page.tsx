@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { Suspense } from 'react'
 import { Phone } from 'lucide-react'
-import CategoryEventsBrowser from '@/components/CategoryEventsBrowser'
+import CategoryEventsBrowserFallback from '@/components/CategoryEventsBrowserFallback'
+import PreloadedCategoryEventsBrowser from '@/components/PreloadedCategoryEventsBrowser'
 
 export const metadata: Metadata = {
   title: 'Las Vegas Events Calendar | Nightclubs & Pool Parties 2026',
@@ -63,13 +65,15 @@ export default function EventsPage() {
         </div>
       </section>
 
-      <CategoryEventsBrowser
-        category="all"
-        anchorId="events-browser"
-        title="What’s Happening in Las Vegas"
-        description="Browse all featured nightlife and pool party events for your dates, then jump into the exact venue page to reserve."
-        allowCategorySwitching
-      />
+      <Suspense fallback={<CategoryEventsBrowserFallback />}>
+        <PreloadedCategoryEventsBrowser
+          category="all"
+          anchorId="events-browser"
+          title="What’s Happening in Las Vegas"
+          description="Browse all featured nightlife and pool party events for your dates, then jump into the exact venue page to reserve."
+          allowCategorySwitching
+        />
+      </Suspense>
     </>
   )
 }

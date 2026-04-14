@@ -1,8 +1,10 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { Suspense } from 'react'
 import { Phone } from 'lucide-react'
-import CategoryEventsBrowser from '@/components/CategoryEventsBrowser'
+import CategoryEventsBrowserFallback from '@/components/CategoryEventsBrowserFallback'
 import InquiryForm from '@/components/InquiryForm'
+import PreloadedCategoryEventsBrowser from '@/components/PreloadedCategoryEventsBrowser'
 import { nightclubVenues as clubs } from '@/lib/categoryVenueData'
 
 export const metadata: Metadata = {
@@ -46,12 +48,14 @@ export default function NightclubsPage() {
         </div>
       </section>
 
-      <CategoryEventsBrowser
-        category="nightclubs"
-        anchorId="events"
-        title="What’s Happening Each Night"
-        description="Pick your date and browse the nightclub calendar for that night and the days right after it. Clicking any event takes you to the exact venue page with that event preselected."
-      />
+      <Suspense fallback={<CategoryEventsBrowserFallback />}>
+        <PreloadedCategoryEventsBrowser
+          category="nightclubs"
+          anchorId="events"
+          title="What’s Happening Each Night"
+          description="Pick your date and browse the nightclub calendar for that night and the days right after it. Clicking any event takes you to the exact venue page with that event preselected."
+        />
+      </Suspense>
 
       <section id="clubs" className="py-20 px-4 scroll-mt-20">
         <div className="max-w-7xl mx-auto">

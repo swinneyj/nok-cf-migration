@@ -29,6 +29,7 @@ const contactMethods = [
     icon: Mail,
     title: 'Email',
     value: 'sales@nokturnallifestyle.com',
+    valueParts: ['sales@', 'nokturnallifestyle.com'],
     sub: 'For detailed inquiries',
     href: 'mailto:sales@nokturnallifestyle.com',
     color: 'text-blue-400',
@@ -85,16 +86,27 @@ export default function ContactPage() {
 
       {/* Contact Methods */}
       <section className="py-10 px-4">
-        <div className="max-w-4xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {contactMethods.map(({ icon: Icon, title, value, sub, href, color }) => (
-            <div key={title} className="card-dark p-5 text-center">
+        <div className="mx-auto grid max-w-4xl grid-cols-2 gap-4 lg:grid-cols-4">
+          {contactMethods.map(({ icon: Icon, title, value, valueParts, sub, href, color }) => (
+            <div key={title} className="card-dark min-w-0 p-5 text-center">
               <div className={`${color} mb-3 flex justify-center`}>
                 <Icon size={22} />
               </div>
               <div className="text-white/40 text-xs uppercase tracking-wider mb-1">{title}</div>
               {href ? (
-                <a href={href} className={`${color} text-sm font-semibold hover:opacity-80 transition-opacity block`}>
-                  {value}
+                <a
+                  href={href}
+                  className={`${color} block min-w-0 text-sm font-semibold leading-tight transition-opacity hover:opacity-80`}
+                >
+                  {valueParts ? (
+                    <>
+                      <span className="block sm:hidden">Email Us</span>
+                      <span className="hidden sm:block">{valueParts[0]}</span>
+                      <span className="hidden break-all text-[0.72rem] sm:block sm:text-sm">{valueParts[1]}</span>
+                    </>
+                  ) : (
+                    value
+                  )}
                 </a>
               ) : (
                 <div className="text-white font-semibold text-sm">{value}</div>

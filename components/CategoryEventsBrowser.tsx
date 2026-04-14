@@ -27,13 +27,39 @@ interface Props {
   description: string;
   anchorId: string;
   allowCategorySwitching?: boolean;
+  initialDate?: string;
+  initialEvents?: CategoryEventItem[];
 }
 
-function formatDateInputValue(date: Date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
+function buildTodayDateKey() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
+}
+
+function buildMonthKeyFromDateKey(dateKey: string) {
+  const [year, month] = dateKey.split("-");
+  return `${year}-${month}`;
+}
+
+function parseDateKey(dateKey: string) {
+  const [year, month, day] = dateKey.split("-").map(Number);
+  return new Date(year, month - 1, day, 12, 0, 0, 0);
+}
+
+function filterEventsForWindow(events: CategoryEventItem[], startDateParam: string, days = 3) {
+  const safeDays = Number.isFinite(days) && days > 0 ? Math.min(days, 7) : 3;
+  const startDate = parseDateKey(startDateParam);
+  const endDate = new Date(startDate);
+  endDate.setDate(endDate.getDate() + safeDays - 1);
+  endDate.setHours(23, 59, 59, 999);
+
+  return events.filter((event) => {
+    const eventDate = parseDateKey(event.dateKey);
+    return eventDate >= startDate && eventDate <= endDate;
+  });
 }
 
 function formatDayHeading(dateKey: string) {
@@ -47,8 +73,7 @@ function formatDayHeading(dateKey: string) {
 }
 
 function buildDefaultDate() {
-  const now = new Date();
-  return formatDateInputValue(now);
+  return buildTodayDateKey();
 }
 
 export default function CategoryEventsBrowser({
@@ -57,14 +82,21 @@ export default function CategoryEventsBrowser({
   description,
   anchorId,
   allowCategorySwitching = false,
+  initialDate,
+  initialEvents = [],
 }: Props) {
   const [activeCategory, setActiveCategory] = useState<CategoryEventsKey>(category);
-  const [selectedDate, setSelectedDate] = useState(buildDefaultDate);
-  const [activeDate, setActiveDate] = useState(buildDefaultDate);
-  const [events, setEvents] = useState<CategoryEventItem[]>([]);
+  const seededDate = initialDate || buildDefaultDate();
+  const [selectedDate, setSelectedDate] = useState(seededDate);
+  const [activeDate, setActiveDate] = useState(seededDate);
+  const [monthEvents, setMonthEvents] = useState<CategoryEventItem[]>(initialEvents);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const dateInputRef = useRef<HTMLInputElement | null>(null);
+  const hydratedRef = useRef(false);
+  const monthCacheRef = useRef<Map<string, CategoryEventItem[]>>(
+    new Map([[`${category}:${buildMonthKeyFromDateKey(seededDate)}`, initialEvents]])
+  );
 
   const openDatePicker = () => {
     const input = dateInputRef.current;
@@ -81,6 +113,30 @@ export default function CategoryEventsBrowser({
   }, [category]);
 
   useEffect(() => {
+    const activeMonth = buildMonthKeyFromDateKey(activeDate);
+    const cacheKey = `${activeCategory}:${activeMonth}`;
+
+    if (!hydratedRef.current) {
+      hydratedRef.current = true;
+      const sameSeed =
+        activeCategory === category &&
+        cacheKey === `${category}:${buildMonthKeyFromDateKey(seededDate)}` &&
+        initialEvents.length > 0;
+
+      if (sameSeed) {
+        setMonthEvents(initialEvents);
+        return;
+      }
+    }
+
+    const cachedMonthEvents = monthCacheRef.current.get(cacheKey);
+    if (cachedMonthEvents) {
+      setMonthEvents(cachedMonthEvents);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
     let cancelled = false;
 
     async function loadEvents() {
@@ -90,7 +146,7 @@ export default function CategoryEventsBrowser({
 
         const response = await fetch(
           `/api/category-events?category=${activeCategory}&start_date=${activeDate}&days=3`,
-          { cache: "no-store" }
+          { cache: "default" }
         );
 
         if (!response.ok) {
@@ -99,11 +155,13 @@ export default function CategoryEventsBrowser({
 
         const data = await response.json();
         if (!cancelled) {
-          setEvents(Array.isArray(data.events) ? data.events : []);
+          const nextEvents = Array.isArray(data.events) ? data.events : [];
+          monthCacheRef.current.set(cacheKey, nextEvents);
+          setMonthEvents(nextEvents);
         }
       } catch (err) {
         if (!cancelled) {
-          setEvents([]);
+          setMonthEvents([]);
           setError(err instanceof Error ? err.message : "Could not load events.");
         }
       } finally {
@@ -121,16 +179,17 @@ export default function CategoryEventsBrowser({
   }, [activeCategory, activeDate]);
 
   const groupedEvents = useMemo(() => {
+    const visibleEvents = filterEventsForWindow(monthEvents, activeDate, 3);
     const grouped = new Map<string, CategoryEventItem[]>();
 
-    for (const event of events) {
+    for (const event of visibleEvents) {
       const bucket = grouped.get(event.dateKey) ?? [];
       bucket.push(event);
       grouped.set(event.dateKey, bucket);
     }
 
     return Array.from(grouped.entries());
-  }, [events]);
+  }, [activeDate, monthEvents]);
 
   return (
     <section id={anchorId} className="px-4 py-20 scroll-mt-20">

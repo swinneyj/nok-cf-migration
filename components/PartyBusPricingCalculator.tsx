@@ -1,8 +1,11 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import Link from 'next/link'
+import { useEffect, useMemo, useState } from 'react'
+import { Check, ChevronDown, X } from 'lucide-react'
 import {
   PARTY_BUS_VEHICLES,
+  type PartyBusPickupLocation,
   calculatePartyBusEstimate,
 } from '@/lib/partyBusPricing'
 
@@ -22,58 +25,196 @@ function formatCurrency(value: number) {
   }).format(value)
 }
 
+function getVehicleOptionLabel(name: string, seats: number) {
+  const shortenedName = name
+    .replace('Ultra Luxury Party Bus', 'Party Bus')
+    .replace('Executive Coach', 'Coach')
+    .replace('Sprinter Limo', 'Sprinter')
+    .replace('Limo SUV', 'SUV')
+
+  return `${shortenedName} · up to ${seats}`
+}
+
+const groupSizeOptions = [
+  { value: '', label: 'How many people?', min: 0, max: Infinity },
+  { value: '2-4', label: '2–4 people', min: 2, max: 4 },
+  { value: '5-8', label: '5–8 people', min: 5, max: 8 },
+  { value: '9-15', label: '9–15 people', min: 9, max: 15 },
+  { value: '16-25', label: '16–25 people', min: 16, max: 25 },
+  { value: '25+', label: '25+ people', min: 26, max: Infinity },
+] as const
+
+const pickupLocationOptions = [
+  { value: 'strip', label: 'Las Vegas Strip / major casino' },
+  { value: 'airport', label: 'Harry Reid Airport (LAS)' },
+  { value: 'off-strip', label: 'Off-strip / custom quote' },
+] as const
+
+type MobilePickerType = 'group_size' | 'pickup_location' | 'vehicle' | 'hours' | null
+
 export default function PartyBusPricingCalculator() {
   const pricedVehicles = PARTY_BUS_VEHICLES.filter((vehicle) => vehicle.hourlyRate)
+  const [groupSize, setGroupSize] = useState('')
+  const [pickupLocation, setPickupLocation] = useState<PartyBusPickupLocation>('strip')
   const [vehicleSlug, setVehicleSlug] = useState(pricedVehicles[0]?.slug ?? '')
-  const [hours, setHours] = useState('2')
+  const [hours, setHours] = useState('1')
   const [date, setDate] = useState(buildDefaultDate)
+  const [mobilePicker, setMobilePicker] = useState<MobilePickerType>(null)
+
+  const selectedGroupSize = groupSizeOptions.find((option) => option.value === groupSize) ?? groupSizeOptions[0]
+  const selectedPickupLocation =
+    pickupLocationOptions.find((option) => option.value === pickupLocation) ?? pickupLocationOptions[0]
+  const filteredVehicles = useMemo(() => {
+    if (!groupSize) return pricedVehicles
+    return pricedVehicles.filter(
+      (vehicle) =>
+        vehicle.recommendedPaxWithLuggage >= selectedGroupSize.min &&
+        vehicle.seats >= selectedGroupSize.min &&
+        vehicle.seats <= selectedGroupSize.max + 6
+    )
+  }, [groupSize, pricedVehicles, selectedGroupSize.max, selectedGroupSize.min])
+
+  const selectedVehicle = filteredVehicles.find((vehicle) => vehicle.slug === vehicleSlug) ?? filteredVehicles[0] ?? pricedVehicles[0]
+  const hourOptions = ['1', '2', '3', 'custom'] as const
+  const isCustomHours = hours === 'custom'
+
+  const canChooseVehicle = Boolean(groupSize)
 
   const estimate = useMemo(
     () =>
       calculatePartyBusEstimate({
-        vehicleSlug,
+        vehicleSlug: selectedVehicle?.slug ?? vehicleSlug,
         hours: Math.max(Number(hours) || 0, 0),
         date,
+        pickupLocation,
       }),
-    [vehicleSlug, hours, date]
+    [selectedVehicle?.slug, vehicleSlug, hours, date, pickupLocation]
   )
+
+  const mobilePickerTitle =
+    mobilePicker === 'group_size'
+      ? 'Choose Group Size'
+      : mobilePicker === 'pickup_location'
+        ? 'Choose Pickup Location'
+      : mobilePicker === 'vehicle'
+        ? 'Choose Vehicle'
+        : 'Choose Hours'
+
+  useEffect(() => {
+    if (!selectedVehicle) return
+    if (selectedVehicle.slug !== vehicleSlug) {
+      setVehicleSlug(selectedVehicle.slug)
+    }
+  }, [selectedVehicle, vehicleSlug])
 
   return (
     <div className="card-dark p-6 lg:p-8">
       <div className="section-eyebrow mb-3">Price Estimator</div>
       <h3 className="font-display text-2xl font-bold text-white">Estimate Your Transportation</h3>
       <p className="mt-3 max-w-2xl text-sm leading-relaxed text-white/55">
-        This estimate uses the Presidential rate sheet you shared: service minimum, built-in discount,
-        fuel line, booking fee, Nevada excise tax, and 2026 holiday or event uplifts from your surcharge
-        calendar. Final quotes can still change if routing or venue minimums apply.
+        This estimate uses the Presidential rate sheet you shared along with the 2026 holiday and event
+        surcharge calendar. Final quotes can still change if routing or venue minimums apply.
       </p>
 
-      <div className="mt-6 grid gap-4 md:grid-cols-3">
+      <div className="mt-6 grid gap-4 md:grid-cols-5">
         <div>
-          <label className="mb-1.5 block text-xs uppercase tracking-wider text-white/50">Vehicle</label>
-          <select
-            value={vehicleSlug}
-            onChange={(event) => setVehicleSlug(event.target.value)}
-            className="form-input"
+          <label className="mb-1.5 block text-xs uppercase tracking-wider text-white/50">Group Size</label>
+          <button
+            type="button"
+            onClick={() => setMobilePicker('group_size')}
+            className="form-input flex items-center justify-between text-left md:hidden"
           >
-            {pricedVehicles.map((vehicle) => (
-              <option key={vehicle.slug} value={vehicle.slug}>
-                {vehicle.name} · up to {vehicle.seats}
+            <span>{selectedGroupSize.label}</span>
+            <ChevronDown className="h-4 w-4 shrink-0 text-white/55" />
+          </button>
+          <select
+            value={groupSize}
+            onChange={(event) => setGroupSize(event.target.value)}
+            className="form-input hidden md:block"
+          >
+            {groupSizeOptions.map((option) => (
+              <option key={option.value || 'placeholder'} value={option.value}>
+                {option.label}
               </option>
             ))}
           </select>
         </div>
         <div>
+          <label className="mb-1.5 block text-xs uppercase tracking-wider text-white/50">Pickup Location</label>
+          <button
+            type="button"
+            onClick={() => setMobilePicker('pickup_location')}
+            className="form-input flex items-center justify-between text-left md:hidden"
+          >
+            <span className="truncate pr-3">{selectedPickupLocation.label}</span>
+            <ChevronDown className="h-4 w-4 shrink-0 text-white/55" />
+          </button>
+          <select
+            value={pickupLocation}
+            onChange={(event) => setPickupLocation(event.target.value as PartyBusPickupLocation)}
+            className="form-input hidden md:block"
+          >
+            {pickupLocationOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="mb-1.5 block text-xs uppercase tracking-wider text-white/50">Vehicle</label>
+          <button
+            type="button"
+            onClick={() => {
+              if (canChooseVehicle) setMobilePicker('vehicle')
+            }}
+            disabled={!canChooseVehicle}
+            className="form-input flex items-center justify-between text-left disabled:cursor-not-allowed disabled:opacity-50 md:hidden"
+          >
+            <span className="truncate pr-3">
+              {canChooseVehicle
+                ? getVehicleOptionLabel(selectedVehicle.name, selectedVehicle.seats)
+                : 'Choose group size first'}
+            </span>
+            <ChevronDown className="h-4 w-4 shrink-0 text-white/55" />
+          </button>
+          <select
+            value={vehicleSlug}
+            onChange={(event) => setVehicleSlug(event.target.value)}
+            className="form-input hidden md:block disabled:cursor-not-allowed disabled:opacity-50"
+            disabled={!canChooseVehicle}
+          >
+            {!canChooseVehicle ? (
+              <option value="">Choose group size first</option>
+            ) : null}
+            {filteredVehicles.map((vehicle) => (
+              <option key={vehicle.slug} value={vehicle.slug}>
+                {getVehicleOptionLabel(vehicle.name, vehicle.seats)}
+              </option>
+            ))}
+          </select>
+          <p className="mt-2 text-xs leading-relaxed text-white/40">
+            {canChooseVehicle
+              ? `Showing ${filteredVehicles.length} vehicle option${filteredVehicles.length === 1 ? '' : 's'} for this group size.`
+              : 'Choose group size first to narrow the vehicle list.'}
+          </p>
+        </div>
+        <div>
           <label className="mb-1.5 block text-xs uppercase tracking-wider text-white/50">Hours</label>
-          <select value={hours} onChange={(event) => setHours(event.target.value)} className="form-input">
-            {Array.from({ length: 12 }).map((_, index) => {
-              const value = String(index + 1)
-              return (
-                <option key={value} value={value}>
-                  {value} hour{value === '1' ? '' : 's'}
-                </option>
-              )
-            })}
+          <button
+            type="button"
+            onClick={() => setMobilePicker('hours')}
+            className="form-input flex items-center justify-between text-left md:hidden"
+          >
+            <span>{isCustomHours ? '4+ hours · custom quote' : `${hours} hour${hours === '1' ? '' : 's'}`}</span>
+            <ChevronDown className="h-4 w-4 shrink-0 text-white/55" />
+          </button>
+          <select value={hours} onChange={(event) => setHours(event.target.value)} className="form-input hidden md:block">
+            {hourOptions.map((value) => (
+              <option key={value} value={value}>
+                {value === 'custom' ? '4+ hours · custom quote' : `${value} hour${value === '1' ? '' : 's'}`}
+              </option>
+            ))}
           </select>
         </div>
         <div>
@@ -87,8 +228,124 @@ export default function PartyBusPricingCalculator() {
         </div>
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+      {mobilePicker ? (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 p-3 md:hidden">
+          <div className="flex max-h-[min(80vh,680px)] w-full max-w-sm flex-col overflow-hidden rounded-[24px] border border-white/10 bg-night-900 shadow-[0_24px_80px_rgba(0,0,0,0.45)]">
+            <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+              <div>
+                <p className="text-sm font-semibold text-white">{mobilePickerTitle}</p>
+                <p className="mt-1 text-xs text-white/45">Tap one option to update the estimate.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setMobilePicker(null)}
+                className="rounded-full border border-white/10 p-2 text-white/55 transition hover:text-white"
+                aria-label="Close picker"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="overflow-y-auto p-3">
+              {mobilePicker === 'group_size'
+                ? groupSizeOptions.map((option) => {
+                    const isActive = option.value === groupSize
+                    return (
+                      <button
+                        key={option.value || 'placeholder'}
+                        type="button"
+                        onClick={() => {
+                          setGroupSize(option.value)
+                          setMobilePicker(null)
+                        }}
+                        className={`mb-2 flex w-full items-center justify-between rounded-2xl border px-4 py-4 text-left transition ${
+                          isActive
+                            ? 'border-gold-500/40 bg-gold-500/10'
+                            : 'border-white/10 bg-white/[0.03]'
+                        }`}
+                      >
+                        <span className="text-base font-semibold text-white">{option.label}</span>
+                        {isActive ? <Check className="h-5 w-5 shrink-0 text-gold-300" /> : null}
+                      </button>
+                    )
+                  })
+                : mobilePicker === 'pickup_location'
+                ? pickupLocationOptions.map((option) => {
+                    const isActive = option.value === pickupLocation
+                    return (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() => {
+                          setPickupLocation(option.value)
+                          setMobilePicker(null)
+                        }}
+                        className={`mb-2 flex w-full items-center justify-between rounded-2xl border px-4 py-4 text-left transition ${
+                          isActive
+                            ? 'border-gold-500/40 bg-gold-500/10'
+                            : 'border-white/10 bg-white/[0.03]'
+                        }`}
+                      >
+                        <span className="text-base font-semibold text-white">{option.label}</span>
+                        {isActive ? <Check className="h-5 w-5 shrink-0 text-gold-300" /> : null}
+                      </button>
+                    )
+                  })
+                : mobilePicker === 'vehicle'
+                ? filteredVehicles.map((vehicle) => {
+                    const isActive = vehicle.slug === vehicleSlug
+                    return (
+                      <button
+                        key={vehicle.slug}
+                        type="button"
+                        onClick={() => {
+                          setVehicleSlug(vehicle.slug)
+                          setMobilePicker(null)
+                        }}
+                        className={`mb-2 flex w-full items-start justify-between rounded-2xl border px-4 py-4 text-left transition ${
+                          isActive
+                            ? 'border-gold-500/40 bg-gold-500/10'
+                            : 'border-white/10 bg-white/[0.03]'
+                        }`}
+                      >
+                        <div>
+                          <div className="text-base font-semibold text-white">{vehicle.name}</div>
+                          <div className="mt-1 text-sm text-gold-400">Up to {vehicle.seats} passengers</div>
+                        </div>
+                        {isActive ? <Check className="mt-0.5 h-5 w-5 shrink-0 text-gold-300" /> : null}
+                      </button>
+                    )
+                  })
+                : hourOptions.map((value) => {
+                    const isActive = value === hours
+                    return (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => {
+                          setHours(value)
+                          setMobilePicker(null)
+                        }}
+                        className={`mb-2 flex w-full items-center justify-between rounded-2xl border px-4 py-4 text-left transition ${
+                          isActive
+                            ? 'border-gold-500/40 bg-gold-500/10'
+                            : 'border-white/10 bg-white/[0.03]'
+                        }`}
+                      >
+                        <span className="text-base font-semibold text-white">
+                          {value === 'custom' ? '4+ hours · custom quote' : `${value} hour${value === '1' ? '' : 's'}`}
+                        </span>
+                        {isActive ? <Check className="h-5 w-5 shrink-0 text-gold-300" /> : null}
+                      </button>
+                    )
+                  })}
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      <div className="mt-6">
+        <div className="rounded-2xl border border-gold-500/15 bg-night-900/70 p-5 sm:p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="text-lg font-semibold text-white">{estimate.vehicle.name}</p>
@@ -101,27 +358,35 @@ export default function PartyBusPricingCalculator() {
             </div>
           </div>
 
-          <div className="mt-5 space-y-3 text-sm text-white/65">
-            <div className="flex items-center justify-between gap-4">
-              <span>Billable hours</span>
-              <span className="font-semibold text-white">{estimate.effectiveHours}</span>
+          <div className="mt-6 grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
+            <div>
+              <div className="flex items-center justify-between gap-4 text-sm text-white/65">
+                <span>Billable hours</span>
+                <span className="font-semibold text-white">{isCustomHours ? 'Custom' : estimate.effectiveHours}</span>
+              </div>
+              <p className="mt-5 text-xs uppercase tracking-[0.18em] text-gold-300">Estimated Total</p>
+              {!isCustomHours && estimate.totalEstimate ? (
+                <>
+                  <p className="mt-3 font-display text-4xl font-bold text-white">
+                    {formatCurrency(estimate.totalEstimate)}
+                  </p>
+                  <p className="mt-3 text-sm leading-relaxed text-white/55">
+                    {pickupLocation === 'airport'
+                      ? 'Airport pricing is applied for this estimate, including the LAS-specific rate adjustment.'
+                      : 'This is the customer-facing estimate for the selected vehicle, hours, and date.'}
+                  </p>
+                </>
+              ) : (
+                <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.03] p-4 text-sm text-white/55">
+                  {pickupLocation === 'off-strip'
+                    ? 'Off-strip pickups need custom routing review. Use the quote form below and we’ll confirm the cleanest price.'
+                    : isCustomHours
+                    ? 'For 4+ hours, tell us your route and timing below and we’ll confirm the cleanest custom quote.'
+                    : 'Pricing for this vehicle is quote-based. Use the form below and we’ll price it manually.'}
+                </div>
+              )}
             </div>
-            <div className="flex items-center justify-between gap-4">
-              <span>Service charge</span>
-              <span className="font-semibold text-white">{formatCurrency(estimate.serviceCharge ?? 0)}</span>
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <span>Rate-sheet discount</span>
-              <span className="font-semibold text-white">{formatCurrency(estimate.fuelDiscount ?? 0)}</span>
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <span>Fuel line</span>
-              <span className="font-semibold text-white">{formatCurrency(estimate.fuelCharge ?? 0)}</span>
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <span>Booking fee</span>
-              <span className="font-semibold text-white">{formatCurrency(estimate.bookingFee ?? 0)}</span>
-            </div>
+
             {estimate.surchargeRule ? (
               <div className="rounded-xl border border-gold-500/20 bg-gold-500/5 p-4">
                 <p className="text-xs uppercase tracking-[0.16em] text-gold-300">Date Adjustment</p>
@@ -137,40 +402,16 @@ export default function PartyBusPricingCalculator() {
                 No special event uplift is applied to this date.
               </div>
             )}
-          </div>
-        </div>
-
-        <div className="rounded-2xl border border-gold-500/15 bg-night-900/70 p-5">
-          <p className="text-xs uppercase tracking-[0.18em] text-gold-300">Estimated Total</p>
-          {estimate.totalEstimate ? (
-            <>
-              <p className="mt-3 font-display text-4xl font-bold text-white">
-                {formatCurrency(estimate.totalEstimate)}
-              </p>
-              <div className="mt-5 space-y-2 text-sm text-white/60">
-                <div className="flex items-center justify-between gap-4">
-                  <span>Estimated base fare</span>
-                  <span>{formatCurrency(estimate.preTaxSubtotal ?? 0)}</span>
-                </div>
-                <div className="flex items-center justify-between gap-4">
-                  <span>Date surcharge</span>
-                  <span>{formatCurrency(estimate.surchargeAmount ?? 0)}</span>
-                </div>
-                <div className="flex items-center justify-between gap-4">
-                  <span>Nevada excise tax</span>
-                  <span>{formatCurrency(estimate.exciseTax ?? 0)}</span>
-                </div>
-              </div>
-              <p className="mt-5 text-xs leading-relaxed text-white/35">
+            <div className="lg:col-span-2">
+              <p className="text-xs leading-relaxed text-white/35">
                 Estimate excludes gratuity, parking, airport-specific charges, venue-specific fees, and any
                 routing requirements outside standard service.
               </p>
-            </>
-          ) : (
-            <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.03] p-4 text-sm text-white/55">
-              Pricing for this vehicle is quote-based. Use the form below and we&apos;ll price it manually.
+              <Link href="#reserve" className="btn-gold mt-6 inline-flex w-full items-center justify-center sm:w-auto">
+                Continue to Quote
+              </Link>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>
