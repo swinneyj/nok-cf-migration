@@ -11,6 +11,16 @@ export type GeneratedPost = {
 
 export const posts: GeneratedPost[] = [
   {
+    "slug": "las-vegas-nightclub-attire-men",
+    "title": "Las Vegas Nightclub Attire for Men 2026 | What to Wear (Full Guide)",
+    "excerpt": "Complete guide to Las Vegas nightclub attire for men — what to wear, what gets you denied, the sneaker question, outfit ideas for every budget, and venue-specific tips.",
+    "date": "April 15, 2026",
+    "readTime": "8 min read",
+    "category": "Style Guide",
+    "image": "/blog/las-vegas-nightclub-attire-men/cover.jpg",
+    "imageAlt": "Las Vegas nightclub attire for men 2026 dress code"
+  },
+  {
     "slug": "what-time-do-vegas-clubs-close",
     "title": "What Time Do Las Vegas Clubs Close? (Every Major Venue, 2026)",
     "excerpt": "Exact closing times for every major Las Vegas nightclub — XS, Hakkasan, Omnia, Marquee, TAO, Zouk, LIV, Drai\\",
