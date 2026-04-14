@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AlertTriangle, Mail, Phone, Users } from "lucide-react";
+import TurnstileField from "@/components/TurnstileField";
 
 interface ReservationFormProps {
   venueName: string;
@@ -58,8 +59,14 @@ export default function ReservationForm({
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
 
   const totalGuests = guestData.numGuys + guestData.numGirls;
+  const handleTurnstileTokenChange = useCallback((token: string | null) => {
+    setTurnstileToken(token);
+  }, []);
+
   const isOverCapacity = useMemo(() => {
     if (!selectedTable?.capacity || selectedTable.capacity <= 0) {
       return false;
@@ -124,6 +131,12 @@ export default function ReservationForm({
       return;
     }
 
+    if (!turnstileToken) {
+      setError("Please complete the spam protection check.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const data: ReservationData = {
         venueName,
@@ -142,9 +155,7 @@ export default function ReservationForm({
 
       onSubmit?.(data);
 
-      const formId = process.env.NEXT_PUBLIC_FORMSPREE_FORM_ID || "mvzvobod";
-
-      const response = await fetch(`https://formspree.io/f/${formId}`, {
+      const response = await fetch("/api/reservation", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -152,6 +163,8 @@ export default function ReservationForm({
         },
         body: JSON.stringify({
           ...data,
+          website: "",
+          turnstileToken,
           _subject: `${isOverCapacity ? "⚠️ OVER CAPACITY — " : ""}New Reservation Request - ${eventName} at ${venueName}`,
           _replyto: formData.email,
         }),
@@ -159,6 +172,8 @@ export default function ReservationForm({
 
       if (response.ok) {
         setSubmitted(true);
+        setTurnstileToken(null);
+        setTurnstileResetKey((current) => current + 1);
         setFormData({
           firstName: "",
           lastName: "",
@@ -426,11 +441,17 @@ export default function ReservationForm({
           </ul>
         </div>
 
+        <TurnstileField
+          onTokenChange={handleTurnstileTokenChange}
+          resetKey={turnstileResetKey}
+          theme="light"
+        />
+
         <button
           type="submit"
-          disabled={loading || !selectedTable}
+          disabled={loading || !selectedTable || !turnstileToken}
           className={`w-full rounded-lg px-6 py-3 text-lg font-bold text-white transition ${
-            loading || !selectedTable
+            loading || !selectedTable || !turnstileToken
               ? "cursor-not-allowed bg-gray-400"
               : "bg-gradient-to-r from-purple-900 to-black hover:from-purple-800 hover:to-gray-900"
           }`}

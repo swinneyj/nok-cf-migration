@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Check, ChevronDown, X } from 'lucide-react'
 import ReviewProofStrip from '@/components/ReviewProofStrip'
+import TurnstileField from '@/components/TurnstileField'
 
 interface InquiryFormProps {
   defaultPackage?: string
@@ -20,6 +21,8 @@ export default function InquiryForm({
   const [eventType, setEventType] = useState(defaultPackage)
   const [groupSize, setGroupSize] = useState('')
   const [mobilePicker, setMobilePicker] = useState<'event_type' | 'group_size' | null>(null)
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0)
 
   const eventTypeOptions = [
     { value: '', label: 'Select a package...' },
@@ -45,19 +48,39 @@ export default function InquiryForm({
 
   const selectedEventTypeLabel = eventTypeOptions.find((option) => option.value === eventType)?.label ?? 'Select a package...'
   const selectedGroupSizeLabel = groupSizeOptions.find((option) => option.value === groupSize)?.label ?? 'How many people?'
+  const handleTurnstileTokenChange = useCallback((token: string | null) => {
+    setTurnstileToken(token)
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
     try {
+      if (!turnstileToken) {
+        alert('Please complete the spam protection check.')
+        setLoading(false)
+        return
+      }
+
       const formData = new FormData(e.currentTarget)
-      const res = await fetch('https://formspree.io/f/mvzvobod', {
+      const payload = Object.fromEntries(formData.entries())
+      const res = await fetch('/api/inquiry', {
         method: 'POST',
-        headers: { 'Accept': 'application/json' },
-        body: formData,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...payload,
+          event_type: eventType,
+          group_size: groupSize,
+          turnstileToken,
+        }),
       })
       if (res.ok) {
         setSubmitted(true)
+        setTurnstileResetKey((current) => current + 1)
+        setTurnstileToken(null)
       } else {
         alert('Something went wrong. Please call us at (702) 996-4884.')
       }
@@ -86,6 +109,7 @@ export default function InquiryForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       <input type="hidden" name="event_type" value={eventType} />
       {hideGroupSize ? <input type="hidden" name="group_size" value={groupSize} /> : null}
+      <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hidden" />
       <div className={`grid gap-4 ${compact ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2'}`}>
         <div>
           <label className="block text-white/50 text-xs uppercase tracking-wider mb-1.5">
@@ -204,9 +228,14 @@ export default function InquiryForm({
         </div>
       )}
 
+      <TurnstileField
+        onTokenChange={handleTurnstileTokenChange}
+        resetKey={turnstileResetKey}
+      />
+
       <button
         type="submit"
-        disabled={loading}
+        disabled={loading || !turnstileToken}
         className="btn-gold w-full text-center py-4 text-sm disabled:opacity-60 disabled:cursor-not-allowed"
       >
         {loading ? 'Sending...' : 'Get My Free Quote →'}
