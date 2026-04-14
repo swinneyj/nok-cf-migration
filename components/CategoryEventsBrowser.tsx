@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { CalendarDays, CalendarIcon, ChevronRight, Loader2 } from "lucide-react";
+import { CalendarDays, CalendarIcon, ChevronRight, Loader2, Search } from "lucide-react";
 import type { CategoryEventsKey } from "@/lib/categoryVenueData";
 
 interface CategoryEventItem {
@@ -27,6 +27,7 @@ interface Props {
   description: string;
   anchorId: string;
   allowCategorySwitching?: boolean;
+  enableSearch?: boolean;
   initialDate?: string;
   initialEvents?: CategoryEventItem[];
 }
@@ -39,9 +40,34 @@ function buildTodayDateKey() {
   return `${year}-${month}-${day}`;
 }
 
+function formatMonthKey(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  return `${year}-${month}`;
+}
+
 function buildMonthKeyFromDateKey(dateKey: string) {
   const [year, month] = dateKey.split("-");
   return `${year}-${month}`;
+}
+
+function buildMonthStartDate(monthKey: string) {
+  return `${monthKey}-01`;
+}
+
+function addMonthsToMonthKey(monthKey: string, monthsToAdd: number) {
+  const [year, month] = monthKey.split("-").map(Number);
+  const date = new Date(year, month - 1 + monthsToAdd, 1);
+  return formatMonthKey(date);
+}
+
+function normalizeSearchText(value: string) {
+  return value
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[^\w\s-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function parseDateKey(dateKey: string) {
@@ -82,6 +108,7 @@ export default function CategoryEventsBrowser({
   description,
   anchorId,
   allowCategorySwitching = false,
+  enableSearch = false,
   initialDate,
   initialEvents = [],
 }: Props) {
@@ -89,8 +116,10 @@ export default function CategoryEventsBrowser({
   const seededDate = initialDate || buildDefaultDate();
   const [selectedDate, setSelectedDate] = useState(seededDate);
   const [activeDate, setActiveDate] = useState(seededDate);
+  const [searchQuery, setSearchQuery] = useState("");
   const [monthEvents, setMonthEvents] = useState<CategoryEventItem[]>(initialEvents);
   const [loading, setLoading] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const dateInputRef = useRef<HTMLInputElement | null>(null);
   const hydratedRef = useRef(false);
@@ -110,6 +139,10 @@ export default function CategoryEventsBrowser({
 
   useEffect(() => {
     setActiveCategory(category);
+  }, [category]);
+
+  useEffect(() => {
+    setSearchQuery("");
   }, [category]);
 
   useEffect(() => {
@@ -178,8 +211,90 @@ export default function CategoryEventsBrowser({
     };
   }, [activeCategory, activeDate]);
 
+  useEffect(() => {
+    if (!enableSearch) return;
+
+    const trimmedQuery = searchQuery.trim();
+    if (!trimmedQuery) {
+      setSearchLoading(false);
+      return;
+    }
+
+    const baseMonth = buildMonthKeyFromDateKey(activeDate);
+    const monthKeysToLoad = Array.from({ length: 6 }, (_, index) =>
+      addMonthsToMonthKey(baseMonth, index)
+    );
+    const missingMonthKeys = monthKeysToLoad.filter(
+      (monthKey) => !monthCacheRef.current.has(`${activeCategory}:${monthKey}`)
+    );
+
+    if (missingMonthKeys.length === 0) {
+      setSearchLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    async function loadFutureMonths() {
+      try {
+        setSearchLoading(true);
+
+        const responses = await Promise.all(
+          missingMonthKeys.map(async (monthKey) => {
+            const response = await fetch(
+              `/api/category-events?category=${activeCategory}&start_date=${buildMonthStartDate(monthKey)}&days=3`,
+              { cache: "default" }
+            );
+
+            if (!response.ok) {
+              throw new Error("Could not load additional future events.");
+            }
+
+            const data = await response.json();
+            return {
+              monthKey,
+              events: Array.isArray(data.events) ? data.events : [],
+            };
+          })
+        );
+
+        if (cancelled) return;
+
+        for (const result of responses) {
+          monthCacheRef.current.set(`${activeCategory}:${result.monthKey}`, result.events);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Could not load future events.");
+        }
+      } finally {
+        if (!cancelled) {
+          setSearchLoading(false);
+        }
+      }
+    }
+
+    loadFutureMonths();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeCategory, activeDate, enableSearch, searchQuery]);
+
   const groupedEvents = useMemo(() => {
-    const visibleEvents = filterEventsForWindow(monthEvents, activeDate, 3);
+    const normalizedQuery = normalizeSearchText(searchQuery);
+    const visibleEvents = normalizedQuery
+      ? Array.from({ length: 6 }, (_, index) => addMonthsToMonthKey(buildMonthKeyFromDateKey(activeDate), index))
+          .flatMap((monthKey) => monthCacheRef.current.get(`${activeCategory}:${monthKey}`) ?? [])
+          .filter((event) => {
+            if (event.dateKey < activeDate) return false;
+
+            const haystack = normalizeSearchText(
+              `${event.eventName} ${event.venueName} ${event.venueLocation}`
+            );
+            return haystack.includes(normalizedQuery);
+          })
+      : filterEventsForWindow(monthEvents, activeDate, 3);
     const grouped = new Map<string, CategoryEventItem[]>();
 
     for (const event of visibleEvents) {
@@ -189,7 +304,7 @@ export default function CategoryEventsBrowser({
     }
 
     return Array.from(grouped.entries());
-  }, [activeDate, monthEvents]);
+  }, [activeCategory, activeDate, monthEvents, searchQuery]);
 
   return (
     <section id={anchorId} className="px-4 py-20 scroll-mt-20">
@@ -219,6 +334,26 @@ export default function CategoryEventsBrowser({
                     {option.label}
                   </button>
                 ))}
+              </div>
+            ) : null}
+            {enableSearch ? (
+              <div className="mt-5 max-w-xl">
+                <label className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.18em] text-gold-400 sm:text-xs">
+                  Search Artist or Event
+                </label>
+                <div className="relative">
+                  <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/35" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(event) => setSearchQuery(event.target.value)}
+                    placeholder="Search Hugel, Dom Dolla, Fisher..."
+                    className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-11 pr-4 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-gold-500/40"
+                  />
+                </div>
+                <p className="mt-2 text-xs text-white/40">
+                  Search across upcoming events from your selected date forward.
+                </p>
               </div>
             ) : null}
           </div>
@@ -278,14 +413,24 @@ export default function CategoryEventsBrowser({
           ) : groupedEvents.length === 0 ? (
             <div className="flex min-h-[220px] items-center justify-center">
               <div className="max-w-md text-center">
-                <p className="text-lg font-semibold text-white">No events found</p>
+                <p className="text-lg font-semibold text-white">
+                  {searchQuery.trim() ? `No upcoming matches for “${searchQuery.trim()}”` : "No events found"}
+                </p>
                 <p className="mt-2 text-sm text-white/55">
-                  Try another date to see what&apos;s happening across these venues.
+                  {searchQuery.trim()
+                    ? "Try another artist, event name, or date to keep exploring."
+                    : "Try another date to see what&apos;s happening across these venues."}
                 </p>
               </div>
             </div>
           ) : (
             <div className="space-y-10">
+              {searchLoading ? (
+                <div className="flex items-center gap-2 text-sm text-white/50">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Pulling more future results...
+                </div>
+              ) : null}
               {groupedEvents.map(([dateKey, dayEvents]) => (
                 <div key={dateKey}>
                   <div className="mb-4 flex items-center gap-3">

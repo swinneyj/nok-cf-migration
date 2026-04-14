@@ -12,6 +12,7 @@ interface Props {
   description: string;
   anchorId: string;
   allowCategorySwitching?: boolean;
+  enableSearch?: boolean;
 }
 
 export default async function PreloadedCategoryEventsBrowser({
@@ -20,6 +21,7 @@ export default async function PreloadedCategoryEventsBrowser({
   description,
   anchorId,
   allowCategorySwitching = false,
+  enableSearch = false,
 }: Props) {
   const initialDate = buildTodayDateKey();
   const initialMonth = buildMonthKeyFromDateKey(initialDate);
@@ -32,6 +34,7 @@ export default async function PreloadedCategoryEventsBrowser({
       description={description}
       anchorId={anchorId}
       allowCategorySwitching={allowCategorySwitching}
+      enableSearch={enableSearch}
       initialDate={initialDate}
       initialEvents={initialEvents}
     />

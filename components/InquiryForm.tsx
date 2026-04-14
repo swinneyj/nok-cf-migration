@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Check, ChevronDown, X } from 'lucide-react'
+import ReviewProofStrip from '@/components/ReviewProofStrip'
 
 interface InquiryFormProps {
   defaultPackage?: string
@@ -210,6 +211,10 @@ export default function InquiryForm({
       >
         {loading ? 'Sending...' : 'Get My Free Quote →'}
       </button>
+
+      <div className="flex justify-center">
+        <ReviewProofStrip compact centered />
+      </div>
 
       <p className="text-white/25 text-xs text-center">
         No commitment required · Typically respond in under 30 min

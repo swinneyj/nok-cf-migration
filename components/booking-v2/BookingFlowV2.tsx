@@ -163,6 +163,9 @@ export default function BookingFlowV2({
       const params = new URLSearchParams(searchParams);
       const eventSlug = slugify(event.eventName);
       params.set("event", eventSlug);
+      if (event.dateKey) {
+        params.set("date", event.dateKey);
+      }
       params.delete("section");
       params.delete("table");
       const queryString = params.toString();
@@ -193,6 +196,9 @@ export default function BookingFlowV2({
         ? slugify(state.selectedEvent.eventName)
         : "";
       if (eventSlug) params.set("event", eventSlug);
+      if (state.selectedEvent?.dateKey) {
+        params.set("date", state.selectedEvent.dateKey);
+      }
 
       const sectionSlug = slugify(table.section);
       params.set("section", sectionSlug);

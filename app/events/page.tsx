@@ -72,6 +72,7 @@ export default function EventsPage() {
           title="What’s Happening in Las Vegas"
           description="Browse all featured nightlife and pool party events for your dates, then jump into the exact venue page to reserve."
           allowCategorySwitching
+          enableSearch
         />
       </Suspense>
     </>

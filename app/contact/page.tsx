@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Phone, Mail, MessageCircle, Clock } from 'lucide-react'
 import InquiryForm from '@/components/InquiryForm'
+import ReviewProofStrip from '@/components/ReviewProofStrip'
 
 export const metadata: Metadata = {
   title: 'Contact | Book Your Las Vegas VIP Experience',
@@ -81,6 +82,7 @@ export default function ContactPage() {
             Fill out the form below or call us directly. Justin typically responds within 30 minutes
             during business hours.
           </p>
+          <ReviewProofStrip centered className="mt-6" />
         </div>
       </section>
 

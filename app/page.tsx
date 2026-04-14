@@ -4,6 +4,7 @@ import { Phone, Star, ChevronRight, Shield, Clock, Award, Users } from 'lucide-r
 import PackageCard from '@/components/PackageCard'
 import ReviewCard from '@/components/ReviewCard'
 import InquiryForm from '@/components/InquiryForm'
+import ReviewProofStrip from '@/components/ReviewProofStrip'
 
 export const metadata: Metadata = {
   title: 'Las Vegas VIP Concierge | Bachelor & Bachelorette Party Packages',
@@ -231,10 +232,7 @@ export default function HomePage() {
 
           {/* Social proof bar */}
           <div className="flex items-center justify-center gap-4 mb-10 flex-wrap">
-            <div className="flex items-center gap-2 bg-night-900/60 border border-gold-500/20 rounded-full px-4 py-2">
-              <div className="stars text-xs">★★★★★</div>
-              <span className="text-white/80 text-xs font-medium">4.9 · 200+ Reviews</span>
-            </div>
+            <ReviewProofStrip centered />
             <div className="flex items-center gap-2 bg-night-900/60 border border-gold-500/20 rounded-full px-4 py-2">
               <span className="text-gold-400 text-xs">✓</span>
               <span className="text-white/80 text-xs font-medium">Licensed & Local</span>
@@ -479,6 +477,10 @@ export default function HomePage() {
                   (702) 996-4884
                 </a>
                 <div className="text-white/30 text-xs mt-1">Available 7 days · 9am – Midnight</div>
+              </div>
+
+              <div className="mt-6">
+                <ReviewProofStrip compact />
               </div>
             </div>
 

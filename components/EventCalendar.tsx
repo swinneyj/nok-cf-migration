@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { ParsedEvent } from "@/lib/calendarParser";
 
 interface Props {
@@ -68,23 +69,12 @@ export default function EventCalendar({
   onEventSelected,
   selectedEventId,
 }: Props) {
-  const initialMonth = useMemo(() => {
-    if (typeof window === "undefined") {
-      return new Date(2026, 3, 1);
-    }
-
-    const params = new URLSearchParams(window.location.search);
-    const dateParam = params.get("date");
-    if (dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam)) {
-      const [year, month] = dateParam.split("-").map(Number);
-      return new Date(year, month - 1, 1);
-    }
-
-    return new Date(2026, 3, 1);
-  }, []);
+  const searchParams = useSearchParams();
+  const dateParam = searchParams.get("date");
+  const eventParam = searchParams.get("event");
 
   const [events, setEvents] = useState<ParsedEvent[]>([]);
-  const [visibleMonth, setVisibleMonth] = useState(initialMonth);
+  const [visibleMonth, setVisibleMonth] = useState(() => new Date(2026, 3, 1));
   const [loading, setLoading] = useState(false);
   const [hasSearchedForEvent, setHasSearchedForEvent] = useState(false);
   const [maxSearchMonth, setMaxSearchMonth] = useState<Date | null>(null);
@@ -103,13 +93,31 @@ export default function EventCalendar({
   const currentMonthKey = formatMonthKey(today);
   const canGoToPrevMonth = monthKey > currentMonthKey;
 
+  useEffect(() => {
+    if (!dateParam || !/^\d{4}-\d{2}-\d{2}$/.test(dateParam)) {
+      return;
+    }
+
+    const [year, month] = dateParam.split("-").map(Number);
+    const targetMonth = new Date(year, month - 1, 1);
+    const targetMonthKey = formatMonthKey(targetMonth);
+
+    if (targetMonthKey !== monthKey) {
+      setVisibleMonth(targetMonth);
+    }
+
+    setHasSearchedForEvent(true);
+    setMaxSearchMonth(null);
+  }, [dateParam, monthKey]);
+
   // Auto-adjust month based on URL parameters (only on initial load)
   useEffect(() => {
-    if (typeof window !== "undefined" && !hasSearchedForEvent && events.length > 0) {
-      const params = new URLSearchParams(window.location.search);
-      const eventParam = params.get("event");
-      const dateParam = params.get("date");
-      
+    if (!hasSearchedForEvent && events.length > 0) {
+      if (dateParam) {
+        setHasSearchedForEvent(true);
+        return;
+      }
+
       // Only search if we have an event param and haven't found it in current month
       if (eventParam) {
         const foundEvent = events.some(e => {
@@ -152,7 +160,7 @@ export default function EventCalendar({
         setHasSearchedForEvent(true);
       }
     }
-  }, [hasSearchedForEvent, visibleMonth, maxSearchMonth, events]);
+  }, [dateParam, eventParam, hasSearchedForEvent, visibleMonth, maxSearchMonth, events]);
 
   useEffect(() => {
     let cancelled = false;
@@ -173,8 +181,6 @@ export default function EventCalendar({
           
           // Only mark as searched if we actually got results or if no event param
           if (nextEvents.length === 0 && hasSearchedForEvent === false) {
-           const params = new URLSearchParams(window.location.search);
-            const eventParam = params.get("event");
             if (!eventParam) {
               // No search needed, no events expected
               setHasSearchedForEvent(true);
@@ -199,7 +205,7 @@ export default function EventCalendar({
     return () => {
       cancelled = true;
     };
-  }, [venueSlug, monthKey, hasSearchedForEvent]);
+  }, [venueSlug, monthKey, hasSearchedForEvent, eventParam]);
 
   // Auto-select event from URL parameters
   useEffect(() => {
