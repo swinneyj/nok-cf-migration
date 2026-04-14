@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AlertTriangle, Mail, Phone, Users } from "lucide-react";
-import TurnstileField from "@/components/TurnstileField";
+import TurnstileField, { type TurnstileStatus } from "@/components/TurnstileField";
 
 interface ReservationFormProps {
   venueName: string;
@@ -61,10 +61,16 @@ export default function ReservationForm({
   const [error, setError] = useState<string | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [turnstileResetKey, setTurnstileResetKey] = useState(0);
+  const [turnstileStatus, setTurnstileStatus] = useState<TurnstileStatus>("loading");
+  const [turnstileMessage, setTurnstileMessage] = useState("Loading spam protection...");
 
   const totalGuests = guestData.numGuys + guestData.numGirls;
   const handleTurnstileTokenChange = useCallback((token: string | null) => {
     setTurnstileToken(token);
+  }, []);
+  const handleTurnstileStatusChange = useCallback((status: TurnstileStatus, message?: string | null) => {
+    setTurnstileStatus(status);
+    setTurnstileMessage(message ?? "");
   }, []);
 
   const isOverCapacity = useMemo(() => {
@@ -443,9 +449,16 @@ export default function ReservationForm({
 
         <TurnstileField
           onTokenChange={handleTurnstileTokenChange}
+          onStatusChange={handleTurnstileStatusChange}
           resetKey={turnstileResetKey}
           theme="light"
         />
+
+        {!turnstileToken ? (
+          <p className={`text-sm ${turnstileStatus === "error" ? "text-red-600" : "text-gray-600"}`}>
+            {turnstileMessage || "Complete the spam check to enable submission."}
+          </p>
+        ) : null}
 
         <button
           type="submit"

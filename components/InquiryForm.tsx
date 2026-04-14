@@ -3,7 +3,7 @@
 import { useCallback, useState } from 'react'
 import { Check, ChevronDown, X } from 'lucide-react'
 import ReviewProofStrip from '@/components/ReviewProofStrip'
-import TurnstileField from '@/components/TurnstileField'
+import TurnstileField, { type TurnstileStatus } from '@/components/TurnstileField'
 
 interface InquiryFormProps {
   defaultPackage?: string
@@ -23,6 +23,8 @@ export default function InquiryForm({
   const [mobilePicker, setMobilePicker] = useState<'event_type' | 'group_size' | null>(null)
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
   const [turnstileResetKey, setTurnstileResetKey] = useState(0)
+  const [turnstileStatus, setTurnstileStatus] = useState<TurnstileStatus>('loading')
+  const [turnstileMessage, setTurnstileMessage] = useState('Loading spam protection...')
 
   const eventTypeOptions = [
     { value: '', label: 'Select a package...' },
@@ -50,6 +52,10 @@ export default function InquiryForm({
   const selectedGroupSizeLabel = groupSizeOptions.find((option) => option.value === groupSize)?.label ?? 'How many people?'
   const handleTurnstileTokenChange = useCallback((token: string | null) => {
     setTurnstileToken(token)
+  }, [])
+  const handleTurnstileStatusChange = useCallback((status: TurnstileStatus, message?: string | null) => {
+    setTurnstileStatus(status)
+    setTurnstileMessage(message ?? '')
   }, [])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -230,8 +236,15 @@ export default function InquiryForm({
 
       <TurnstileField
         onTokenChange={handleTurnstileTokenChange}
+        onStatusChange={handleTurnstileStatusChange}
         resetKey={turnstileResetKey}
       />
+
+      {!turnstileToken ? (
+        <p className={`text-xs ${turnstileStatus === 'error' ? 'text-red-400' : 'text-white/45'}`}>
+          {turnstileMessage || 'Complete the spam check to enable submission.'}
+        </p>
+      ) : null}
 
       <button
         type="submit"
