@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "cheerio": "^1.2.0",
     "cherio": "1.0.0-rc.2",
     "googleapis": "^171.4.0",
