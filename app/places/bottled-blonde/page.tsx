@@ -26,7 +26,7 @@ export default function BottledBlonde() {
         coverCharge: '$15–$25 general admission',
         music: 'Top 40, Hip-hop, Pop — live DJ nightly',
         dresscode: 'Smart casual — more relaxed than major nightclubs',
-        image: 'https://images.unsplash.com/photo-1574391884720-bbc3740c59d1?w=1200&q=85',
+        image: '/images/venues/bottled-blonde.jpg',
         description: "Bottled Blonde at Park MGM Las Vegas is a high-energy cocktail lounge and bar that blurs the line between upscale bar and nightclub. With a live DJ nightly, an impressive cocktail program, and a more approachable atmosphere than the Strip's mega-clubs, it's the ideal spot for pregaming, birthday celebrations, or a full night out for groups who want great vibes without the intensity of a full nightclub.",
         highlights: [
           'High-energy cocktail lounge format — great for pregaming or a standalone night',

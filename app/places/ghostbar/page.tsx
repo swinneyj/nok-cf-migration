@@ -26,7 +26,7 @@ export default function Ghostbar() {
         coverCharge: '$15–$30 general admission',
         music: 'Top 40, Hip-hop, EDM — live DJ nightly',
         dresscode: 'Smart casual — clean sneakers acceptable',
-        image: 'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=1200&q=85',
+        image: '/images/venues/ghostbar.jpg',
         description: "Ghostbar at Palms Casino Resort is one of Las Vegas's most iconic lounge experiences. Perched on the 55th floor, the venue features a transparent ghost deck that extends over the edge of the building — stand on it and look straight down 55 stories. The panoramic Las Vegas Strip views are among the best in the city, and the intimate capacity creates a VIP-feeling experience that the mega-clubs can't replicate.",
         highlights: [
           'Iconic transparent ghost deck — stand 55 floors up with the Strip beneath your feet',

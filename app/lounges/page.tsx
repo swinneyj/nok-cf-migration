@@ -14,7 +14,7 @@ const lounges = [
     location: 'Park MGM Las Vegas',
     vibe: 'High-energy bar & lounge with live DJ, great for pregaming or a full night out',
     href: '/places/bottled-blonde',
-    image: 'https://images.unsplash.com/photo-1574391884720-bbc3740c59d1?w=600&q=80',
+    image: '/images/venues/bottled-blonde.jpg',
     alt: 'Bottled Blonde Las Vegas lounge VIP access',
   },
   {
@@ -22,7 +22,7 @@ const lounges = [
     location: 'Palms Casino Resort',
     vibe: 'Iconic rooftop lounge with stunning 55th-floor Strip views and an outdoor ghost deck',
     href: '/places/ghostbar',
-    image: 'https://images.unsplash.com/photo-1545431781-3e1b506e9a37?w=600&q=80',
+    image: '/images/venues/ghostbar.jpg',
     alt: 'Ghostbar Las Vegas rooftop lounge VIP access Palms',
   },
 ]
