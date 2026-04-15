@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Playfair_Display, DM_Sans } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import { headers } from 'next/headers'
 import './globals.css'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
@@ -106,7 +107,7 @@ const schemaOrg = {
           name: 'How much does bottle service cost in Las Vegas?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Las Vegas bottle service minimums typically range from $300–$500 on weekdays and $700–$3,000+ on weekends depending on the venue. This is per table, not per person. Gratuity of 20–24% is additional.',
+            text: 'Las Vegas bottle service minimums typically range from $300\u2013$500 on weekdays and $700\u2013$3,000+ on weekends depending on the venue. This is per table, not per person. Gratuity of 20\u201324% is additional.',
           },
         },
         {
@@ -122,7 +123,7 @@ const schemaOrg = {
           name: 'How far in advance should I book a Las Vegas VIP package?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'We recommend booking 2–4 weeks in advance for weekend events to secure the best table placement. However, we specialize in last-minute bookings and can often accommodate same-day requests.',
+            text: 'We recommend booking 2\u20134 weeks in advance for weekend events to secure the best table placement. However, we specialize in last-minute bookings and can often accommodate same-day requests.',
           },
         },
         {
@@ -146,12 +147,15 @@ const schemaOrg = {
   ],
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const nonce = (await headers()).get('x-nonce') ?? ''
+
   return (
     <html lang="en" className={`${playfair.variable} ${dmSans.variable}`}>
       <head>
         <script
           type="application/ld+json"
+          nonce={nonce}
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrg) }}
         />
         <link rel="icon" href="/favicon.ico" />
