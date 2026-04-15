@@ -13,6 +13,8 @@ interface Props {
   anchorId: string;
   allowCategorySwitching?: boolean;
   enableSearch?: boolean;
+  initialDate?: string;
+  syncDateToUrl?: boolean;
 }
 
 export default async function PreloadedCategoryEventsBrowser({
@@ -22,9 +24,11 @@ export default async function PreloadedCategoryEventsBrowser({
   anchorId,
   allowCategorySwitching = false,
   enableSearch = false,
+  initialDate,
+  syncDateToUrl = false,
 }: Props) {
-  const initialDate = buildTodayDateKey();
-  const initialMonth = buildMonthKeyFromDateKey(initialDate);
+  const seededDate = initialDate || buildTodayDateKey();
+  const initialMonth = buildMonthKeyFromDateKey(seededDate);
   const initialEvents = await getCategoryMonthEvents(category, initialMonth);
 
   return (
@@ -35,8 +39,9 @@ export default async function PreloadedCategoryEventsBrowser({
       anchorId={anchorId}
       allowCategorySwitching={allowCategorySwitching}
       enableSearch={enableSearch}
-      initialDate={initialDate}
+      initialDate={seededDate}
       initialEvents={initialEvents}
+      syncDateToUrl={syncDateToUrl}
     />
   );
 }

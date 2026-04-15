@@ -12,7 +12,19 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://www.nokturnallifestyle.com/events' },
 }
 
-export default function EventsPage() {
+function getInitialDate(searchParams?: Record<string, string | string[] | undefined>) {
+  const value = searchParams?.date
+  const date = Array.isArray(value) ? value[0] : value
+  return date && /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/.test(date) ? date : undefined
+}
+
+export default function EventsPage({
+  searchParams,
+}: {
+  searchParams?: Record<string, string | string[] | undefined>
+}) {
+  const initialDate = getInitialDate(searchParams)
+
   return (
     <>
       <section className="relative page-hero overflow-hidden">
@@ -73,6 +85,8 @@ export default function EventsPage() {
           description="Browse all featured nightlife and pool party events for your dates, then jump into the exact venue page to reserve."
           allowCategorySwitching
           enableSearch
+          initialDate={initialDate}
+          syncDateToUrl
         />
       </Suspense>
     </>

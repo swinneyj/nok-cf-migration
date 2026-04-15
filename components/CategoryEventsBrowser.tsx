@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { CalendarDays, CalendarIcon, ChevronRight, Loader2, Search } from "lucide-react";
 import type { CategoryEventsKey } from "@/lib/categoryVenueData";
 
@@ -30,6 +31,7 @@ interface Props {
   enableSearch?: boolean;
   initialDate?: string;
   initialEvents?: CategoryEventItem[];
+  syncDateToUrl?: boolean;
 }
 
 function buildTodayDateKey() {
@@ -102,6 +104,10 @@ function buildDefaultDate() {
   return buildTodayDateKey();
 }
 
+function isValidDateKey(value: string | null | undefined): value is string {
+  return Boolean(value && /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/.test(value));
+}
+
 export default function CategoryEventsBrowser({
   category,
   title,
@@ -111,7 +117,11 @@ export default function CategoryEventsBrowser({
   enableSearch = false,
   initialDate,
   initialEvents = [],
+  syncDateToUrl = false,
 }: Props) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [activeCategory, setActiveCategory] = useState<CategoryEventsKey>(category);
   const seededDate = initialDate || buildDefaultDate();
   const [selectedDate, setSelectedDate] = useState(seededDate);
@@ -126,6 +136,28 @@ export default function CategoryEventsBrowser({
   const monthCacheRef = useRef<Map<string, CategoryEventItem[]>>(
     new Map([[`${category}:${buildMonthKeyFromDateKey(seededDate)}`, initialEvents]])
   );
+
+  const updateDate = (nextDate: string) => {
+    if (!isValidDateKey(nextDate)) return;
+
+    setSelectedDate(nextDate);
+    setActiveDate(nextDate);
+
+    if (!syncDateToUrl) {
+      return;
+    }
+
+    const currentUrlDate = searchParams.get("date");
+    if (currentUrlDate === nextDate) {
+      return;
+    }
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("date", nextDate);
+    const queryString = params.toString();
+    const nextUrl = queryString ? `${pathname}?${queryString}#${anchorId}` : `${pathname}#${anchorId}`;
+    router.replace(nextUrl, { scroll: false });
+  };
 
   const openDatePicker = () => {
     const input = dateInputRef.current;
@@ -369,9 +401,7 @@ export default function CategoryEventsBrowser({
                   type="date"
                   value={selectedDate}
                   onChange={(event) => {
-                    const nextDate = event.target.value;
-                    setSelectedDate(nextDate);
-                    setActiveDate(nextDate);
+                    updateDate(event.target.value);
                   }}
                   className="w-full min-w-0 rounded-xl border border-white/10 bg-night-800 px-4 py-3 pr-12 text-sm text-white outline-none transition focus:border-gold-500/50 cursor-pointer"
                 />
