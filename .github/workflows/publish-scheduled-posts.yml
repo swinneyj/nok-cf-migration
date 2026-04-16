@@ -100,7 +100,7 @@ jobs:
             exit 0
           fi
 
-          git config user.email "bot@github.com"
+          git config user.email "justin.swinney88@gmail.com"
           git config user.name "Auto-Publisher"
 
           git add app/blog/ _scheduled-posts/ scripts/rebuild-blog-index.mjs
