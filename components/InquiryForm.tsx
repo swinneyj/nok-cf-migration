@@ -103,7 +103,7 @@ export default function InquiryForm({
         <div className="text-gold-400 text-4xl mb-4">✓</div>
         <h3 className="font-display text-white text-xl font-bold mb-2">We'll be in touch shortly!</h3>
         <p className="text-white/50 text-sm">
-          Justin usually responds within 30 minutes during business hours.
+          Our team will respond within 30 minutes during business hours (9am – Midnight, 7 days a week).
           For urgent requests, call{' '}
           <a href="tel:+17029964884" className="text-gold-400 hover:underline">(702) 996-4884</a>.
         </p>
@@ -156,57 +156,85 @@ export default function InquiryForm({
         />
       </div>
 
-      <div className={`grid gap-4 ${compact || hideGroupSize ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2'}`}>
+      <div className={`grid gap-4 ${compact ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2'}`}>
         <div>
           <label className="block text-white/50 text-xs uppercase tracking-wider mb-1.5">
             Event Type
           </label>
-          <button
-            type="button"
-            onClick={() => setMobilePicker('event_type')}
-            className="form-input flex items-center justify-between text-left md:hidden"
-          >
-            <span className="truncate pr-3">{selectedEventTypeLabel}</span>
-            <ChevronDown className="h-4 w-4 shrink-0 text-white/55" />
-          </button>
-          <select
-            value={eventType}
-            onChange={(event) => setEventType(event.target.value)}
-            className="form-input hidden md:block"
-          >
-            {eventTypeOptions.map((option) => (
-              <option key={option.value || 'placeholder'} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setMobilePicker(mobilePicker === 'event_type' ? null : 'event_type')}
+              className="form-input w-full text-left flex items-center justify-between"
+            >
+              {selectedEventTypeLabel}
+              <ChevronDown size={16} />
+            </button>
+            {mobilePicker === 'event_type' && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-night-900 border border-gold-400/20 rounded-lg z-10 max-h-48 overflow-y-auto">
+                {eventTypeOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => {
+                      setEventType(option.value)
+                      setMobilePicker(null)
+                    }}
+                    className="w-full text-left px-4 py-2 hover:bg-gold-400/10 text-white text-sm"
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            )}
+            <select
+              name="event_type"
+              value={eventType}
+              onChange={(e) => setEventType(e.target.value)}
+              className="absolute inset-0 opacity-0 form-input"
+            />
+          </div>
         </div>
-        {!hideGroupSize ? (
+        {!hideGroupSize && (
           <div>
             <label className="block text-white/50 text-xs uppercase tracking-wider mb-1.5">
               Group Size
             </label>
-            <button
-              type="button"
-              onClick={() => setMobilePicker('group_size')}
-              className="form-input flex items-center justify-between text-left md:hidden"
-            >
-              <span>{selectedGroupSizeLabel}</span>
-              <ChevronDown className="h-4 w-4 shrink-0 text-white/55" />
-            </button>
-            <select
-              value={groupSize}
-              onChange={(event) => setGroupSize(event.target.value)}
-              className="form-input hidden md:block"
-            >
-              {groupSizeOptions.map((option) => (
-                <option key={option.value || 'placeholder'} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setMobilePicker(mobilePicker === 'group_size' ? null : 'group_size')}
+                className="form-input w-full text-left flex items-center justify-between"
+              >
+                {selectedGroupSizeLabel}
+                <ChevronDown size={16} />
+              </button>
+              {mobilePicker === 'group_size' && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-night-900 border border-gold-400/20 rounded-lg z-10 max-h-48 overflow-y-auto">
+                  {groupSizeOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => {
+                        setGroupSize(option.value)
+                        setMobilePicker(null)
+                      }}
+                      className="w-full text-left px-4 py-2 hover:bg-gold-400/10 text-white text-sm"
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <select
+                name="group_size"
+                value={groupSize}
+                onChange={(e) => setGroupSize(e.target.value)}
+                className="absolute inset-0 opacity-0 form-input"
+              />
+            </div>
           </div>
-        ) : null}
+        )}
       </div>
 
       <div>
@@ -235,85 +263,24 @@ export default function InquiryForm({
       )}
 
       <TurnstileField
+        key={turnstileResetKey}
         onTokenChange={handleTurnstileTokenChange}
         onStatusChange={handleTurnstileStatusChange}
-        resetKey={turnstileResetKey}
       />
-
-      {!turnstileToken ? (
-        <p className={`text-xs ${turnstileStatus === 'error' ? 'text-red-400' : 'text-white/45'}`}>
-          {turnstileMessage || 'Complete the spam check to enable submission.'}
-        </p>
-      ) : null}
 
       <button
         type="submit"
-        disabled={loading || !turnstileToken}
+        disabled={loading || turnstileStatus === 'loading'}
         className="btn-gold w-full text-center py-4 text-sm disabled:opacity-60 disabled:cursor-not-allowed"
       >
         {loading ? 'Sending...' : 'Get My Free Quote →'}
       </button>
 
-      <div className="flex justify-center">
-        <ReviewProofStrip compact centered />
-      </div>
-
       <p className="text-white/25 text-xs text-center">
         No commitment required · Typically respond in under 30 min
       </p>
 
-      {mobilePicker ? (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 p-3 md:hidden">
-          <div className="flex max-h-[min(80vh,680px)] w-full max-w-sm flex-col overflow-hidden rounded-[24px] border border-white/10 bg-night-900 shadow-[0_24px_80px_rgba(0,0,0,0.45)]">
-            <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
-              <div>
-                <p className="text-sm font-semibold text-white">
-                  {mobilePicker === 'event_type' ? 'Choose Event Type' : 'Choose Group Size'}
-                </p>
-                <p className="mt-1 text-xs text-white/45">Tap one option to update the form.</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setMobilePicker(null)}
-                className="rounded-full border border-white/10 p-2 text-white/55 transition hover:text-white"
-                aria-label="Close picker"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            <div className="overflow-y-auto p-3">
-              {(mobilePicker === 'event_type' ? eventTypeOptions : groupSizeOptions).map((option) => {
-                const isActive =
-                  mobilePicker === 'event_type' ? option.value === eventType : option.value === groupSize
-
-                return (
-                  <button
-                    key={`${mobilePicker}-${option.value || 'placeholder'}`}
-                    type="button"
-                    onClick={() => {
-                      if (mobilePicker === 'event_type') {
-                        setEventType(option.value)
-                      } else {
-                        setGroupSize(option.value)
-                      }
-                      setMobilePicker(null)
-                    }}
-                    className={`mb-2 flex w-full items-center justify-between rounded-2xl border px-4 py-4 text-left transition ${
-                      isActive
-                        ? 'border-gold-500/40 bg-gold-500/10'
-                        : 'border-white/10 bg-white/[0.03]'
-                    }`}
-                  >
-                    <span className="text-base font-semibold text-white">{option.label}</span>
-                    {isActive ? <Check className="h-5 w-5 shrink-0 text-gold-300" /> : null}
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-        </div>
-      ) : null}
+      <ReviewProofStrip />
     </form>
   )
 }
