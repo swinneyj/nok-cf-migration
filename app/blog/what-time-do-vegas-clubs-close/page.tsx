@@ -50,7 +50,7 @@ export default function WhatTimeDoVegasClubsClose() {
             What Time Do Las Vegas Clubs Close? (Every Major Venue, 2026)
           </h1>
           <div className="flex items-center gap-4 text-white/40 text-sm">
-            <span>April 10, 2026</span><span>·</span><span>5 min read</span><span>·</span><span>By Justin — Nokturnal Lifestyle</span>
+            <span>April 10, 2026</span><span>·</span><span>5 min read</span><span>·</span><span>By Nokturnal Lifestyle Team</span>
           </div>
         </div>
       </section>

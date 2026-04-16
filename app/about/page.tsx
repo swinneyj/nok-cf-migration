@@ -137,7 +137,7 @@ export default function AboutPage() {
             Ready to experience the Nokturnal difference?
           </h2>
           <p className="text-white/50 mb-8">
-            Call Justin directly or fill out our inquiry form. We'll have a custom itinerary ready
+            Call us directly or fill out our inquiry form. We'll have a custom itinerary ready
             for you within the hour.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">

@@ -137,7 +137,7 @@ export default function LoungesPage() {
             <div className="section-eyebrow mb-4">Book VIP Lounge Access</div>
             <h2 className="font-display text-white font-bold text-3xl mb-4">Reserve Your Spot</h2>
             <p className="text-white/60 leading-relaxed mb-6">
-              Tell us your date and group size. Justin will confirm availability and handle your VIP entry coordination.
+              Tell us your date and group size. Our team will confirm availability and handle your VIP entry coordination.
             </p>
             <ul className="check-list">
               <li>Skip the line at every venue</li>

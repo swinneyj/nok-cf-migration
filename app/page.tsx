@@ -131,7 +131,7 @@ const whyUs = [
   {
     icon: Users,
     title: 'Personal VIP Host',
-    desc: 'Justin or one of our team will be with you in person all night. No one-and-done.',
+    desc: 'Our team will be with you in person all night. No one-and-done.',
   },
   {
     icon: Award,
@@ -376,7 +376,7 @@ export default function HomePage() {
               </h2>
               <p className="text-white/60 leading-relaxed mb-8">
                 Most booking sites take your money and disappear. Nokturnal Lifestyle is different —
-                Justin and his team are physically with you all night, making sure everything goes
+                our team is physically with you all night, making sure everything goes
                 perfectly. Over 8 years, 5,000+ events, and 200+ five-star reviews.
               </p>
 
@@ -399,7 +399,7 @@ export default function HomePage() {
                   Meet the Team
                 </Link>
                 <a href="tel:+17029964884" className="btn-ghost flex items-center gap-2">
-                  <Phone size={14} /> Call Justin
+                  <Phone size={14} /> Call Our Team
                 </a>
               </div>
             </div>
@@ -456,7 +456,7 @@ export default function HomePage() {
                 <span className="text-gold-shimmer">No-Obligation Quote</span>
               </h2>
               <p className="text-white/60 leading-relaxed mb-8">
-                Tell us about your group and what you're looking for. Justin will personally reach
+                Tell us about your group and what you're looking for. Our team will personally reach
                 out within 30 minutes to build your perfect Las Vegas experience.
               </p>
 

@@ -199,7 +199,7 @@ export default function BachelorPage() {
               Ready to Plan the Perfect Bachelor Party?
             </h2>
             <p className="text-white/60 mb-6 leading-relaxed">
-              Fill out the form and Justin will reach out within 30 minutes with a custom itinerary
+              Fill out the form and our team will reach out within 30 minutes with a custom itinerary
               and pricing tailored to your group.
             </p>
             <ul className="check-list">

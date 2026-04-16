@@ -30,7 +30,7 @@ export default function NightclubAttireMen() {
             Las Vegas Nightclub Attire for Men 2026: The Complete Guide
           </h1>
           <div className="flex items-center gap-4 text-white/40 text-sm">
-            <span>April 15, 2026</span><span>·</span><span>8 min read</span><span>·</span><span>By Justin — Nokturnal Lifestyle</span>
+            <span>April 15, 2026</span><span>·</span><span>8 min read</span><span>·</span><span>By Nokturnal Lifestyle Team</span>
           </div>
         </div>
       </section>

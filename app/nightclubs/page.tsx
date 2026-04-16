@@ -92,7 +92,7 @@ export default function NightclubsPage() {
           <div>
             <div className="section-eyebrow mb-4">Book a Table</div>
             <h2 className="font-display text-white font-bold text-3xl mb-4">Reserve Your VIP Table</h2>
-            <p className="text-white/60 mb-6 leading-relaxed">Tell us which venue and your group size — Justin confirms availability and pricing within 30 minutes.</p>
+            <p className="text-white/60 mb-6 leading-relaxed">Tell us which venue and your group size — our team confirms availability and pricing within 30 minutes.</p>
             <ul className="check-list">
               <li>No cover charges at any venue</li>
               <li>Skip-the-line VIP entry</li>

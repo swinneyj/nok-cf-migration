@@ -64,7 +64,7 @@ const faqs = [
   },
   {
     q: 'Can I build a fully custom itinerary?',
-    a: 'Absolutely — that\'s our specialty. Call or fill out the form and Justin will build something completely tailored to your group.',
+    a: 'Absolutely — that\'s our specialty. Call or fill out the form and our team will build something completely tailored to your group.',
   },
 ]
 
@@ -79,7 +79,7 @@ export default function ContactPage() {
             Let's Plan Your Vegas Experience
           </h1>
           <p className="text-white/60 text-lg leading-relaxed">
-            Fill out the form below or call us directly. Justin typically responds within 30 minutes
+            Fill out the form below or call us directly. Our team typically responds within 30 minutes
             during business hours.
           </p>
           <ReviewProofStrip centered className="mt-6" />

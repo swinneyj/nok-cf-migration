@@ -97,7 +97,7 @@ export default function PoolPartiesPage() {
           <div>
             <div className="section-eyebrow mb-4">Book Now</div>
             <h2 className="font-display text-white font-bold text-3xl mb-4">Reserve Your Cabana or Daybed</h2>
-            <p className="text-white/60 mb-6 leading-relaxed">Popular dates sell out weeks in advance. Tell us your date, venue preference, and group size — Justin confirms availability within 30 minutes.</p>
+            <p className="text-white/60 mb-6 leading-relaxed">Popular dates sell out weeks in advance. Tell us your date, venue preference, and group size — our team confirms availability within 30 minutes.</p>
             <ul className="check-list">
               <li>Cabanas and daybeds at all 8 dayclubs</li>
               <li>Skip general admission lines</li>

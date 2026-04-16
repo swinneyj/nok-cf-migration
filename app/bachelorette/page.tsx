@@ -158,7 +158,7 @@ export default function BachelorettePage() {
               Plan the Perfect Bachelorette
             </h2>
             <p className="text-white/60 mb-6 leading-relaxed">
-              Tell us about your group and we'll build a custom itinerary. Justin responds within
+              Tell us about your group and we'll build a custom itinerary. Our team responds within
               30 minutes.
             </p>
             <ul className="check-list">
