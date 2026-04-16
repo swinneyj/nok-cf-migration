@@ -11,6 +11,16 @@ export type GeneratedPost = {
 
 export const posts: GeneratedPost[] = [
   {
+    "slug": "male-strip-clubs-las-vegas",
+    "title": "Male Strip Clubs Las Vegas 2026 | Bachelorette Guide to Male Revues",
+    "excerpt": "The complete guide to male strip clubs and revues in Las Vegas — Magic Mike Live, Chippendales, Thunder From Down Under and more. Which is best for your bachelorette party?",
+    "date": "April 17, 2026",
+    "readTime": "8 min read",
+    "category": "Bachelorette Parties",
+    "image": "/blog/male-strip-clubs-las-vegas/cover.jpg",
+    "imageAlt": "Male strip clubs Las Vegas bachelorette party male revue guide"
+  },
+  {
     "slug": "las-vegas-nightclub-attire-men",
     "title": "Las Vegas Nightclub Attire for Men 2026 | What to Wear (Full Guide)",
     "excerpt": "Complete guide to Las Vegas nightclub attire for men — what to wear, what gets you denied, the sneaker question, outfit ideas for every budget, and venue-specific tips.",
