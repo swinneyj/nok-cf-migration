@@ -10,12 +10,12 @@ export const metadata: Metadata = {
 }
 
 const clubs = [
-  { name: 'Crazy Horse 3', desc: 'Las Vegas\'s largest gentleman\'s club. World-class entertainment, multiple rooms, VIP suites.', img: '/images/venues/crazy-horse-3.jpg', alt: 'Crazy Horse 3 Las Vegas VIP strip club' },
-  { name: 'Sapphire', desc: '70,000 sq ft — the world\'s largest gentleman\'s club. Multiple floors and stage shows.', img: '/images/venues/sapphire.jpg', alt: 'Sapphire Las Vegas strip club VIP access' },
-  { name: 'Spearmint Rhino', desc: 'A global brand. Las Vegas location is one of the best in the world with private VIP rooms.', img: '/images/venues/spearmint-rhino.jpg', alt: 'Spearmint Rhino Las Vegas VIP' },
-  { name: 'Hustler Club', desc: 'Larry Flynt\'s flagship. On the Strip, convenient, high energy, celebrity appearances.', img: '/images/venues/hustler-club.jpg', alt: 'Hustler Club Las Vegas strip club VIP' },
-  { name: 'Little Darlings', desc: 'Unique all-nude venue. No alcohol allowed — drinks are BYOB or purchased inside.', img: '/images/venues/little-darlings.jpg', alt: 'Little Darlings Las Vegas strip club' },
-  { name: 'Palomino', desc: 'The only topless club with a full bar located directly on the Las Vegas Strip.', img: '/images/venues/palomino.jpg', alt: 'Palomino Las Vegas strip club VIP access' },
+  { name: 'Crazy Horse 3', desc: 'Las Vegas\'s largest gentleman\'s club. World-class entertainment, multiple rooms, VIP suites.', img: '/images/venues/crazy-horse-3.jpg', alt: 'Crazy Horse 3 Las Vegas VIP strip club', href: '/places/crazy-horse-3' },
+  { name: 'Sapphire', desc: '70,000 sq ft — the world\'s largest gentleman\'s club. Multiple floors and stage shows.', img: '/images/venues/sapphire.jpg', alt: 'Sapphire Las Vegas strip club VIP access', href: '/places/sapphire' },
+  { name: 'Spearmint Rhino', desc: 'A global brand. Las Vegas location is one of the best in the world with private VIP rooms.', img: '/images/venues/spearmint-rhino.jpg', alt: 'Spearmint Rhino Las Vegas VIP', href: '/places/spearmint-rhino' },
+  { name: 'Hustler Club', desc: 'Larry Flynt\'s flagship. On the Strip, convenient, high energy, celebrity appearances.', img: '/images/venues/hustler-club.jpg', alt: 'Hustler Club Las Vegas strip club VIP', href: '/places/hustler-club' },
+  { name: 'Little Darlings', desc: 'Unique all-nude venue. No alcohol allowed — drinks are BYOB or purchased inside.', img: '/images/venues/little-darlings.jpg', alt: 'Little Darlings Las Vegas strip club', href: '/places/little-darlings' },
+  { name: 'Palomino', desc: 'The only topless club with a full bar located directly on the Las Vegas Strip.', img: '/images/venues/palomino.jpg', alt: 'Palomino Las Vegas strip club VIP access', href: '/places/palomino' },
 ]
 
 const perks = [
@@ -68,7 +68,7 @@ export default function StripClubsPage() {
                 <div className="p-5 flex-1 flex flex-col">
                   <div className="text-white font-bold font-display text-lg mb-2">{club.name}</div>
                   <p className="text-white/55 text-sm leading-relaxed mb-5 flex-1">{club.desc}</p>
-                  <Link href="/contact" className="btn-gold text-xs py-2.5 text-center">Book VIP Access</Link>
+                  <Link href={club.href} className="btn-gold text-xs py-2.5 text-center">View Details</Link>
                 </div>
               </div>
             ))}
