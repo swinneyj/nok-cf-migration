@@ -187,12 +187,6 @@ export default function InquiryForm({
                 ))}
               </div>
             )}
-            <select
-              name="event_type"
-              value={eventType}
-              onChange={(e) => setEventType(e.target.value)}
-              className="absolute inset-0 opacity-0 form-input"
-            />
           </div>
         </div>
         {!hideGroupSize && (
@@ -226,12 +220,6 @@ export default function InquiryForm({
                   ))}
                 </div>
               )}
-              <select
-                name="group_size"
-                value={groupSize}
-                onChange={(e) => setGroupSize(e.target.value)}
-                className="absolute inset-0 opacity-0 form-input"
-              />
             </div>
           </div>
         )}
