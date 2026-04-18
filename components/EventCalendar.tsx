@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { ParsedEvent } from "@/lib/calendarParser";
 
@@ -80,6 +80,9 @@ export default function EventCalendar({
   const [maxSearchMonth, setMaxSearchMonth] = useState<Date | null>(null);
   const [monthHasBeenLoaded, setMonthHasBeenLoaded] = useState(false);
 
+  // Track if we've already applied the initial dateParam
+  const dateParamAppliedRef = useRef(false);
+
   const monthKey = useMemo(() => formatMonthKey(visibleMonth), [visibleMonth]);
   const venueLabel = useMemo(() => formatVenueLabel(venueSlug), [venueSlug]);
 
@@ -93,22 +96,24 @@ export default function EventCalendar({
   const currentMonthKey = formatMonthKey(today);
   const canGoToPrevMonth = monthKey > currentMonthKey;
 
+  // Apply URL dateParam only once on initial load, then let manual navigation work freely
   useEffect(() => {
+    if (dateParamAppliedRef.current) {
+      return; // Already applied, don't interfere with manual month navigation
+    }
+
     if (!dateParam || !/^\d{4}-\d{2}-\d{2}$/.test(dateParam)) {
       return;
     }
 
     const [year, month] = dateParam.split("-").map(Number);
     const targetMonth = new Date(year, month - 1, 1);
-    const targetMonthKey = formatMonthKey(targetMonth);
 
-    if (targetMonthKey !== monthKey) {
-      setVisibleMonth(targetMonth);
-    }
-
+    setVisibleMonth(targetMonth);
     setHasSearchedForEvent(true);
     setMaxSearchMonth(null);
-  }, [dateParam, monthKey]);
+    dateParamAppliedRef.current = true;
+  }, [dateParam]); // Only depend on dateParam, NOT monthKey
 
   // Auto-adjust month based on URL parameters (only on initial load)
   useEffect(() => {
@@ -130,20 +135,20 @@ export default function EventCalendar({
           const dateMatches = !dateParam || e.dateKey === dateParam;
           return eventSlug === eventParam && dateMatches;
         });
-        
+
         if (!foundEvent) {
           // Event not found in current month, try next month
           // but only if we haven't reached the max search month
           const nextMonth = new Date(visibleMonth);
           nextMonth.setMonth(nextMonth.getMonth() + 1);
-          
+
           // Set max search as 6 months ahead to prevent infinite searching
           if (!maxSearchMonth) {
             const maxMonth = new Date(visibleMonth);
             maxMonth.setMonth(maxMonth.getMonth() + 6);
             setMaxSearchMonth(maxMonth);
           }
-          
+
           // Only advance if we haven't exceeded the search limit
           if (!maxSearchMonth || nextMonth <= maxSearchMonth) {
             setVisibleMonth(nextMonth);
@@ -178,7 +183,7 @@ export default function EventCalendar({
         if (!cancelled) {
           setEvents(nextEvents);
           setMonthHasBeenLoaded(true);
-          
+
           // Only mark as searched if we actually got results or if no event param
           if (nextEvents.length === 0 && hasSearchedForEvent === false) {
             if (!eventParam) {
