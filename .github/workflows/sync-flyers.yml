@@ -49,7 +49,7 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add public/event-flyers/manifest.json public/event-flyers/**/*.{jpg,png,gif,webp}
+          git add public/event-flyers/
           # Only commit if there are changes
           if git diff --cached --quiet; then
             echo "No changes to commit"
