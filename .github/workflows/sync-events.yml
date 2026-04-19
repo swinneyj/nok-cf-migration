@@ -1,0 +1,22 @@
+name: Weekly Event Sync
+
+on:
+  schedule:
+    # Runs every Monday at 2:00 AM UTC (9 PM PST Sunday)
+    - cron: '0 2 * * 1'
+  workflow_dispatch: # Allow manual triggering from GitHub UI
+
+jobs:
+  sync-events:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger event sync
+        run: |
+          curl -X POST ${{ secrets.SYNC_ENDPOINT }} \
+            -H "Authorization: Bearer ${{ secrets.SYNC_SECRET_KEY }}" \
+            -H "Content-Type: application/json" \
+            -w "\nHTTP Status: %{http_code}\n"
+
+      - name: Notify on failure
+        if: failure()
+        run: echo "Event sync failed"
