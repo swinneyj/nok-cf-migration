@@ -28,6 +28,7 @@ const VENUE_ALIASES = [
   { slug: "omnia-dayclub", aliases: ["OMNIA Dayclub", "Omnia Dayclub", "Omnia Dayclub at Caesars Palace"] },
   { slug: "liv-nightclub", aliases: ["LIV Nightclub", "LIV"] },
   { slug: "drais-nightclub", aliases: ["Drai's Nightclub", "Drai's Nightclub: South Strip", "Drai's After Hours: North Strip", "Drai's After Hours"] },
+  { slug: "stadium-swim", aliases: ["Stadium Swim", "Stadium Swim at Circa", "Circa Resort"] },
 ];
 
 function slugify(str) {
