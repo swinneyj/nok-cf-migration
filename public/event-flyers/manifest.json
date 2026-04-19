@@ -34,6 +34,14 @@
   {
     "venueSlug": "ayu-dayclub",
     "venueName": "AYU Dayclub",
+    "eventName": "Ayu Afters - Ownboss",
+    "date": "2026-05-02",
+    "imagePath": "/event-flyers/ayu-dayclub/2026-05-02_ayu-afters-ownboss.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38167248-ayu-afters-ownboss-at-ayu-dayclub"
+  },
+  {
+    "venueSlug": "ayu-dayclub",
+    "venueName": "AYU Dayclub",
     "eventName": "Ayu Afters - Special Guest",
     "date": "2026-05-02",
     "imagePath": "/event-flyers/ayu-dayclub/2026-05-02_ayu-afters-special-guest.jpeg",
@@ -106,6 +114,14 @@
   {
     "venueSlug": "ayu-dayclub",
     "venueName": "AYU Dayclub",
+    "eventName": "Interstellar Presents: Mathame W/ Cristoph",
+    "date": "2026-05-15",
+    "imagePath": "/event-flyers/ayu-dayclub/2026-05-15_interstellar-presents-mathame-w-cristoph.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38145338-interstellar-presents-mathame-w-cristoph-at-ayu-dayclub"
+  },
+  {
+    "venueSlug": "ayu-dayclub",
+    "venueName": "AYU Dayclub",
     "eventName": "Noizu & Bolo",
     "date": "2026-05-15",
     "imagePath": "/event-flyers/ayu-dayclub/2026-05-15_noizu-bolo.jpeg",
@@ -118,6 +134,14 @@
     "date": "2026-05-16",
     "imagePath": "/event-flyers/ayu-dayclub/2026-05-16_interstellar-presents-mathame.jpeg",
     "sourceUrl": "https://app.discotech.me/events/38145338-interstellar-presents-mathame-at-ayu-dayclub"
+  },
+  {
+    "venueSlug": "ayu-dayclub",
+    "venueName": "AYU Dayclub",
+    "eventName": "Interstellar Presents: Mathame W/ Cristoph",
+    "date": "2026-05-16",
+    "imagePath": "/event-flyers/ayu-dayclub/2026-05-16_interstellar-presents-mathame-w-cristoph.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38145338-interstellar-presents-mathame-w-cristoph-at-ayu-dayclub"
   },
   {
     "venueSlug": "ayu-dayclub",
@@ -1294,6 +1318,78 @@
     "date": "2026-06-30",
     "imagePath": "/event-flyers/drais-nightclub/2026-06-30_after-hours.jpeg",
     "sourceUrl": "https://app.discotech.me/events/38132351-after-hours-at-drais-after-hours"
+  },
+  {
+    "venueSlug": "ebc-at-night",
+    "venueName": "EBC at Night",
+    "eventName": "Late Night Afters - 2 AM Start",
+    "date": "2026-04-21",
+    "imagePath": "/event-flyers/ebc-at-night/2026-04-21_late-night-afters-2-am-start.png",
+    "sourceUrl": "https://app.discotech.me/events/38170049-late-night-afters-2-am-start-at-ebc-at-night"
+  },
+  {
+    "venueSlug": "ebc-at-night",
+    "venueName": "EBC at Night",
+    "eventName": "Late Night Afters - 2 AM Start",
+    "date": "2026-04-22",
+    "imagePath": "/event-flyers/ebc-at-night/2026-04-22_late-night-afters-2-am-start.png",
+    "sourceUrl": "https://app.discotech.me/events/38170049-late-night-afters-2-am-start-at-ebc-at-night"
+  },
+  {
+    "venueSlug": "ebc-at-night",
+    "venueName": "EBC at Night",
+    "eventName": "Late Night Afters - 2 AM Start",
+    "date": "2026-04-23",
+    "imagePath": "/event-flyers/ebc-at-night/2026-04-23_late-night-afters-2-am-start.png",
+    "sourceUrl": "https://app.discotech.me/events/38170049-late-night-afters-2-am-start-at-ebc-at-night"
+  },
+  {
+    "venueSlug": "ebc-at-night",
+    "venueName": "EBC at Night",
+    "eventName": "Late Night Afters - 2 AM Start",
+    "date": "2026-04-24",
+    "imagePath": "/event-flyers/ebc-at-night/2026-04-24_late-night-afters-2-am-start.png",
+    "sourceUrl": "https://app.discotech.me/events/38170049-late-night-afters-2-am-start-at-ebc-at-night"
+  },
+  {
+    "venueSlug": "ebc-at-night",
+    "venueName": "EBC at Night",
+    "eventName": "Late Night Afters - 2 AM Start",
+    "date": "2026-04-25",
+    "imagePath": "/event-flyers/ebc-at-night/2026-04-25_late-night-afters-2-am-start.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38170050-late-night-afters-2-am-start-at-ebc-at-night"
+  },
+  {
+    "venueSlug": "ebc-at-night",
+    "venueName": "EBC at Night",
+    "eventName": "7 Summers",
+    "date": "2026-05-02",
+    "imagePath": "/event-flyers/ebc-at-night/2026-05-02_7-summers.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38172275-7-summers-at-ebc-at-night"
+  },
+  {
+    "venueSlug": "ebc-at-night",
+    "venueName": "EBC at Night",
+    "eventName": "Bunt.",
+    "date": "2026-05-03",
+    "imagePath": "/event-flyers/ebc-at-night/2026-05-03_bunt.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38110582-bunt-at-ebc-at-night"
+  },
+  {
+    "venueSlug": "ebc-at-night",
+    "venueName": "EBC at Night",
+    "eventName": "Bunt.",
+    "date": "2026-05-04",
+    "imagePath": "/event-flyers/ebc-at-night/2026-05-04_bunt.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38110582-bunt-at-ebc-at-night"
+  },
+  {
+    "venueSlug": "ebc-at-night",
+    "venueName": "EBC at Night",
+    "eventName": "Bunt.",
+    "date": "2026-05-05",
+    "imagePath": "/event-flyers/ebc-at-night/2026-05-05_bunt.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38110582-bunt-at-ebc-at-night"
   },
   {
     "venueSlug": "ebc-at-night",
@@ -5050,6 +5146,14 @@
   {
     "venueSlug": "liquid-pool-lounge",
     "venueName": "Liquid: South Strip",
+    "eventName": "DJ Buza - The Wednesday Dip - Memorial Day Weekend",
+    "date": "2026-05-17",
+    "imagePath": "/event-flyers/liquid-pool-lounge/2026-05-17_dj-buza-the-wednesday-dip-memorial-day-weekend.webp",
+    "sourceUrl": "https://app.discotech.me/events/38133869-dj-buza-the-wednesday-dip-memorial-day-weekend-at-liquid-pool"
+  },
+  {
+    "venueSlug": "liquid-pool-lounge",
+    "venueName": "Liquid: South Strip",
     "eventName": "Eric Remy - EDC Week",
     "date": "2026-05-17",
     "imagePath": "/event-flyers/liquid-pool-lounge/2026-05-17_eric-remy-edc-week.webp",
@@ -5066,6 +5170,14 @@
   {
     "venueSlug": "liquid-pool-lounge",
     "venueName": "Liquid: South Strip",
+    "eventName": "DJ Buza - The Wednesday Dip - Memorial Day Weekend",
+    "date": "2026-05-18",
+    "imagePath": "/event-flyers/liquid-pool-lounge/2026-05-18_dj-buza-the-wednesday-dip-memorial-day-weekend.webp",
+    "sourceUrl": "https://app.discotech.me/events/38133869-dj-buza-the-wednesday-dip-memorial-day-weekend-at-liquid-pool"
+  },
+  {
+    "venueSlug": "liquid-pool-lounge",
+    "venueName": "Liquid: South Strip",
     "eventName": "DJ Shr3d - Memorial Day Weekend",
     "date": "2026-05-18",
     "imagePath": "/event-flyers/liquid-pool-lounge/2026-05-18_dj-shr3d-memorial-day-weekend.webp",
@@ -5078,6 +5190,14 @@
     "date": "2026-05-19",
     "imagePath": "/event-flyers/liquid-pool-lounge/2026-05-19_dj-buza-the-wednesday-dip.webp",
     "sourceUrl": "https://app.discotech.me/events/38133869-dj-buza-the-wednesday-dip-at-liquid-pool"
+  },
+  {
+    "venueSlug": "liquid-pool-lounge",
+    "venueName": "Liquid: South Strip",
+    "eventName": "DJ Buza - The Wednesday Dip - Memorial Day Weekend",
+    "date": "2026-05-19",
+    "imagePath": "/event-flyers/liquid-pool-lounge/2026-05-19_dj-buza-the-wednesday-dip-memorial-day-weekend.webp",
+    "sourceUrl": "https://app.discotech.me/events/38133869-dj-buza-the-wednesday-dip-memorial-day-weekend-at-liquid-pool"
   },
   {
     "venueSlug": "liquid-pool-lounge",
@@ -6530,6 +6650,22 @@
   {
     "venueSlug": "liv-beach-club",
     "venueName": "LIV Beach",
+    "eventName": "Sunday Circuit - Irv G",
+    "date": "2026-04-19",
+    "imagePath": "/event-flyers/liv-beach-club/2026-04-19_sunday-circuit-irv-g.jpg",
+    "sourceUrl": "https://app.discotech.me/events/38118880-sunday-circuit-irv-g-at-liv-beach"
+  },
+  {
+    "venueSlug": "liv-beach-club",
+    "venueName": "LIV Beach",
+    "eventName": "Nathanya",
+    "date": "2026-04-22",
+    "imagePath": "/event-flyers/liv-beach-club/2026-04-22_nathanya.jpg",
+    "sourceUrl": "https://app.discotech.me/events/38118881-nathanya-at-liv-beach"
+  },
+  {
+    "venueSlug": "liv-beach-club",
+    "venueName": "LIV Beach",
     "eventName": "Special Guest",
     "date": "2026-04-22",
     "imagePath": "/event-flyers/liv-beach-club/2026-04-22_special-guest.png",
@@ -6538,10 +6674,26 @@
   {
     "venueSlug": "liv-beach-club",
     "venueName": "LIV Beach",
+    "eventName": "Nathanya",
+    "date": "2026-04-23",
+    "imagePath": "/event-flyers/liv-beach-club/2026-04-23_nathanya.jpg",
+    "sourceUrl": "https://app.discotech.me/events/38118881-nathanya-at-liv-beach"
+  },
+  {
+    "venueSlug": "liv-beach-club",
+    "venueName": "LIV Beach",
     "eventName": "Special Guest",
     "date": "2026-04-23",
     "imagePath": "/event-flyers/liv-beach-club/2026-04-23_special-guest.png",
     "sourceUrl": "https://app.discotech.me/events/38118881-special-guest-at-liv-beach"
+  },
+  {
+    "venueSlug": "liv-beach-club",
+    "venueName": "LIV Beach",
+    "eventName": "Nathanya",
+    "date": "2026-04-24",
+    "imagePath": "/event-flyers/liv-beach-club/2026-04-24_nathanya.jpg",
+    "sourceUrl": "https://app.discotech.me/events/38118881-nathanya-at-liv-beach"
   },
   {
     "venueSlug": "liv-beach-club",
@@ -6614,6 +6766,14 @@
     "date": "2026-05-02",
     "imagePath": "/event-flyers/liv-beach-club/2026-05-02_special-guest.png",
     "sourceUrl": "https://app.discotech.me/events/38118884-special-guest-at-liv-beach"
+  },
+  {
+    "venueSlug": "liv-beach-club",
+    "venueName": "LIV Beach",
+    "eventName": "Reggaeton Landia - 3BallMTY",
+    "date": "2026-05-03",
+    "imagePath": "/event-flyers/liv-beach-club/2026-05-03_reggaeton-landia-3ballmty.jpg",
+    "sourceUrl": "https://app.discotech.me/events/38118884-reggaeton-landia-3ballmty-at-liv-beach"
   },
   {
     "venueSlug": "liv-beach-club",
@@ -7570,6 +7730,14 @@
   {
     "venueSlug": "liv-nightclub",
     "venueName": "LIV",
+    "eventName": "Official BTC 2026 Kickoff Party w DJ Precise",
+    "date": "2026-04-26",
+    "imagePath": "/event-flyers/liv-nightclub/2026-04-26_official-btc-2026-kickoff-party-w-dj-precise.png",
+    "sourceUrl": "https://app.discotech.me/events/38180272-official-btc-2026-kickoff-party-w-dj-precise-at-liv"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
     "eventName": "Voss Events: Drag BrunchHard Rock",
     "date": "2026-04-26",
     "imagePath": "/event-flyers/liv-nightclub/2026-04-26_voss-events-drag-brunchhard-rock.png",
@@ -7590,6 +7758,14 @@
     "date": "2026-04-27",
     "imagePath": "/event-flyers/liv-nightclub/2026-04-27_ikons-of-rockhard-rock.jpg",
     "sourceUrl": "https://app.discotech.me/events/38141185-ikons-of-rock-at-hard-rock-live"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
+    "eventName": "Official BTC 2026 Kickoff Party w DJ Precise",
+    "date": "2026-04-27",
+    "imagePath": "/event-flyers/liv-nightclub/2026-04-27_official-btc-2026-kickoff-party-w-dj-precise.png",
+    "sourceUrl": "https://app.discotech.me/events/38180272-official-btc-2026-kickoff-party-w-dj-precise-at-liv"
   },
   {
     "venueSlug": "liv-nightclub",
@@ -8082,6 +8258,14 @@
   {
     "venueSlug": "liv-nightclub",
     "venueName": "LIV",
+    "eventName": "Josh Baker B2B Kettama B2B Prospa w Cole Knight - EDC Week",
+    "date": "2026-05-10",
+    "imagePath": "/event-flyers/liv-nightclub/2026-05-10_josh-baker-b2b-kettama-b2b-prospa-w-cole-knight-edc-week.jpg",
+    "sourceUrl": "https://app.discotech.me/events/38180273-josh-baker-b2b-kettama-b2b-prospa-w-cole-knight-edc-week-at-liv"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
     "eventName": "No Doubt",
     "date": "2026-05-10",
     "imagePath": "/event-flyers/liv-nightclub/2026-05-10_no-doubt.jpg",
@@ -8138,6 +8322,14 @@
   {
     "venueSlug": "liv-nightclub",
     "venueName": "LIV",
+    "eventName": "Josh Baker B2B Kettama B2B Prospa w Cole Knight - EDC Week",
+    "date": "2026-05-11",
+    "imagePath": "/event-flyers/liv-nightclub/2026-05-11_josh-baker-b2b-kettama-b2b-prospa-w-cole-knight-edc-week.jpg",
+    "sourceUrl": "https://app.discotech.me/events/38180273-josh-baker-b2b-kettama-b2b-prospa-w-cole-knight-edc-week-at-liv"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
     "eventName": "No Doubt",
     "date": "2026-05-11",
     "imagePath": "/event-flyers/liv-nightclub/2026-05-11_no-doubt.jpg",
@@ -8186,6 +8378,14 @@
   {
     "venueSlug": "liv-nightclub",
     "venueName": "LIV",
+    "eventName": "Josh Baker B2B Kettama B2B Prospa w Cole Knight - EDC Week",
+    "date": "2026-05-12",
+    "imagePath": "/event-flyers/liv-nightclub/2026-05-12_josh-baker-b2b-kettama-b2b-prospa-w-cole-knight-edc-week.jpg",
+    "sourceUrl": "https://app.discotech.me/events/38180273-josh-baker-b2b-kettama-b2b-prospa-w-cole-knight-edc-week-at-liv"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
     "eventName": "No Doubt",
     "date": "2026-05-12",
     "imagePath": "/event-flyers/liv-nightclub/2026-05-12_no-doubt.jpg",
@@ -8228,7 +8428,7 @@
     "venueName": "LIV",
     "eventName": "Dom Dolla - EDC Week",
     "date": "2026-05-13",
-    "imagePath": "/event-flyers/liv-nightclub/2026-05-13_dom-dolla-edc-week.jpg",
+    "imagePath": "/event-flyers/liv-nightclub/2026-05-13_dom-dolla-edc-week.jpeg",
     "sourceUrl": "https://app.discotech.me/events/38112550-dom-dolla-edc-week-at-liv"
   },
   {
@@ -8238,6 +8438,14 @@
     "date": "2026-05-13",
     "imagePath": "/event-flyers/liv-nightclub/2026-05-13_ikons-of-rockhard-rock.jpg",
     "sourceUrl": "https://app.discotech.me/events/38061453-ikons-of-rock-at-hard-rock-live"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
+    "eventName": "Josh Baker B2B Kettama B2B Prospa w Cole Knight - EDC Week",
+    "date": "2026-05-13",
+    "imagePath": "/event-flyers/liv-nightclub/2026-05-13_josh-baker-b2b-kettama-b2b-prospa-w-cole-knight-edc-week.jpg",
+    "sourceUrl": "https://app.discotech.me/events/38180273-josh-baker-b2b-kettama-b2b-prospa-w-cole-knight-edc-week-at-liv"
   },
   {
     "venueSlug": "liv-nightclub",
@@ -8292,7 +8500,7 @@
     "venueName": "LIV",
     "eventName": "Dom Dolla - EDC Week",
     "date": "2026-05-14",
-    "imagePath": "/event-flyers/liv-nightclub/2026-05-14_dom-dolla-edc-week.jpg",
+    "imagePath": "/event-flyers/liv-nightclub/2026-05-14_dom-dolla-edc-week.jpeg",
     "sourceUrl": "https://app.discotech.me/events/38112550-dom-dolla-edc-week-at-liv"
   },
   {
@@ -10938,6 +11146,14 @@
   {
     "venueSlug": "marquee-nightclub",
     "venueName": "Marquee Nightclub: North Strip",
+    "eventName": "Luis Torres",
+    "date": "2026-04-24",
+    "imagePath": "/event-flyers/marquee-nightclub/2026-04-24_luis-torres.webp",
+    "sourceUrl": "https://app.discotech.me/events/38100347-luis-torres-at-marquee-nightclub"
+  },
+  {
+    "venueSlug": "marquee-nightclub",
+    "venueName": "Marquee Nightclub: North Strip",
     "eventName": "Jackie Hollander",
     "date": "2026-04-25",
     "imagePath": "/event-flyers/marquee-nightclub/2026-04-25_jackie-hollander.webp",
@@ -12490,6 +12706,14 @@
   {
     "venueSlug": "omnia-nightclub",
     "venueName": "Omnia: South Strip",
+    "eventName": "Paloma Mami - Cinco De Mayo Weekend",
+    "date": "2026-05-03",
+    "imagePath": "/event-flyers/omnia-nightclub/2026-05-03_paloma-mami-cinco-de-mayo-weekend.webp",
+    "sourceUrl": "https://app.discotech.me/events/38098055-paloma-mami-cinco-de-mayo-weekend-at-omnia"
+  },
+  {
+    "venueSlug": "omnia-nightclub",
+    "venueName": "Omnia: South Strip",
     "eventName": "Yo Yolie - Cinco De Mayo Weekend",
     "date": "2026-05-03",
     "imagePath": "/event-flyers/omnia-nightclub/2026-05-03_yo-yolie-cinco-de-mayo-weekend.webp",
@@ -13954,10 +14178,26 @@
   {
     "venueSlug": "palm-tree-beach-club",
     "venueName": "Palm Tree Beach Club",
+    "eventName": "Jonas Blue w/ me n ü - Anniversary Weekend",
+    "date": "2026-04-25",
+    "imagePath": "/event-flyers/palm-tree-beach-club/2026-04-25_jonas-blue-w-me-n-u-anniversary-weekend.webp",
+    "sourceUrl": "https://app.discotech.me/events/38129215-jonas-blue-with-me-n-u-anniversary-weekend-at-palm-tree-beach-club"
+  },
+  {
+    "venueSlug": "palm-tree-beach-club",
+    "venueName": "Palm Tree Beach Club",
     "eventName": "Kygo w/ Frank Walker",
     "date": "2026-04-25",
     "imagePath": "/event-flyers/palm-tree-beach-club/2026-04-25_kygo-w-frank-walker.webp",
     "sourceUrl": "https://app.discotech.me/events/38125146-kygo-with-frank-walker-at-palm-tree-beach-club"
+  },
+  {
+    "venueSlug": "palm-tree-beach-club",
+    "venueName": "Palm Tree Beach Club",
+    "eventName": "Kygo w/ Frank Walker - Anniversary Weekend",
+    "date": "2026-04-25",
+    "imagePath": "/event-flyers/palm-tree-beach-club/2026-04-25_kygo-w-frank-walker-anniversary-weekend.webp",
+    "sourceUrl": "https://app.discotech.me/events/38125146-kygo-with-frank-walker-anniversary-weekend-at-palm-tree-beach-club"
   },
   {
     "venueSlug": "palm-tree-beach-club",
@@ -13982,6 +14222,14 @@
     "date": "2026-04-26",
     "imagePath": "/event-flyers/palm-tree-beach-club/2026-04-26_jonas-blue-w-me-n-u.webp",
     "sourceUrl": "https://app.discotech.me/events/38129215-jonas-blue-with-me-n-u-at-palm-tree-beach-club"
+  },
+  {
+    "venueSlug": "palm-tree-beach-club",
+    "venueName": "Palm Tree Beach Club",
+    "eventName": "Jonas Blue w/ me n ü - Anniversary Weekend",
+    "date": "2026-04-26",
+    "imagePath": "/event-flyers/palm-tree-beach-club/2026-04-26_jonas-blue-w-me-n-u-anniversary-weekend.webp",
+    "sourceUrl": "https://app.discotech.me/events/38129215-jonas-blue-with-me-n-u-anniversary-weekend-at-palm-tree-beach-club"
   },
   {
     "venueSlug": "palm-tree-beach-club",
@@ -15008,6 +15256,438 @@
     "sourceUrl": "https://app.discotech.me/events/38129254-mike-attack-fourth-of-july-weekend-at-palm-tree-beach-club"
   },
   {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "CircaMania",
+    "date": "2026-04-19",
+    "imagePath": "/event-flyers/stadium-swim/2026-04-19_circamania.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38083176-circamania-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekdays at Circa",
+    "date": "2026-04-19",
+    "imagePath": "/event-flyers/stadium-swim/2026-04-19_weekdays-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083177-weekdays-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Pro Football Draft Watch Party",
+    "date": "2026-04-20",
+    "imagePath": "/event-flyers/stadium-swim/2026-04-20_pro-football-draft-watch-party.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38083180-pro-football-draft-watch-party-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekdays at Circa",
+    "date": "2026-04-20",
+    "imagePath": "/event-flyers/stadium-swim/2026-04-20_weekdays-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083177-weekdays-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Pro Football Draft Watch Party",
+    "date": "2026-04-21",
+    "imagePath": "/event-flyers/stadium-swim/2026-04-21_pro-football-draft-watch-party.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38083180-pro-football-draft-watch-party-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekdays at Circa",
+    "date": "2026-04-21",
+    "imagePath": "/event-flyers/stadium-swim/2026-04-21_weekdays-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083178-weekdays-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Pro Football Draft Watch Party",
+    "date": "2026-04-22",
+    "imagePath": "/event-flyers/stadium-swim/2026-04-22_pro-football-draft-watch-party.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38083180-pro-football-draft-watch-party-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekdays at Circa",
+    "date": "2026-04-22",
+    "imagePath": "/event-flyers/stadium-swim/2026-04-22_weekdays-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083179-weekdays-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Pro Football Draft Watch Party",
+    "date": "2026-04-23",
+    "imagePath": "/event-flyers/stadium-swim/2026-04-23_pro-football-draft-watch-party.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38083180-pro-football-draft-watch-party-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekdays at Circa",
+    "date": "2026-04-23",
+    "imagePath": "/event-flyers/stadium-swim/2026-04-23_weekdays-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083181-weekdays-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekdays at Circa",
+    "date": "2026-04-24",
+    "imagePath": "/event-flyers/stadium-swim/2026-04-24_weekdays-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083181-weekdays-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekends at Circa",
+    "date": "2026-04-24",
+    "imagePath": "/event-flyers/stadium-swim/2026-04-24_weekends-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083182-weekends-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekends at Circa",
+    "date": "2026-04-25",
+    "imagePath": "/event-flyers/stadium-swim/2026-04-25_weekends-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083182-weekends-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Champions League Semi-Finals at",
+    "date": "2026-04-26",
+    "imagePath": "/event-flyers/stadium-swim/2026-04-26_champions-league-semi-finals-at.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38083185-champions-league-semi-finals-at-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekdays at Circa",
+    "date": "2026-04-26",
+    "imagePath": "/event-flyers/stadium-swim/2026-04-26_weekdays-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083184-weekdays-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekends at Circa",
+    "date": "2026-04-26",
+    "imagePath": "/event-flyers/stadium-swim/2026-04-26_weekends-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083183-weekends-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Champions League Semi-Finals at",
+    "date": "2026-04-27",
+    "imagePath": "/event-flyers/stadium-swim/2026-04-27_champions-league-semi-finals-at.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38083185-champions-league-semi-finals-at-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekdays at Circa",
+    "date": "2026-04-27",
+    "imagePath": "/event-flyers/stadium-swim/2026-04-27_weekdays-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083184-weekdays-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Champions League Semi-Finals at",
+    "date": "2026-04-28",
+    "imagePath": "/event-flyers/stadium-swim/2026-04-28_champions-league-semi-finals-at.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38083185-champions-league-semi-finals-at-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekdays at Circa",
+    "date": "2026-04-28",
+    "imagePath": "/event-flyers/stadium-swim/2026-04-28_weekdays-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083186-weekdays-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekdays at Circa",
+    "date": "2026-04-29",
+    "imagePath": "/event-flyers/stadium-swim/2026-04-29_weekdays-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083186-weekdays-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekdays at Circa",
+    "date": "2026-04-30",
+    "imagePath": "/event-flyers/stadium-swim/2026-04-30_weekdays-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083187-weekdays-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Derby Day",
+    "date": "2026-05-01",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-01_derby-day.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38083189-derby-day-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekdays at Circa",
+    "date": "2026-05-01",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-01_weekdays-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083188-weekdays-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Derby Day",
+    "date": "2026-05-02",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-02_derby-day.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38083189-derby-day-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekends at Circa",
+    "date": "2026-05-02",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-02_weekends-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083190-weekends-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Champions League Semi-Finals at",
+    "date": "2026-05-03",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-03_champions-league-semi-finals-at.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38083192-champions-league-semi-finals-at-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekdays at Circa",
+    "date": "2026-05-03",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-03_weekdays-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083191-weekdays-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekends at Circa",
+    "date": "2026-05-03",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-03_weekends-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083190-weekends-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Champions League Semi-Finals at",
+    "date": "2026-05-04",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-04_champions-league-semi-finals-at.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38083192-champions-league-semi-finals-at-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekdays at Circa",
+    "date": "2026-05-04",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-04_weekdays-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083191-weekdays-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Champions League Semi-Finals at",
+    "date": "2026-05-05",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-05_champions-league-semi-finals-at.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38083192-champions-league-semi-finals-at-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekdays at Circa",
+    "date": "2026-05-05",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-05_weekdays-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083193-weekdays-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekdays at Circa",
+    "date": "2026-05-06",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-06_weekdays-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083193-weekdays-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekdays at Circa",
+    "date": "2026-05-07",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-07_weekdays-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083194-weekdays-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "UFC 328 at Circa Fight House",
+    "date": "2026-05-08",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-08_ufc-328-at-circa-fight-house.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38083196-ufc-328-at-circa-fight-house-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekdays at Circa",
+    "date": "2026-05-08",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-08_weekdays-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083195-weekdays-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "UFC 328 at Circa Fight House",
+    "date": "2026-05-09",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-09_ufc-328-at-circa-fight-house.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38083196-ufc-328-at-circa-fight-house-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekends at Circa",
+    "date": "2026-05-09",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-09_weekends-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083197-weekends-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekdays at Circa",
+    "date": "2026-05-10",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-10_weekdays-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083198-weekdays-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekends at Circa",
+    "date": "2026-05-10",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-10_weekends-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083197-weekends-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Viewing Par-Tee",
+    "date": "2026-05-11",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-11_viewing-par-tee.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38083201-viewing-par-tee-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekdays at Circa",
+    "date": "2026-05-11",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-11_weekdays-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083198-weekdays-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Viewing Par-Tee",
+    "date": "2026-05-12",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-12_viewing-par-tee.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38083201-viewing-par-tee-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekdays at Circa",
+    "date": "2026-05-12",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-12_weekdays-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083199-weekdays-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Viewing Par-Tee",
+    "date": "2026-05-13",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-13_viewing-par-tee.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38083201-viewing-par-tee-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekdays at Circa",
+    "date": "2026-05-13",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-13_weekdays-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083200-weekdays-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Viewing Par-Tee",
+    "date": "2026-05-14",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-14_viewing-par-tee.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38083201-viewing-par-tee-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Viewing Par-Tee",
+    "date": "2026-05-15",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-15_viewing-par-tee.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38083202-viewing-par-tee-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Viewing Par-Tee",
+    "date": "2026-05-16",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-16_viewing-par-tee.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38083203-viewing-par-tee-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Viewing Par-Tee",
+    "date": "2026-05-17",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-17_viewing-par-tee.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38083204-viewing-par-tee-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekdays at Circa",
+    "date": "2026-05-17",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-17_weekdays-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083205-weekdays-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekdays at Circa",
+    "date": "2026-05-18",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-18_weekdays-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083205-weekdays-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekdays at Circa",
+    "date": "2026-05-19",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-19_weekdays-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083206-weekdays-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
     "venueSlug": "tao-beach",
     "venueName": "Tao Beach: North Strip",
     "eventName": "Party Pupils Presents Yacht House",
@@ -16002,6 +16682,14 @@
   {
     "venueSlug": "tao-nightclub",
     "venueName": "Tao: North Strip",
+    "eventName": "Jerzy",
+    "date": "2026-05-08",
+    "imagePath": "/event-flyers/tao-nightclub/2026-05-08_jerzy.webp",
+    "sourceUrl": "https://app.discotech.me/events/38157773-jerzy-at-tao"
+  },
+  {
+    "venueSlug": "tao-nightclub",
+    "venueName": "Tao: North Strip",
     "eventName": "DJ Precise",
     "date": "2026-05-09",
     "imagePath": "/event-flyers/tao-nightclub/2026-05-09_dj-precise.webp",
@@ -16740,7 +17428,7 @@
     "venueName": "XS Nightclub: North Strip",
     "eventName": "Loud Luxury",
     "date": "2026-04-24",
-    "imagePath": "/event-flyers/xs-nightclub/2026-04-24_loud-luxury.jpg",
+    "imagePath": "/event-flyers/xs-nightclub/2026-04-24_loud-luxury.png",
     "sourceUrl": "https://app.discotech.me/events/38089971-loud-luxury-at-xs"
   },
   {
@@ -17538,10 +18226,26 @@
   {
     "venueSlug": "zouk-nightclub",
     "venueName": "Zouk: North Strip",
+    "eventName": "Duke Dumont",
+    "date": "2026-05-01",
+    "imagePath": "/event-flyers/zouk-nightclub/2026-05-01_duke-dumont.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38166782-duke-dumont-at-zouk"
+  },
+  {
+    "venueSlug": "zouk-nightclub",
+    "venueName": "Zouk: North Strip",
     "eventName": "Special Guest",
     "date": "2026-05-01",
     "imagePath": "/event-flyers/zouk-nightclub/2026-05-01_special-guest.jpeg",
     "sourceUrl": "https://app.discotech.me/events/38166782-special-guest-at-zouk"
+  },
+  {
+    "venueSlug": "zouk-nightclub",
+    "venueName": "Zouk: North Strip",
+    "eventName": "Arley Perez",
+    "date": "2026-05-02",
+    "imagePath": "/event-flyers/zouk-nightclub/2026-05-02_arley-perez.jpeg",
+    "sourceUrl": "https://app.discotech.me/events/38166783-arley-perez-at-zouk"
   },
   {
     "venueSlug": "zouk-nightclub",
