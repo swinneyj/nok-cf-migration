@@ -181,11 +181,51 @@ async function scrapeDay(page, date) {
 }
 
 async function main() {
-  const start = process.argv[2];
-  const end = process.argv[3] || start;
+  let start = process.argv[2];
+  let end = process.argv[3];
 
+  // If no arguments provided, calculate intelligently from manifest
+  if (!start) {
+    await ensureDir(OUT_DIR);
+    const manifestPath = path.join(OUT_DIR, "manifest.json");
+    const existingManifest = await loadExistingManifest(manifestPath);
+
+    if (existingManifest.length > 0) {
+      // Find the latest date in the manifest
+      const dates = existingManifest.map((item) => new Date(item.date));
+      const latestDate = new Date(Math.max(...dates.map((d) => d.getTime())));
+
+      // Start from previous day to catch updates
+      const prevDay = new Date(latestDate);
+      prevDay.setDate(prevDay.getDate() - 1);
+      start = prevDay.toISOString().slice(0, 10);
+
+      console.log(
+        `📅 Found manifest with ${existingManifest.length} entries. Latest date: ${latestDate.toISOString().slice(0, 10)}`
+      );
+      console.log(`📅 Starting sync from previous day: ${start}`);
+    } else {
+      // If manifest is empty, go back 6 months
+      const sixMonthsAgo = new Date();
+      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+      start = sixMonthsAgo.toISOString().slice(0, 10);
+
+      console.log(`📅 Empty manifest. Starting from 6 months ago: ${start}`);
+    }
+
+    // Always sync 6 months forward
+    const sixMonthsForward = new Date();
+    sixMonthsForward.setMonth(sixMonthsForward.getMonth() + 6);
+    end = sixMonthsForward.toISOString().slice(0, 10);
+
+    console.log(`📅 Syncing 6 months forward to: ${end}`);
+  } else if (!end) {
+    end = start;
+  }
+
+  // Validate provided arguments
   if (!start || !/^\d{4}-\d{2}-\d{2}$/.test(start)) {
-    console.error("Usage: node scripts/sync-discotech-flyers.mjs 2026-04-18");
+    console.error("Usage: node scripts/sync-discotech-flyers.mjs");
     console.error("   or: node scripts/sync-discotech-flyers.mjs 2026-04-18 2026-04-30");
     process.exit(1);
   }
