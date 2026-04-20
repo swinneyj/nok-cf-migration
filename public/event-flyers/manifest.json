@@ -5218,6 +5218,14 @@
   {
     "venueSlug": "liquid-pool-lounge",
     "venueName": "Liquid: South Strip",
+    "eventName": "DJ Buza - The Wednesday Dip - Memorial Day Weekend",
+    "date": "2026-05-20",
+    "imagePath": "/event-flyers/liquid-pool-lounge/2026-05-20_dj-buza-the-wednesday-dip-memorial-day-weekend.webp",
+    "sourceUrl": "https://app.discotech.me/events/38133869-dj-buza-the-wednesday-dip-memorial-day-weekend-at-liquid-pool"
+  },
+  {
+    "venueSlug": "liquid-pool-lounge",
+    "venueName": "Liquid: South Strip",
     "eventName": "DJ Que - Memorial Day Weekend",
     "date": "2026-05-20",
     "imagePath": "/event-flyers/liquid-pool-lounge/2026-05-20_dj-que-memorial-day-weekend.webp",
@@ -6902,6 +6910,14 @@
     "date": "2026-05-17",
     "imagePath": "/event-flyers/liv-beach-club/2026-05-17_john-summit-edc-week.jpg",
     "sourceUrl": "https://app.discotech.me/events/38118888-john-summit-edc-week-at-liv-beach"
+  },
+  {
+    "venueSlug": "liv-beach-club",
+    "venueName": "LIV Beach",
+    "eventName": "Disco Lines",
+    "date": "2026-05-20",
+    "imagePath": "/event-flyers/liv-beach-club/2026-05-20_disco-lines.jpg",
+    "sourceUrl": "https://app.discotech.me/events/38118889-disco-lines-at-liv-beach"
   },
   {
     "venueSlug": "liv-beach-club",
@@ -15686,6 +15702,14 @@
     "date": "2026-05-19",
     "imagePath": "/event-flyers/stadium-swim/2026-05-19_weekdays-at-circa.png",
     "sourceUrl": "https://app.discotech.me/events/38083206-weekdays-at-circa-stadium-swim-at-stadium-swim"
+  },
+  {
+    "venueSlug": "stadium-swim",
+    "venueName": "Stadium Swim",
+    "eventName": "Weekdays at Circa",
+    "date": "2026-05-20",
+    "imagePath": "/event-flyers/stadium-swim/2026-05-20_weekdays-at-circa.png",
+    "sourceUrl": "https://app.discotech.me/events/38083207-weekdays-at-circa-stadium-swim-at-stadium-swim"
   },
   {
     "venueSlug": "tao-beach",
