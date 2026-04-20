@@ -186,6 +186,58 @@ function getEventStartDetails(event: GoogleCalendarEvent, fallbackDateKey: strin
   };
 }
 
+function canonicalizeGoogleEventId(id: string | undefined) {
+  if (!id) return "";
+
+  // Recurring instances often come back as:
+  // - {seriesId}_RYYYYMMDDTHHMMSS
+  // - {seriesId}_YYYYMMDDTHHMMSSZ
+  // Normalize those to the series id so we can safely dedupe.
+  const match = id.match(/^(.*)_((R)?\d{8}T\d{6})(Z)?$/);
+  if (match && match[1]) {
+    return match[1];
+  }
+
+  return id;
+}
+
+function pickBetterParsedEvent(a: ParsedEvent, b: ParsedEvent) {
+  const aSections = Array.isArray(a.sections) ? a.sections.length : 0;
+  const bSections = Array.isArray(b.sections) ? b.sections.length : 0;
+  if (aSections !== bSections) return aSections > bSections ? a : b;
+
+  const aHasTime = Boolean(a.timeLabel);
+  const bHasTime = Boolean(b.timeLabel);
+  if (aHasTime !== bHasTime) return aHasTime ? a : b;
+
+  // Prefer the "normal" instance id (usually ends in Z) over the _R... form when all else is equal.
+  const aIsR = typeof a.id === "string" && /_R\d{8}T\d{6}$/.test(a.id);
+  const bIsR = typeof b.id === "string" && /_R\d{8}T\d{6}$/.test(b.id);
+  if (aIsR !== bIsR) return aIsR ? b : a;
+
+  return a;
+}
+
+function dedupeParsedEvents(events: ParsedEvent[]) {
+  const map = new Map<string, ParsedEvent>();
+
+  for (const event of events) {
+    const canonicalId = canonicalizeGoogleEventId(event.id);
+    const timeKey = event.timeSortKey || "";
+    const key = `${canonicalId}::${event.dateKey}::${timeKey}`;
+
+    const existing = map.get(key);
+    if (!existing) {
+      map.set(key, event);
+      continue;
+    }
+
+    map.set(key, pickBetterParsedEvent(existing, event));
+  }
+
+  return Array.from(map.values());
+}
+
 function dateToKey(date: Date): string {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -361,7 +413,16 @@ export async function fetchVenueEvents(
       return [];
     }
 
-    return parsedEvents;
+    const dedupedEvents = dedupeParsedEvents(parsedEvents);
+    if (dedupedEvents.length !== parsedEvents.length) {
+      debugLog("deduped parsed events", {
+        venueSlug,
+        before: parsedEvents.length,
+        after: dedupedEvents.length,
+      });
+    }
+
+    return dedupedEvents;
   } catch (error) {
     if (isProduction) {
       console.error("Error fetching calendar events with OAuth.", {
