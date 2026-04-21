@@ -72,6 +72,16 @@ function normalizeSearchText(value: string) {
     .trim();
 }
 
+function dedupeEvents(events: CategoryEventItem[]) {
+  const seen = new Set<string>();
+  return events.filter((event) => {
+    const key = event.id || `${event.venueSlug}:${event.eventName}:${event.dateKey}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 function parseDateKey(dateKey: string) {
   const [year, month, day] = dateKey.split("-").map(Number);
   return new Date(year, month - 1, day, 12, 0, 0, 0);
@@ -211,7 +221,7 @@ export default function CategoryEventsBrowser({
 
         const response = await fetch(
           `/api/category-events?category=${activeCategory}&start_date=${activeDate}&days=3`,
-          { cache: "default" }
+          { cache: "no-store" }
         );
 
         if (!response.ok) {
@@ -220,7 +230,9 @@ export default function CategoryEventsBrowser({
 
         const data = await response.json();
         if (!cancelled) {
-          const nextEvents = Array.isArray(data.events) ? data.events : [];
+          const nextEvents = dedupeEvents(
+            Array.isArray(data.events) ? data.events : []
+          );
           monthCacheRef.current.set(cacheKey, nextEvents);
           setMonthEvents(nextEvents);
         }
@@ -275,7 +287,7 @@ export default function CategoryEventsBrowser({
           missingMonthKeys.map(async (monthKey) => {
             const response = await fetch(
               `/api/category-events?category=${activeCategory}&start_date=${buildMonthStartDate(monthKey)}&days=3`,
-              { cache: "default" }
+              { cache: "no-store" }
             );
 
             if (!response.ok) {
@@ -285,7 +297,7 @@ export default function CategoryEventsBrowser({
             const data = await response.json();
             return {
               monthKey,
-              events: Array.isArray(data.events) ? data.events : [],
+              events: dedupeEvents(Array.isArray(data.events) ? data.events : []),
             };
           })
         );
@@ -316,14 +328,18 @@ export default function CategoryEventsBrowser({
   const groupedEvents = useMemo(() => {
     const normalizedQuery = normalizeSearchText(searchQuery);
     const visibleEvents = normalizedQuery
-      ? Array.from({ length: 6 }, (_, index) => addMonthsToMonthKey(buildMonthKeyFromDateKey(activeDate), index))
-          .flatMap((monthKey) => monthCacheRef.current.get(`${activeCategory}:${monthKey}`) ?? [])
+      ? dedupeEvents(
+          Array.from({ length: 6 }, (_, index) =>
+            addMonthsToMonthKey(buildMonthKeyFromDateKey(activeDate), index)
+          )
+            .flatMap(
+              (monthKey) => monthCacheRef.current.get(`${activeCategory}:${monthKey}`) ?? []
+            )
+        )
           .filter((event) => {
             if (event.dateKey < activeDate) return false;
 
-            const haystack = normalizeSearchText(
-              `${event.eventName} ${event.venueName} ${event.venueLocation}`
-            );
+            const haystack = normalizeSearchText(event.eventName);
             return haystack.includes(normalizedQuery);
           })
       : filterEventsForWindow(monthEvents, activeDate, 3);

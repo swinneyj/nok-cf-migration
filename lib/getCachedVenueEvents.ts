@@ -1,50 +1,173 @@
-import { unstable_cache } from "next/cache";
-import { fetchBooketingVenueEvents } from "@/lib/booketingClient";
-import { fetchVenueEvents } from "@/lib/googleCalendarClient";
+import { sql } from "@vercel/postgres";
+import { getSectionsForEvent } from "@/lib/db/client";
+import { parseEventDescription, type ParsedEvent } from "@/lib/calendarParser";
+
+export function clearEventCache() {
+  console.log('[CACHE] Cleared month data cache');
+}
+
+function isWeekdaySectionTitle(value: string) {
+  return /^(monday|tuesday|wednesday|thursday|friday|saturday|sunday)$/i.test(
+    String(value || "").trim()
+  );
+}
+
+function shouldReparseSectionsFromDescription(
+  sections: Awaited<ReturnType<typeof getSectionsForEvent>>,
+  rawDescription?: string
+) {
+  if (!sections.length) return false;
+
+  if (sections.some((section) => isWeekdaySectionTitle(section.title))) {
+    return true;
+  }
+
+  if (
+    sections.some((section) =>
+      section.tiers.some((tier) => /[•|]/.test(String(tier.name || "")))
+    )
+  ) {
+    return true;
+  }
+
+  if (
+    sections.length === 1 &&
+    typeof rawDescription === "string" &&
+    /^\s*[A-Z][A-Z0-9/&' -]{2,}\s*$/m.test(rawDescription)
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+async function getMonthEventsFromDB(month: string) {
+  // Note: In-memory caching doesn't work reliably in serverless/distributed environment
+  // Each request might go to a different process instance, making cache invalidation unreliable
+  // Fetch fresh from database every time
+
+  try {
+    const [year, monthNum] = month.split("-");
+    const yearNum = parseInt(year, 10);
+    const monthIndex = parseInt(monthNum, 10) - 1;
+
+    // Query a wider range (previous month through next month) to handle timezone conversions
+    // This ensures we get all events that might display in this month when converted to LA time
+    const queryStart = new Date(Date.UTC(yearNum, monthIndex - 1, 1, 0, 0, 0));
+    const queryEnd = new Date(Date.UTC(yearNum, monthIndex + 2, 1, 0, 0, 0));
+
+    console.log(`[DB-QUERY] Fetching events for ${month}: ${queryStart.toISOString()} to ${queryEnd.toISOString()}`);
+
+    const result = await sql`
+      SELECT event_id, venue_id, event_title, event_description, start_time
+      FROM events
+      WHERE start_time >= ${queryStart.toISOString()}
+        AND start_time < ${queryEnd.toISOString()}
+      ORDER BY venue_id, start_time
+    `;
+
+    console.log(`[DB-QUERY] Found ${result.rows.length} total events for month ${month}`);
+
+    // Group by venue
+    const eventsByVenue: Record<string, any[]> = {};
+    for (const row of result.rows) {
+      if (!eventsByVenue[row.venue_id]) {
+        eventsByVenue[row.venue_id] = [];
+      }
+      eventsByVenue[row.venue_id].push(row);
+    }
+
+    console.log(`[DB-QUERY] Grouped into ${Object.keys(eventsByVenue).length} venues:`, Object.keys(eventsByVenue));
+    return eventsByVenue;
+  } catch (error) {
+    console.error(`Error fetching month events for ${month}:`, error);
+    return {};
+  }
+}
 
 export async function getCachedVenueEvents(
   venue: string,
   month: string | null
-) {
-  const cacheKey = `venue-events:${venue}:${month ?? "all"}`;
+): Promise<ParsedEvent[]> {
+  if (!month) {
+    return [];
+  }
 
-  const getCached = unstable_cache(
-    async () => {
-      let startDate: Date | undefined;
-      let endDate: Date | undefined;
+  try {
+    console.log(`[API] getCachedVenueEvents called: venue=${venue}, month=${month}`);
+    const eventsByVenue = await getMonthEventsFromDB(month);
+    console.log(`[API] eventsByVenue keys:`, Object.keys(eventsByVenue));
+    const venueEvents = eventsByVenue[venue] || [];
+    console.log(`[API] venueEvents for ${venue}: ${venueEvents.length} events`);
 
-      if (month) {
-        const [year, monthNum] = month.split("-");
-        if (year && monthNum) {
-          const yearNum = parseInt(year, 10);
-          const monthIndex = parseInt(monthNum, 10) - 1;
+    // Transform database events to ParsedEvent format with sections/pricing
+    const parsedEvents: ParsedEvent[] = [];
 
-          // Fetch padded range to avoid late-night Vegas UTC rollover issues
-          startDate = new Date(Date.UTC(yearNum, monthIndex, 1, 0, 0, 0, 0));
-          startDate.setUTCDate(startDate.getUTCDate() - 1);
+    for (const event of venueEvents) {
+      const startDate = new Date(event.start_time);
 
-          endDate = new Date(Date.UTC(yearNum, monthIndex + 1, 1, 0, 0, 0, 0));
-          endDate.setUTCDate(endDate.getUTCDate() + 2);
+      // Format dates in Las Vegas timezone (America/Los_Angeles)
+      const laFormatter = new Intl.DateTimeFormat("en-US", {
+        timeZone: "America/Los_Angeles",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      });
+      const formattedDate = laFormatter.format(startDate);
+      const [monthStr, dayStr, yearStr] = formattedDate.split("/");
+      const dateKey = `${yearStr}-${monthStr}-${dayStr}`; // Convert MM/DD/YYYY to YYYY-MM-DD
+
+      // Fetch sections and pricing tiers for this event
+      let sections = await getSectionsForEvent(event.event_id);
+
+      // Some older synced rows stored weekday headings like "Thursday" as section titles.
+      // Reparse from the raw description at read time so the UI can recover immediately.
+      if (
+        shouldReparseSectionsFromDescription(
+          sections,
+          typeof event.event_description === "string" ? event.event_description : undefined
+        ) &&
+        typeof event.event_description === "string" &&
+        event.event_description.trim()
+      ) {
+        const reparsed = parseEventDescription(
+          event.event_description,
+          event.event_id,
+          event.event_title,
+          startDate,
+          dateKey
+        );
+        if (reparsed?.sections.length) {
+          sections = reparsed.sections;
         }
       }
 
-      let events =
-        venue === "stadium-swim"
-          ? await fetchBooketingVenueEvents(venue, startDate, endDate)
-          : await fetchVenueEvents(venue, startDate, endDate);
+      const parsedEvent: ParsedEvent = {
+        id: event.event_id,
+        eventName: event.event_title,
+        date: startDate,
+        dateKey,
+        dateString: startDate.toLocaleDateString("en-US", {
+          timeZone: "America/Los_Angeles",
+          weekday: "long",
+          month: "long",
+          day: "numeric",
+        }),
+        sections,
+        flyerImagePath: undefined,
+      };
 
-      if (month) {
-        events = events.filter((event) => event.dateKey?.startsWith(month));
+      if (parsedEvent.dateKey.startsWith(month)) {
+        parsedEvents.push(parsedEvent);
       }
-
-      return events;
-    },
-    [cacheKey],
-    {
-      revalidate: 300, // 5 minutes
-      tags: [`venue-events:${venue}`, `venue-events:${venue}:${month ?? "all"}`],
     }
-  );
 
-  return getCached();
+    return parsedEvents;
+  } catch (error) {
+    console.error(
+      `Error in getCachedVenueEvents for ${venue} ${month}:`,
+      error
+    );
+    return [];
+  }
 }

@@ -54,6 +54,7 @@ export default function PoolPartiesPage() {
           anchorId="events"
           title="What’s Happening Poolside"
           description="Pick your date and see what’s going on across Las Vegas pool parties and dayclubs. Clicking an event opens the exact venue page with that event ready to book."
+          enableSearch
         />
       </Suspense>
 

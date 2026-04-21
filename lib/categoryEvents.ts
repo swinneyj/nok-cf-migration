@@ -1,6 +1,5 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { unstable_cache } from "next/cache";
 import { getCachedVenueEvents } from "@/lib/getCachedVenueEvents";
 import {
   getCategoryVenueCards,
@@ -218,14 +217,7 @@ async function loadCategoryMonthEvents(category: CategoryEventsKey, monthKey: st
 }
 
 export async function getCategoryMonthEvents(category: CategoryEventsKey, monthKey: string) {
-  const cacheKey = `category-month-events:${category}:${monthKey}`;
-
-  const getCached = unstable_cache(async () => loadCategoryMonthEvents(category, monthKey), [cacheKey], {
-    revalidate: 300,
-    tags: [`category-events:${category}`, cacheKey],
-  });
-
-  return getCached();
+  return loadCategoryMonthEvents(category, monthKey);
 }
 
 export async function getCategoryEvents(

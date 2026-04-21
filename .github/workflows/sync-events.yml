@@ -1,21 +1,159 @@
-name: Weekly Event Sync
+name: Database Event Sync
 
 on:
   schedule:
-    # Runs every Monday at 2:00 AM UTC (9 PM PST Sunday)
-    - cron: '0 2 * * 1'
-  workflow_dispatch: # Allow manual triggering from GitHub UI
+    # Daily at 2:00 AM America/New_York (06:00 UTC during EDT)
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Which database to sync"
+        required: true
+        default: "both"
+        type: choice
+        options:
+          - both
+          - production
+          - staging
+      monthsAhead:
+        description: "How many months ahead to sync (1-12)"
+        required: true
+        default: "6"
 
 jobs:
-  sync-events:
+  sync-production:
+    if: github.event_name == 'schedule' || github.event.inputs.target == 'both' || github.event.inputs.target == 'production'
     runs-on: ubuntu-latest
+    env:
+      POSTGRES_URL: ${{ secrets.PROD_DATABASE_URL }}
+      DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+      GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
+      GOOGLE_CALENDAR_ID_XS_NIGHTCLUB: ${{ secrets.GOOGLE_CALENDAR_ID_XS_NIGHTCLUB }}
+      GOOGLE_CALENDAR_ID_ZOUK_NIGHTCLUB: ${{ secrets.GOOGLE_CALENDAR_ID_ZOUK_NIGHTCLUB }}
+      GOOGLE_CALENDAR_ID_OMNIA_NIGHTCLUB: ${{ secrets.GOOGLE_CALENDAR_ID_OMNIA_NIGHTCLUB }}
+      GOOGLE_CALENDAR_ID_TAO_NIGHTCLUB: ${{ secrets.GOOGLE_CALENDAR_ID_TAO_NIGHTCLUB }}
+      GOOGLE_CALENDAR_ID_MARQUEE_NIGHTCLUB: ${{ secrets.GOOGLE_CALENDAR_ID_MARQUEE_NIGHTCLUB }}
+      GOOGLE_CALENDAR_ID_LIV_NIGHTCLUB: ${{ secrets.GOOGLE_CALENDAR_ID_LIV_NIGHTCLUB }}
+      GOOGLE_CALENDAR_ID_HAKKASAN_NIGHTCLUB: ${{ secrets.GOOGLE_CALENDAR_ID_HAKKASAN_NIGHTCLUB }}
+      GOOGLE_CALENDAR_ID_DRAIS_NIGHTCLUB: ${{ secrets.GOOGLE_CALENDAR_ID_DRAIS_NIGHTCLUB }}
+      GOOGLE_CALENDAR_ID_JEWEL_NIGHTCLUB: ${{ secrets.GOOGLE_CALENDAR_ID_JEWEL_NIGHTCLUB }}
+      GOOGLE_CALENDAR_ID_EBC_AT_NIGHT: ${{ secrets.GOOGLE_CALENDAR_ID_EBC_AT_NIGHT }}
+      GOOGLE_CALENDAR_ID_ENCORE_BEACH_CLUB: ${{ secrets.GOOGLE_CALENDAR_ID_ENCORE_BEACH_CLUB }}
+      GOOGLE_CALENDAR_ID_MARQUEE_DAYCLUB: ${{ secrets.GOOGLE_CALENDAR_ID_MARQUEE_DAYCLUB }}
+      GOOGLE_CALENDAR_ID_OMNIA_DAYCLUB: ${{ secrets.GOOGLE_CALENDAR_ID_OMNIA_DAYCLUB }}
+      GOOGLE_CALENDAR_ID_LIV_BEACH_CLUB: ${{ secrets.GOOGLE_CALENDAR_ID_LIV_BEACH_CLUB }}
+      GOOGLE_CALENDAR_ID_AYU_DAYCLUB: ${{ secrets.GOOGLE_CALENDAR_ID_AYU_DAYCLUB }}
+      GOOGLE_CALENDAR_ID_KASSI_BEACH_CLUB: ${{ secrets.GOOGLE_CALENDAR_ID_KASSI_BEACH_CLUB }}
+      GOOGLE_CALENDAR_ID_DAYLIGHT_BEACH_CLUB: ${{ secrets.GOOGLE_CALENDAR_ID_DAYLIGHT_BEACH_CLUB }}
+      GOOGLE_CALENDAR_ID_PALM_TREE_BEACH_CLUB: ${{ secrets.GOOGLE_CALENDAR_ID_PALM_TREE_BEACH_CLUB }}
+      GOOGLE_CALENDAR_ID_LIQUID_POOL_LOUNGE: ${{ secrets.GOOGLE_CALENDAR_ID_LIQUID_POOL_LOUNGE }}
+      GOOGLE_CALENDAR_ID_TAO_BEACH: ${{ secrets.GOOGLE_CALENDAR_ID_TAO_BEACH }}
+      GOOGLE_CALENDAR_ID_STADIUM_SWIM: ${{ secrets.GOOGLE_CALENDAR_ID_STADIUM_SWIM }}
     steps:
-      - name: Trigger event sync
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
         run: |
-          curl -X POST ${{ secrets.SYNC_ENDPOINT }} \
-            -H "Authorization: Bearer ${{ secrets.SYNC_SECRET_KEY }}" \
-            -H "Content-Type: application/json" \
-            -w "\nHTTP Status: %{http_code}\n"
+          corepack enable
+          pnpm install --frozen-lockfile
+
+      - name: Preflight (production)
+        shell: bash
+        run: |
+          set -euxo pipefail
+          node -v
+          pnpm -v
+          test -n "${POSTGRES_URL:-}" || { echo "::error::Missing PROD_DATABASE_URL secret (mapped to POSTGRES_URL)"; exit 1; }
+          test -n "${GOOGLE_CLIENT_ID:-}" || { echo "::error::Missing GOOGLE_CLIENT_ID secret"; exit 1; }
+          test -n "${GOOGLE_CLIENT_SECRET:-}" || { echo "::error::Missing GOOGLE_CLIENT_SECRET secret"; exit 1; }
+          test -n "${GOOGLE_REFRESH_TOKEN:-}" || { echo "::error::Missing GOOGLE_REFRESH_TOKEN secret"; exit 1; }
+          test -n "${GOOGLE_REDIRECT_URI:-}" || { echo "::error::Missing GOOGLE_REDIRECT_URI secret"; exit 1; }
+          test -f ./node_modules/tsx/dist/cli.mjs
+          node ./node_modules/tsx/dist/cli.mjs --version
+
+      - name: Run event sync
+        shell: bash
+        run: |
+          set -euxo pipefail
+          node ./node_modules/tsx/dist/cli.mjs scripts/sync-db.ts
+        env:
+          SYNC_MONTHS_AHEAD: ${{ github.event.inputs.monthsAhead || '6' }}
+
+  sync-staging:
+    if: github.event_name == 'workflow_dispatch' && (github.event.inputs.target == 'both' || github.event.inputs.target == 'staging')
+    runs-on: ubuntu-latest
+    env:
+      POSTGRES_URL: ${{ secrets.STAGING_DATABASE_URL }}
+      DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+      GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
+      GOOGLE_CALENDAR_ID_XS_NIGHTCLUB: ${{ secrets.GOOGLE_CALENDAR_ID_XS_NIGHTCLUB }}
+      GOOGLE_CALENDAR_ID_ZOUK_NIGHTCLUB: ${{ secrets.GOOGLE_CALENDAR_ID_ZOUK_NIGHTCLUB }}
+      GOOGLE_CALENDAR_ID_OMNIA_NIGHTCLUB: ${{ secrets.GOOGLE_CALENDAR_ID_OMNIA_NIGHTCLUB }}
+      GOOGLE_CALENDAR_ID_TAO_NIGHTCLUB: ${{ secrets.GOOGLE_CALENDAR_ID_TAO_NIGHTCLUB }}
+      GOOGLE_CALENDAR_ID_MARQUEE_NIGHTCLUB: ${{ secrets.GOOGLE_CALENDAR_ID_MARQUEE_NIGHTCLUB }}
+      GOOGLE_CALENDAR_ID_LIV_NIGHTCLUB: ${{ secrets.GOOGLE_CALENDAR_ID_LIV_NIGHTCLUB }}
+      GOOGLE_CALENDAR_ID_HAKKASAN_NIGHTCLUB: ${{ secrets.GOOGLE_CALENDAR_ID_HAKKASAN_NIGHTCLUB }}
+      GOOGLE_CALENDAR_ID_DRAIS_NIGHTCLUB: ${{ secrets.GOOGLE_CALENDAR_ID_DRAIS_NIGHTCLUB }}
+      GOOGLE_CALENDAR_ID_JEWEL_NIGHTCLUB: ${{ secrets.GOOGLE_CALENDAR_ID_JEWEL_NIGHTCLUB }}
+      GOOGLE_CALENDAR_ID_EBC_AT_NIGHT: ${{ secrets.GOOGLE_CALENDAR_ID_EBC_AT_NIGHT }}
+      GOOGLE_CALENDAR_ID_ENCORE_BEACH_CLUB: ${{ secrets.GOOGLE_CALENDAR_ID_ENCORE_BEACH_CLUB }}
+      GOOGLE_CALENDAR_ID_MARQUEE_DAYCLUB: ${{ secrets.GOOGLE_CALENDAR_ID_MARQUEE_DAYCLUB }}
+      GOOGLE_CALENDAR_ID_OMNIA_DAYCLUB: ${{ secrets.GOOGLE_CALENDAR_ID_OMNIA_DAYCLUB }}
+      GOOGLE_CALENDAR_ID_LIV_BEACH_CLUB: ${{ secrets.GOOGLE_CALENDAR_ID_LIV_BEACH_CLUB }}
+      GOOGLE_CALENDAR_ID_AYU_DAYCLUB: ${{ secrets.GOOGLE_CALENDAR_ID_AYU_DAYCLUB }}
+      GOOGLE_CALENDAR_ID_KASSI_BEACH_CLUB: ${{ secrets.GOOGLE_CALENDAR_ID_KASSI_BEACH_CLUB }}
+      GOOGLE_CALENDAR_ID_DAYLIGHT_BEACH_CLUB: ${{ secrets.GOOGLE_CALENDAR_ID_DAYLIGHT_BEACH_CLUB }}
+      GOOGLE_CALENDAR_ID_PALM_TREE_BEACH_CLUB: ${{ secrets.GOOGLE_CALENDAR_ID_PALM_TREE_BEACH_CLUB }}
+      GOOGLE_CALENDAR_ID_LIQUID_POOL_LOUNGE: ${{ secrets.GOOGLE_CALENDAR_ID_LIQUID_POOL_LOUNGE }}
+      GOOGLE_CALENDAR_ID_TAO_BEACH: ${{ secrets.GOOGLE_CALENDAR_ID_TAO_BEACH }}
+      GOOGLE_CALENDAR_ID_STADIUM_SWIM: ${{ secrets.GOOGLE_CALENDAR_ID_STADIUM_SWIM }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+
+      - name: Preflight (staging)
+        shell: bash
+        run: |
+          set -euxo pipefail
+          node -v
+          pnpm -v
+          test -n "${POSTGRES_URL:-}" || { echo "::error::Missing STAGING_DATABASE_URL secret (mapped to POSTGRES_URL)"; exit 1; }
+          test -n "${GOOGLE_CLIENT_ID:-}" || { echo "::error::Missing GOOGLE_CLIENT_ID secret"; exit 1; }
+          test -n "${GOOGLE_CLIENT_SECRET:-}" || { echo "::error::Missing GOOGLE_CLIENT_SECRET secret"; exit 1; }
+          test -n "${GOOGLE_REFRESH_TOKEN:-}" || { echo "::error::Missing GOOGLE_REFRESH_TOKEN secret"; exit 1; }
+          test -n "${GOOGLE_REDIRECT_URI:-}" || { echo "::error::Missing GOOGLE_REDIRECT_URI secret"; exit 1; }
+          test -f ./node_modules/tsx/dist/cli.mjs
+          node ./node_modules/tsx/dist/cli.mjs --version
+
+      - name: Run staging sync
+        shell: bash
+        run: |
+          set -euxo pipefail
+          node ./node_modules/tsx/dist/cli.mjs scripts/sync-db.ts
+        env:
+          SYNC_MONTHS_AHEAD: ${{ github.event.inputs.monthsAhead || '6' }}
 
       - name: Notify on failure
         if: failure()

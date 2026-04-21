@@ -97,7 +97,7 @@ function isSoldOut(text: string): boolean {
 }
 
 function isDateLine(line: string): boolean {
-  return /^(monday|tuesday|wednesday|thursday|friday|saturday|sunday),/i.test(line);
+  return /^(monday|tuesday|wednesday|thursday|friday|saturday|sunday)(,|\s+\w+\s+\d{1,2}(,?\s+\d{4})?)?$/i.test(line);
 }
 
 function isAddressLine(line: string): boolean {
@@ -273,12 +273,44 @@ function splitPossibleEmbeddedHeaders(text: string): string {
     .replace(/(IMMEDIATE\s*PATIO\s*\/?\s*STAGE(?:\s*-\s*By Approval Only)?)/gi, "\n$1\n");
 }
 
+function splitInlineHeaderAndTier(line: string): string[] {
+  const normalized = normalizeWhitespace(line);
+  if (!normalized) return [];
+
+  const separatorMatch = normalized.match(/^(.+?)\s*[•|]\s*(.+)$/);
+  if (!separatorMatch) {
+    return [normalized];
+  }
+
+  const possibleHeader = normalizeWhitespace(separatorMatch[1]);
+  const possibleTier = normalizeWhitespace(separatorMatch[2]);
+
+  if (!possibleHeader || !possibleTier) {
+    return [normalized];
+  }
+
+  if (parseTierLine(possibleHeader) || !parseTierLine(possibleTier)) {
+    return [normalized];
+  }
+
+  if (
+    isDateLine(possibleHeader) ||
+    /^[A-Z][A-Za-z]+day$/i.test(possibleHeader) ||
+    looksLikeHeader(possibleHeader, possibleTier)
+  ) {
+    return [possibleHeader, possibleTier];
+  }
+
+  return [normalized];
+}
+
 function parseSectionsFromText(text: string): EventSection[] {
   const normalizedText = splitPossibleEmbeddedHeaders(text);
   const rawLines = normalizedText
     .split("\n")
     .map((line) => normalizeWhitespace(line))
-    .filter(Boolean);
+    .filter(Boolean)
+    .flatMap((line) => splitInlineHeaderAndTier(line));
 
   const lines = rawLines.filter((line) => !isSkippableLine(line));
 

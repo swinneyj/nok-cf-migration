@@ -208,9 +208,29 @@ async function fetchBooketingText(url: string) {
   return response.text();
 }
 
-async function fetchBooketingJson<T>(url: string): Promise<T> {
-  const text = await fetchBooketingText(url);
-  return JSON.parse(text) as T;
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function fetchBooketingJson<T>(url: string, retries: number = 2): Promise<T> {
+  let lastError: Error | null = null;
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const text = await fetchBooketingText(url);
+      return JSON.parse(text) as T;
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+
+      if (attempt === retries) {
+        break;
+      }
+
+      await sleep(250 * (attempt + 1));
+    }
+  }
+
+  throw lastError ?? new Error(`Booketing JSON request failed for ${url}`);
 }
 
 async function fetchMonthEvents(monthKey: string) {

@@ -54,6 +54,7 @@ export default function NightclubsPage() {
           anchorId="events"
           title="What’s Happening Each Night"
           description="Pick your date and browse the nightclub calendar for that night and the days right after it. Clicking any event takes you to the exact venue page with that event preselected."
+          enableSearch
         />
       </Suspense>
 

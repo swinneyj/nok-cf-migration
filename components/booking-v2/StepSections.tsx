@@ -84,11 +84,16 @@ function slugify(value: string) {
 }
 
 function normalizeEventName(value: string) {
-  return String(value || "")
+  let normalized = String(value || "")
     .replace(/\s+/g, " ")
     .replace(/\b(guest list|tickets|vip tables|table service)\b/gi, "")
     .replace(/\s*[|•].*$/g, "")
     .trim();
+
+  // Remove venue name if appended with dash/separator
+  normalized = normalized.split(/\s*[–—-]\s*/)[0].trim();
+
+  return normalized;
 }
 
 function normalizeVenueSections(
@@ -205,38 +210,48 @@ function findBestFlyer(
   if (!manifest.length) return null;
 
   const targetDate = getTargetDate(eventDate);
-
-  // Only return flyers with exact date matches
-  // This prevents old flyers from showing for future events
-  // GitHub Actions will sync new flyers weekly
-  const sameDateFlyers = manifest.filter(
-    (entry) => entry.venueSlug === targetVenueSlug && entry.date === targetDate
-  );
-
-  if (!sameDateFlyers.length) return null;
-
   const targetSlug = slugify(normalizeEventName(eventName));
 
-  // Prefer exact event name match
-  const exactMatch = sameDateFlyers.find(
-    (entry) => slugify(normalizeEventName(entry.eventName)) === targetSlug
-  );
-  if (exactMatch) return exactMatch;
+  const scored = manifest
+    .map((entry) => {
+      const entrySlug = slugify(normalizeEventName(entry.eventName));
+      const sameVenue = entry.venueSlug === targetVenueSlug;
+      const sameDate = entry.date === targetDate;
+      const exactNameMatch = entrySlug === targetSlug;
+      const looseNameMatch =
+        !!entrySlug &&
+        !!targetSlug &&
+        (entrySlug.includes(targetSlug) || targetSlug.includes(entrySlug));
 
-  // Otherwise prefer loose name match (substring overlap)
-  const looseMatch = sameDateFlyers.find((entry) => {
-    const entrySlug = slugify(normalizeEventName(entry.eventName));
-    return (
-      entrySlug &&
-      targetSlug &&
-      (entrySlug.includes(targetSlug) || targetSlug.includes(entrySlug))
-    );
-  });
-  if (looseMatch) return looseMatch;
+      let score = 0;
+      if (sameVenue) score += 10;
+      if (sameDate) score += 100;
+      if (exactNameMatch) score += 12;
+      else if (looseNameMatch) score += 7;
 
-  // No name match on exact date - return null to show placeholder
+      return { entry, score, sameVenue, sameDate, exactNameMatch, looseNameMatch };
+    })
+    .sort((a, b) => b.score - a.score);
+
+  let venueScored = scored.filter((item) => item.sameVenue);
+  if (venueScored.length === 0) venueScored = scored;
+
+  const exactSameDate = venueScored.filter((item) => item.sameDate && item.exactNameMatch);
+  if (exactSameDate.length) return exactSameDate[0].entry;
+
+  const looseSameDate = venueScored.filter((item) => item.sameDate && (item.looseNameMatch || item.score >= 22));
+  if (looseSameDate.length) return looseSameDate[0].entry;
+
+  const exactNameAnyDate = venueScored.filter((item) => item.exactNameMatch);
+  if (exactNameAnyDate.length) return exactNameAnyDate[0].entry;
+
+  const looseNameAnyDate = venueScored.filter((item) => item.looseNameMatch && item.score >= 18);
+  if (looseNameAnyDate.length) return looseNameAnyDate[0].entry;
+
+  if (venueScored.length > 0) return venueScored[0].entry;
   return null;
 }
+
 
 function formatCurrency(value?: string | number | null) {
   if (value === null || value === undefined || value === "") return null;
@@ -279,6 +294,40 @@ function stripVenueSuffixes(value: string) {
     .trim();
 }
 
+function stripTrailingYear(value: string) {
+  return String(value || "")
+    .replace(/\b20\d{2}\b/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function isWeekdayLikeSection(value: string) {
+  return /^(monday|tuesday|wednesday|thursday|friday|saturday|sunday)(\s+20\d{2})?$/i.test(
+    String(value || "").trim()
+  );
+}
+
+function stripLeadingVenueName(value: string, venueName: string) {
+  const trimmedValue = String(value || "").trim();
+  const trimmedVenue = String(venueName || "").trim();
+
+  if (!trimmedValue || !trimmedVenue) {
+    return trimmedValue;
+  }
+
+  const valueWords = normalizeComparableName(trimmedValue).split(" ").filter(Boolean);
+  const venueWords = normalizeComparableName(trimmedVenue).split(" ").filter(Boolean);
+
+  if (
+    venueWords.length > 0 &&
+    venueWords.every((word, index) => valueWords[index] === word)
+  ) {
+    return valueWords.slice(venueWords.length).join(" ");
+  }
+
+  return trimmedValue;
+}
+
 function getDisplaySectionName(
   rawSectionName: string,
   index: number,
@@ -291,10 +340,23 @@ function getDisplaySectionName(
     return index === 0 ? "Main" : "Section";
   }
 
+  if (index === 0 && isWeekdayLikeSection(trimmed)) {
+    return "Main";
+  }
+
   const normalizedSection = normalizeComparableName(trimmed);
   const normalizedEvent = normalizeComparableName(normalizeEventName(eventName));
+  const normalizedEventWithoutVenue = normalizeComparableName(
+    stripVenueSuffixes(normalizeEventName(eventName))
+  );
+  const normalizedEventWithoutLeadingVenue = normalizeComparableName(
+    stripTrailingYear(stripLeadingVenueName(normalizeEventName(eventName), venueName))
+  );
   const normalizedVenue = normalizeComparableName(stripVenueSuffixes(venueName));
   const normalizedVenueFull = normalizeComparableName(venueName);
+  const normalizedSectionWithoutYear = normalizeComparableName(
+    stripTrailingYear(trimmed)
+  );
 
   const looksLikeFallback =
     index === 0 &&
@@ -304,6 +366,14 @@ function getDisplaySectionName(
       normalizedSection === normalizedVenue ||
       normalizedSection === normalizedVenueFull ||
       (normalizedEvent && normalizedSection.includes(normalizedEvent)) ||
+      (normalizedEventWithoutVenue &&
+        normalizedSectionWithoutYear === normalizedEventWithoutVenue) ||
+      (normalizedEventWithoutVenue &&
+        normalizedSectionWithoutYear.includes(normalizedEventWithoutVenue)) ||
+      (normalizedEventWithoutLeadingVenue &&
+        normalizedSectionWithoutYear === normalizedEventWithoutLeadingVenue) ||
+      (normalizedEventWithoutLeadingVenue &&
+        normalizedSectionWithoutYear.includes(normalizedEventWithoutLeadingVenue)) ||
       (normalizedVenue && normalizedSection.includes(normalizedVenue)) ||
       (normalizedVenueFull && normalizedSection.includes(normalizedVenueFull))
     );
@@ -328,10 +398,27 @@ function extractCapacityLabel(value: string) {
   return `${capacity} people`;
 }
 
-function getTierDisplayName(tier: PricingTier) {
-  const capacityLabel = extractCapacityLabel(tier.name);
+function stripSectionPrefixFromTierName(tierName: string, sectionName: string) {
+  const rawTierName = String(tierName || "").trim();
+  const rawSectionName = String(sectionName || "").trim();
+
+  if (!rawTierName || !rawSectionName) {
+    return rawTierName;
+  }
+
+  const escapedSection = rawSectionName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return rawTierName
+    .replace(new RegExp(`^${escapedSection}\\s*[•|:\\-–—]+\\s*`, "i"), "")
+    .replace(new RegExp(`^${escapedSection}\\s+`, "i"), "");
+}
+
+function getTierDisplayName(tier: PricingTier, sectionName?: string) {
+  const cleanedTierName = sectionName
+    ? stripSectionPrefixFromTierName(tier.name, sectionName)
+    : tier.name;
+  const capacityLabel = extractCapacityLabel(cleanedTierName);
   if (capacityLabel) return capacityLabel;
-  return toTitleCase(tier.name);
+  return toTitleCase(cleanedTierName);
 }
 
 function shouldShowCapacityPill(tier: PricingTier) {
@@ -900,13 +987,15 @@ export default function StepSections({
                                 <div className="min-w-0 flex-1">
                                   <div className="flex flex-wrap items-center gap-2">
                                     <h3 className="text-lg font-semibold text-white sm:text-xl">
-                                      {extractCapacityLabel(tier.name) ? (
+                                      {extractCapacityLabel(
+                                        stripSectionPrefixFromTierName(tier.name, sectionName)
+                                      ) ? (
                                         <span className="inline-flex items-center gap-1.5">
                                           <Users className="h-4 w-4" />
-                                          {getTierDisplayName(tier)}
+                                          {getTierDisplayName(tier, sectionName)}
                                         </span>
                                       ) : (
-                                        getTierDisplayName(tier)
+                                        getTierDisplayName(tier, sectionName)
                                       )}
                                     </h3>
                                     {isSelected && (

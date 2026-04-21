@@ -34,15 +34,18 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    console.log(`[CALENDAR-API] Fetching events for venue=${venue}, month=${month}`);
     const events = await getCachedVenueEvents(venue, month);
+    console.log(`[CALENDAR-API] Got ${events.length} events from getCachedVenueEvents`);
 
     return NextResponse.json(events, {
       headers: {
-        "Cache-Control": "s-maxage=300, stale-while-revalidate=600",
+        "Cache-Control": "no-cache, no-store, must-revalidate",
       },
     });
   } catch (error) {
-    console.error("Calendar API error:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("[CALENDAR-API] Error:", errorMessage, error);
     return NextResponse.json([], { status: 200 });
   }
 }
