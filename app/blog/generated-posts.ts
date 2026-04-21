@@ -11,6 +11,16 @@ export type GeneratedPost = {
 
 export const posts: GeneratedPost[] = [
   {
+    "slug": "omnia-nightclub-review",
+    "title": "Omnia Nightclub Las Vegas Review 2026 | Is It Worth It?",
+    "excerpt": "Honest Omnia Nightclub review — table quality, DJs, kinetic chandelier, pricing, crowd, and whether it\\",
+    "date": "April 22, 2026",
+    "readTime": "7 min read",
+    "category": "Venue Reviews",
+    "image": "/blog/omnia-nightclub-review/cover.jpg",
+    "imageAlt": "Omnia Nightclub Caesars Palace Las Vegas review 2026"
+  },
+  {
     "slug": "male-strip-clubs-las-vegas",
     "title": "Male Strip Clubs Las Vegas 2026 | Bachelorette Guide to Male Revues",
     "excerpt": "The complete guide to male strip clubs and revues in Las Vegas — Magic Mike Live, Chippendales, Thunder From Down Under and more. Which is best for your bachelorette party?",
