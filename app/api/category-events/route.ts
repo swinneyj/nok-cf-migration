@@ -5,6 +5,7 @@ import {
   buildMonthKeyFromDateKey,
   getCategoryMonthEvents,
   parseCategoryEventsDateKey,
+  searchCategoryEvents,
 } from "@/lib/categoryEvents";
 import type { CategoryEventsKey } from "@/lib/categoryVenueData";
 
@@ -13,6 +14,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const category = searchParams.get("category") as CategoryEventsKey | null;
     const startDateParam = searchParams.get("start_date");
+    const query = searchParams.get("query")?.trim() || "";
     const daysParam = Number(searchParams.get("days") || 3);
 
     if (category !== "all" && category !== "nightclubs" && category !== "pool-parties") {
@@ -25,13 +27,16 @@ export async function GET(request: NextRequest) {
 
     parseCategoryEventsDateKey(startDateParam);
     const monthKey = buildMonthKeyFromDateKey(startDateParam);
-    const events = await getCategoryMonthEvents(category, monthKey);
+    const events = query
+      ? await searchCategoryEvents(category, startDateParam, query)
+      : await getCategoryMonthEvents(category, monthKey);
 
     return NextResponse.json(
       {
         events,
         startDate: startDateParam,
         month: monthKey,
+        query,
       },
       {
         headers: {

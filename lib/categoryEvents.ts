@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { sql } from "@vercel/postgres";
 import { getCachedVenueEvents } from "@/lib/getCachedVenueEvents";
 import {
   getCategoryVenueCards,
@@ -145,6 +146,18 @@ function buildEventHref(venue: CategoryVenueCard, eventName: string, dateKey: st
   return `${venue.href}?${params.toString()}#event-booking`;
 }
 
+function sortCategoryEventItems(items: CategoryEventItem[]) {
+  return items.sort((a, b) => {
+    const dateCompare = a.dateKey.localeCompare(b.dateKey);
+    if (dateCompare !== 0) return dateCompare;
+    const categoryCompare = CATEGORY_PRIORITY[a.category] - CATEGORY_PRIORITY[b.category];
+    if (categoryCompare !== 0) return categoryCompare;
+    const timeCompare = (a.timeSortKey || "99:99").localeCompare(b.timeSortKey || "99:99");
+    if (timeCompare !== 0) return timeCompare;
+    return a.venueName.localeCompare(b.venueName);
+  });
+}
+
 export function filterCategoryEventsForWindow(
   events: CategoryEventItem[],
   startDateParam: string,
@@ -205,19 +218,88 @@ async function loadCategoryMonthEvents(category: CategoryEventsKey, monthKey: st
     }
   }
 
-  return items.sort((a, b) => {
-    const dateCompare = a.dateKey.localeCompare(b.dateKey);
-    if (dateCompare !== 0) return dateCompare;
-    const categoryCompare = CATEGORY_PRIORITY[a.category] - CATEGORY_PRIORITY[b.category];
-    if (categoryCompare !== 0) return categoryCompare;
-    const timeCompare = (a.timeSortKey || "99:99").localeCompare(b.timeSortKey || "99:99");
-    if (timeCompare !== 0) return timeCompare;
-    return a.venueName.localeCompare(b.venueName);
-  });
+  return sortCategoryEventItems(items);
 }
 
 export async function getCategoryMonthEvents(category: CategoryEventsKey, monthKey: string) {
   return loadCategoryMonthEvents(category, monthKey);
+}
+
+export async function searchCategoryEvents(
+  category: CategoryEventsKey,
+  startDateParam: string,
+  query: string
+) {
+  const trimmedQuery = query.trim();
+  if (!trimmedQuery) {
+    return [];
+  }
+
+  const venues = getCategoryVenueCards(category);
+  const venueBySlug = new Map(venues.map((venue) => [venue.venueSlug, venue]));
+  const venueIds = venues.map((venue) => venue.venueSlug);
+  const manifest = await getFlyerManifest();
+  const startDate = parseCategoryEventsDateKey(startDateParam);
+
+  const result = await sql.query(
+    `
+      SELECT event_id, venue_id, event_title, start_time
+      FROM events
+      WHERE venue_id = ANY($1::text[])
+        AND start_time >= $2
+        AND event_title ILIKE $3
+      ORDER BY start_time ASC, venue_id ASC
+    `,
+    [venueIds, startDate.toISOString(), `%${trimmedQuery}%`]
+  );
+
+  const items: CategoryEventItem[] = [];
+
+  for (const row of result.rows) {
+    const venue = venueBySlug.get(String((row as any).venue_id));
+    if (!venue) continue;
+
+    const startTime = new Date((row as any).start_time);
+    const formattedDate = new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/Los_Angeles",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(startTime);
+    const [monthStr, dayStr, yearStr] = formattedDate.split("/");
+    const dateKey = `${yearStr}-${monthStr}-${dayStr}`;
+    const eventName = String((row as any).event_title || "");
+    const eventCategory = poolPartyVenues.some((card) => card.venueSlug === venue.venueSlug)
+      ? "pool-parties"
+      : "nightclubs";
+    const displayTime = CATEGORY_DISPLAY_TIMES[eventCategory];
+
+    const imagePath =
+      findBestFlyer(manifest, venue.venueSlug, eventName, dateKey) || venue.img;
+
+    items.push({
+      id: `${venue.venueSlug}:${(row as any).event_id}:${dateKey}`,
+      eventName,
+      dateKey,
+      dateString: startTime.toLocaleDateString("en-US", {
+        timeZone: "America/Los_Angeles",
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+      }),
+      timeLabel: displayTime.timeLabel,
+      timeSortKey: displayTime.timeSortKey,
+      category: eventCategory,
+      venueSlug: venue.venueSlug,
+      venueName: venue.name,
+      venueLocation: venue.venue,
+      venueHref: venue.href,
+      eventHref: buildEventHref(venue, eventName, dateKey),
+      imagePath,
+    });
+  }
+
+  return sortCategoryEventItems(items);
 }
 
 export async function getCategoryEvents(

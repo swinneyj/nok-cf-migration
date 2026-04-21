@@ -137,6 +137,7 @@ export default function CategoryEventsBrowser({
   const [selectedDate, setSelectedDate] = useState(seededDate);
   const [activeDate, setActiveDate] = useState(seededDate);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<CategoryEventItem[]>([]);
   const [monthEvents, setMonthEvents] = useState<CategoryEventItem[]>(initialEvents);
   const [loading, setLoading] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
@@ -260,56 +261,37 @@ export default function CategoryEventsBrowser({
 
     const trimmedQuery = searchQuery.trim();
     if (!trimmedQuery) {
-      setSearchLoading(false);
-      return;
-    }
-
-    const baseMonth = buildMonthKeyFromDateKey(activeDate);
-    const monthKeysToLoad = Array.from({ length: 6 }, (_, index) =>
-      addMonthsToMonthKey(baseMonth, index)
-    );
-    const missingMonthKeys = monthKeysToLoad.filter(
-      (monthKey) => !monthCacheRef.current.has(`${activeCategory}:${monthKey}`)
-    );
-
-    if (missingMonthKeys.length === 0) {
+      setSearchResults([]);
       setSearchLoading(false);
       return;
     }
 
     let cancelled = false;
 
-    async function loadFutureMonths() {
+    async function loadSearchResults() {
       try {
         setSearchLoading(true);
+        setError(null);
 
-        const responses = await Promise.all(
-          missingMonthKeys.map(async (monthKey) => {
-            const response = await fetch(
-              `/api/category-events?category=${activeCategory}&start_date=${buildMonthStartDate(monthKey)}&days=3`,
-              { cache: "no-store" }
-            );
-
-            if (!response.ok) {
-              throw new Error("Could not load additional future events.");
-            }
-
-            const data = await response.json();
-            return {
-              monthKey,
-              events: dedupeEvents(Array.isArray(data.events) ? data.events : []),
-            };
-          })
+        const response = await fetch(
+          `/api/category-events?category=${activeCategory}&start_date=${activeDate}&query=${encodeURIComponent(trimmedQuery)}`,
+          { cache: "no-store" }
         );
 
+        if (!response.ok) {
+          throw new Error("Could not search events right now.");
+        }
+
+        const data = await response.json();
         if (cancelled) return;
 
-        for (const result of responses) {
-          monthCacheRef.current.set(`${activeCategory}:${result.monthKey}`, result.events);
-        }
+        setSearchResults(
+          dedupeEvents(Array.isArray(data.events) ? data.events : [])
+        );
       } catch (err) {
         if (!cancelled) {
-          setError(err instanceof Error ? err.message : "Could not load future events.");
+          setSearchResults([]);
+          setError(err instanceof Error ? err.message : "Could not search events.");
         }
       } finally {
         if (!cancelled) {
@@ -318,7 +300,7 @@ export default function CategoryEventsBrowser({
       }
     }
 
-    loadFutureMonths();
+    loadSearchResults();
 
     return () => {
       cancelled = true;
@@ -328,20 +310,7 @@ export default function CategoryEventsBrowser({
   const groupedEvents = useMemo(() => {
     const normalizedQuery = normalizeSearchText(searchQuery);
     const visibleEvents = normalizedQuery
-      ? dedupeEvents(
-          Array.from({ length: 6 }, (_, index) =>
-            addMonthsToMonthKey(buildMonthKeyFromDateKey(activeDate), index)
-          )
-            .flatMap(
-              (monthKey) => monthCacheRef.current.get(`${activeCategory}:${monthKey}`) ?? []
-            )
-        )
-          .filter((event) => {
-            if (event.dateKey < activeDate) return false;
-
-            const haystack = normalizeSearchText(event.eventName);
-            return haystack.includes(normalizedQuery);
-          })
+      ? searchResults.filter((event) => event.dateKey >= activeDate)
       : filterEventsForWindow(monthEvents, activeDate, 3);
     const grouped = new Map<string, CategoryEventItem[]>();
 
@@ -352,7 +321,7 @@ export default function CategoryEventsBrowser({
     }
 
     return Array.from(grouped.entries());
-  }, [activeCategory, activeDate, monthEvents, searchQuery]);
+  }, [activeDate, monthEvents, searchQuery, searchResults]);
 
   return (
     <section id={anchorId} className="px-4 py-20 scroll-mt-20">
