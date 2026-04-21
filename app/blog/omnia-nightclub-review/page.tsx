@@ -68,7 +68,7 @@ export default function OmniaReview() {
             <h3 className="font-display text-white font-bold text-xl mb-3">Reserve the Best Table in the House</h3>
             <p className="text-white/55 text-sm mb-6">Justin books mezzanine placement with chandelier views — not whatever's available. That's the difference.</p>
             <div className="flex gap-3 justify-center flex-wrap">
-              <Link href="/places/omnia" className="btn-gold">View Omnia Details</Link>
+              <Link href="/places/omnia-nightclub" className="btn-gold">View Omnia Details</Link>
               <Link href="/contact" className="btn-ghost">Get a Free Quote</Link>
             </div>
           </div>
