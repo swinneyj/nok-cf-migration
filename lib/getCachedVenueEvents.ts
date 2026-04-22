@@ -59,7 +59,7 @@ async function getMonthEventsFromDB(month: string) {
     console.log(`[DB-QUERY] Fetching events for ${month}: ${queryStart.toISOString()} to ${queryEnd.toISOString()}`);
 
     const result = await sql`
-      SELECT event_id, venue_id, event_title, event_description, start_time
+      SELECT event_id, venue_id, event_title, event_description, start_time, raw_data
       FROM events
       WHERE start_time >= ${queryStart.toISOString()}
         AND start_time < ${queryEnd.toISOString()}
@@ -105,6 +105,8 @@ export async function getCachedVenueEvents(
 
     for (const event of venueEvents) {
       const startDate = new Date(event.start_time);
+      const rawData =
+        event.raw_data && typeof event.raw_data === "object" ? event.raw_data : undefined;
 
       // Format dates in Las Vegas timezone (America/Los_Angeles)
       const laFormatter = new Intl.DateTimeFormat("en-US", {
@@ -154,7 +156,20 @@ export async function getCachedVenueEvents(
           day: "numeric",
         }),
         sections,
-        flyerImagePath: undefined,
+        timeLabel:
+          typeof rawData?.timeLabel === "string" ? rawData.timeLabel : undefined,
+        timeSortKey:
+          typeof rawData?.timeSortKey === "string" ? rawData.timeSortKey : undefined,
+        flyerImagePath:
+          typeof rawData?.flyerImagePath === "string"
+            ? rawData.flyerImagePath
+            : undefined,
+        pricingNote:
+          typeof rawData?.pricingNote === "string" ? rawData.pricingNote : undefined,
+        minimumSpendNote:
+          typeof rawData?.minimumSpendNote === "string"
+            ? rawData.minimumSpendNote
+            : undefined,
       };
 
       if (parsedEvent.dateKey.startsWith(month)) {

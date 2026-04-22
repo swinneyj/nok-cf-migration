@@ -28,6 +28,7 @@ interface VenuePageProps {
   reviews?: Array<{ name: string; date: string; location: string; rating: number; text: string }>
   relatedVenues?: Array<{ name: string; href: string }>
   useReserveInquiryCta?: boolean
+  beforeAboutSection?: React.ReactNode
 }
 
 const defaultReviews = [
@@ -41,6 +42,7 @@ export default function VenuePage({
   reviews = defaultReviews,
   relatedVenues = [],
   useReserveInquiryCta = false,
+  beforeAboutSection,
 }: VenuePageProps) {
   const pathname = usePathname()
   const isNightclub = venue.category === 'Nightclub'
@@ -188,6 +190,8 @@ export default function VenuePage({
           ))}
         </div>
       </section>
+
+      {beforeAboutSection}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid lg:grid-cols-3 gap-12">

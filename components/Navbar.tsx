@@ -31,6 +31,7 @@ const navLinks = [
       { label: 'Tao Beach', href: '/places/tao-beach' },
       { label: 'Omnia Dayclub', href: '/places/omnia-dayclub' },
       { label: 'LIV Beach Club', href: '/places/liv-beach-club' },
+      { label: 'Tailgate Beach Club', href: '/places/tailgate-beach-club' },
       { label: 'AYU Dayclub', href: '/places/ayu-dayclub' },
       { label: 'Palm Tree Beach Club', href: '/places/palm-tree-beach-club' },
       { label: 'Kassi Beach Club', href: '/places/kassi-beach-club' },

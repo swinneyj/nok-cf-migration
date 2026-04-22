@@ -137,6 +137,7 @@ export default function CategoryEventsBrowser({
   const [selectedDate, setSelectedDate] = useState(seededDate);
   const [activeDate, setActiveDate] = useState(seededDate);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<CategoryEventItem[]>([]);
   const [monthEvents, setMonthEvents] = useState<CategoryEventItem[]>(initialEvents);
   const [loading, setLoading] = useState(false);
@@ -186,7 +187,18 @@ export default function CategoryEventsBrowser({
 
   useEffect(() => {
     setSearchQuery("");
+    setDebouncedSearchQuery("");
   }, [category]);
+
+  useEffect(() => {
+    const handle = window.setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300);
+
+    return () => {
+      window.clearTimeout(handle);
+    };
+  }, [searchQuery]);
 
   useEffect(() => {
     const activeMonth = buildMonthKeyFromDateKey(activeDate);
@@ -259,7 +271,7 @@ export default function CategoryEventsBrowser({
   useEffect(() => {
     if (!enableSearch) return;
 
-    const trimmedQuery = searchQuery.trim();
+    const trimmedQuery = debouncedSearchQuery.trim();
     if (!trimmedQuery) {
       setSearchResults([]);
       setSearchLoading(false);
@@ -305,12 +317,12 @@ export default function CategoryEventsBrowser({
     return () => {
       cancelled = true;
     };
-  }, [activeCategory, activeDate, enableSearch, searchQuery]);
+  }, [activeCategory, activeDate, debouncedSearchQuery, enableSearch]);
 
   const groupedEvents = useMemo(() => {
-    const normalizedQuery = normalizeSearchText(searchQuery);
+    const normalizedQuery = normalizeSearchText(debouncedSearchQuery);
     const visibleEvents = normalizedQuery
-      ? searchResults.filter((event) => event.dateKey >= activeDate)
+      ? searchResults
       : filterEventsForWindow(monthEvents, activeDate, 3);
     const grouped = new Map<string, CategoryEventItem[]>();
 
@@ -321,7 +333,7 @@ export default function CategoryEventsBrowser({
     }
 
     return Array.from(grouped.entries());
-  }, [activeDate, monthEvents, searchQuery, searchResults]);
+  }, [activeDate, debouncedSearchQuery, monthEvents, searchResults]);
 
   return (
     <section id={anchorId} className="px-4 py-20 scroll-mt-20">
@@ -369,7 +381,7 @@ export default function CategoryEventsBrowser({
                   />
                 </div>
                 <p className="mt-2 text-xs text-white/40">
-                  Search across upcoming events from your selected date forward.
+                  Search across all upcoming events.
                 </p>
               </div>
             ) : null}
@@ -429,10 +441,10 @@ export default function CategoryEventsBrowser({
             <div className="flex min-h-[220px] items-center justify-center">
               <div className="max-w-md text-center">
                 <p className="text-lg font-semibold text-white">
-                  {searchQuery.trim() ? `No upcoming matches for “${searchQuery.trim()}”` : "No events found"}
+                  {debouncedSearchQuery.trim() ? `No upcoming matches for “${debouncedSearchQuery.trim()}”` : "No events found"}
                 </p>
                 <p className="mt-2 text-sm text-white/55">
-                  {searchQuery.trim()
+                  {debouncedSearchQuery.trim()
                     ? "Try another artist, event name, or date to keep exploring."
                     : "Try another date to see what&apos;s happening across these venues."}
                 </p>

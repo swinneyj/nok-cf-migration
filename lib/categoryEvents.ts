@@ -1,7 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { sql } from "@vercel/postgres";
-import { getCachedVenueEvents } from "@/lib/getCachedVenueEvents";
 import {
   getCategoryVenueCards,
   poolPartyVenues,
@@ -97,6 +96,21 @@ function formatMonthKey(date: Date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
 }
 
+function buildMonthQueryRange(monthKey: string) {
+  const [year, month] = monthKey.split("-").map(Number);
+  const monthIndex = month - 1;
+  const startDate = new Date(Date.UTC(year, monthIndex, 1, 0, 0, 0, 0));
+  startDate.setUTCDate(startDate.getUTCDate() - 1);
+
+  const endDate = new Date(Date.UTC(year, monthIndex + 1, 1, 0, 0, 0, 0));
+  endDate.setUTCDate(endDate.getUTCDate() + 2);
+
+  return {
+    startIso: startDate.toISOString(),
+    endIso: endDate.toISOString(),
+  };
+}
+
 async function getFlyerManifest() {
   if (!flyerManifestPromise) {
     flyerManifestPromise = fs
@@ -177,45 +191,75 @@ export function filterCategoryEventsForWindow(
 
 async function loadCategoryMonthEvents(category: CategoryEventsKey, monthKey: string) {
   const venues = getCategoryVenueCards(category);
+  const venueBySlug = new Map(venues.map((venue) => [venue.venueSlug, venue]));
+  const venueIds = venues.map((venue) => venue.venueSlug);
   const manifest = await getFlyerManifest();
+  const { startIso, endIso } = buildMonthQueryRange(monthKey);
 
-  const venueEvents = await Promise.all(
-    venues.map(async (venue) => ({
-      venue,
-      events: await getCachedVenueEvents(venue.venueSlug, monthKey),
-    }))
+  if (venueIds.length === 0) {
+    return [];
+  }
+
+  const result = await sql.query(
+    `
+      SELECT event_id, venue_id, event_title, start_time
+      FROM events
+      WHERE venue_id = ANY($1::text[])
+        AND start_time >= $2
+        AND start_time < $3
+      ORDER BY start_time ASC, venue_id ASC
+    `,
+    [venueIds, startIso, endIso]
   );
 
   const items: CategoryEventItem[] = [];
+  for (const row of result.rows) {
+    const venue = venueBySlug.get(String((row as any).venue_id));
+    if (!venue) continue;
 
-  for (const { venue, events } of venueEvents) {
-    for (const event of events) {
-      const eventCategory = poolPartyVenues.some((card) => card.venueSlug === venue.venueSlug)
-        ? "pool-parties"
-        : "nightclubs";
-      const displayTime = CATEGORY_DISPLAY_TIMES[eventCategory];
+    const startTime = new Date((row as any).start_time);
+    const formattedDate = new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/Los_Angeles",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(startTime);
+    const [monthStr, dayStr, yearStr] = formattedDate.split("/");
+    const dateKey = `${yearStr}-${monthStr}-${dayStr}`;
 
-      const imagePath =
-        event.flyerImagePath ||
-        findBestFlyer(manifest, venue.venueSlug, event.eventName, event.dateKey) ||
-        venue.img;
-
-      items.push({
-        id: `${venue.venueSlug}:${event.id}:${event.dateKey}`,
-        eventName: event.eventName,
-        dateKey: event.dateKey,
-        dateString: event.dateString,
-        timeLabel: displayTime.timeLabel,
-        timeSortKey: displayTime.timeSortKey,
-        category: eventCategory,
-        venueSlug: venue.venueSlug,
-        venueName: venue.name,
-        venueLocation: venue.venue,
-        venueHref: venue.href,
-        eventHref: buildEventHref(venue, event.eventName, event.dateKey),
-        imagePath,
-      });
+    if (!dateKey.startsWith(monthKey)) {
+      continue;
     }
+
+    const eventName = String((row as any).event_title || "");
+    const eventCategory = poolPartyVenues.some((card) => card.venueSlug === venue.venueSlug)
+      ? "pool-parties"
+      : "nightclubs";
+    const displayTime = CATEGORY_DISPLAY_TIMES[eventCategory];
+
+    const imagePath =
+      findBestFlyer(manifest, venue.venueSlug, eventName, dateKey) || venue.img;
+
+    items.push({
+      id: `${venue.venueSlug}:${(row as any).event_id}:${dateKey}`,
+      eventName,
+      dateKey,
+      dateString: startTime.toLocaleDateString("en-US", {
+        timeZone: "America/Los_Angeles",
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+      }),
+      timeLabel: displayTime.timeLabel,
+      timeSortKey: displayTime.timeSortKey,
+      category: eventCategory,
+      venueSlug: venue.venueSlug,
+      venueName: venue.name,
+      venueLocation: venue.venue,
+      venueHref: venue.href,
+      eventHref: buildEventHref(venue, eventName, dateKey),
+      imagePath,
+    });
   }
 
   return sortCategoryEventItems(items);
@@ -227,7 +271,7 @@ export async function getCategoryMonthEvents(category: CategoryEventsKey, monthK
 
 export async function searchCategoryEvents(
   category: CategoryEventsKey,
-  startDateParam: string,
+  _startDateParam: string,
   query: string
 ) {
   const trimmedQuery = query.trim();
@@ -239,7 +283,7 @@ export async function searchCategoryEvents(
   const venueBySlug = new Map(venues.map((venue) => [venue.venueSlug, venue]));
   const venueIds = venues.map((venue) => venue.venueSlug);
   const manifest = await getFlyerManifest();
-  const startDate = parseCategoryEventsDateKey(startDateParam);
+  const startDate = parseCategoryEventsDateKey(buildTodayDateKey());
 
   const result = await sql.query(
     `
