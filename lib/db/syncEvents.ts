@@ -3,13 +3,13 @@ import { fetchVenueEvents, CALENDAR_IDS } from '@/lib/googleCalendarClient';
 import { fetchBooketingVenueEvents, isBooketingVenue } from '@/lib/booketingClient';
 import { parseEventDescription, type ParsedEvent } from '@/lib/calendarParser';
 import {
-  dedupeParsedEvents,
-  getParsedEventDeduplicationKey,
+  filterDisplayEvents,
 } from '@/lib/eventDeduplication';
 import { google } from 'googleapis';
 import { setOAuthCredentialsFromRefreshToken } from '@/lib/googleOAuthClient';
 import {
   ensureDatabaseSchema,
+  deleteEventsForVenueOutsideIds,
   deleteOldEvents,
   insertOrUpdateEvent,
   updateSyncStatus,
@@ -99,6 +99,8 @@ function dedupeGoogleSyncEvents<T extends {
 }>(
   events: T[]
 ) {
+  const getSyncWinnerKey = (event: ParsedEvent) => `${event.id}::${event.dateKey}`;
+
   const syncCandidates = events.map((event) => {
     const startTime = event.start?.dateTime
       ? new Date(event.start.dateTime)
@@ -126,15 +128,13 @@ function dedupeGoogleSyncEvents<T extends {
   });
 
   const winners = new Set(
-    dedupeParsedEvents(syncCandidates.map((candidate) => candidate.parsedEvent)).map(
-      getParsedEventDeduplicationKey
+    filterDisplayEvents(syncCandidates.map((candidate) => candidate.parsedEvent)).map(
+      getSyncWinnerKey
     )
   );
 
   return syncCandidates
-    .filter((candidate) =>
-      winners.has(getParsedEventDeduplicationKey(candidate.parsedEvent))
-    )
+    .filter((candidate) => winners.has(getSyncWinnerKey(candidate.parsedEvent)))
     .map((candidate) => candidate.raw);
 }
 
@@ -208,6 +208,18 @@ export async function syncCategoryVenueEvents(
             await storeSectionsForEvent(event.id || '', event.sections || []);
 
             result.eventsInserted++;
+          }
+
+          const deletedCount = await deleteEventsForVenueOutsideIds(
+            venue.venueSlug,
+            startDate,
+            endDate,
+            booketingEvents.map((event) => event.id || '').filter(Boolean)
+          );
+          if (deletedCount > 0) {
+            console.log(
+              `[SYNC] ${venue.name}: Deleted ${deletedCount} stale future events after Booketing sync`
+            );
           }
 
           await updateSyncStatus(venue.venueSlug, true, booketingEvents.length);
@@ -311,6 +323,18 @@ export async function syncCategoryVenueEvents(
             result.eventsInserted++;
           }
 
+          const deletedCount = await deleteEventsForVenueOutsideIds(
+            venue.venueSlug,
+            startDate,
+            endDate,
+            dedupedEvents.map((event) => event.id || '').filter(Boolean)
+          );
+          if (deletedCount > 0) {
+            console.log(
+              `[SYNC] ${venue.name}: Deleted ${deletedCount} stale future events after Google sync`
+            );
+          }
+
           await updateSyncStatus(venue.venueSlug, true, events.length);
         }
       } catch (error) {
@@ -411,6 +435,18 @@ export async function syncVenuesBySlug(
           result.eventsInserted++;
         }
 
+        const deletedCount = await deleteEventsForVenueOutsideIds(
+          venueSlug,
+          startDate,
+          endDate,
+          booketingEvents.map((event) => event.id || '').filter(Boolean)
+        );
+        if (deletedCount > 0) {
+          console.log(
+            `[SYNC] ${venueName}: Deleted ${deletedCount} stale future events after Booketing sync`
+          );
+        }
+
         await updateSyncStatus(venueSlug, true, booketingEvents.length);
         continue;
       }
@@ -495,6 +531,18 @@ export async function syncVenuesBySlug(
         }
 
         result.eventsInserted++;
+      }
+
+      const deletedCount = await deleteEventsForVenueOutsideIds(
+        venueSlug,
+        startDate,
+        endDate,
+        dedupedEvents.map((event) => event.id || '').filter(Boolean)
+      );
+      if (deletedCount > 0) {
+        console.log(
+          `[SYNC] ${venueName}: Deleted ${deletedCount} stale future events after Google sync`
+        );
       }
 
       await updateSyncStatus(venueSlug, true, events.length);
