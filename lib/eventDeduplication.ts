@@ -42,6 +42,10 @@ export function canonicalizeRecurringEventId(id: string | undefined) {
   return id;
 }
 
+function isRecurringInstanceId(id: string | undefined) {
+  return typeof id === "string" && /_(R)?\d{8}T\d{6}Z?$/.test(id);
+}
+
 export function pickPreferredEvent(a: ParsedEvent, b: ParsedEvent) {
   const aPlaceholder = isGenericPlaceholderEventName(a.eventName);
   const bPlaceholder = isGenericPlaceholderEventName(b.eventName);
@@ -72,6 +76,13 @@ export function pickPreferredEvent(a: ParsedEvent, b: ParsedEvent) {
 
 export function getParsedEventDeduplicationKey(event: ParsedEvent) {
   const canonicalId = canonicalizeRecurringEventId(event.id);
+  if (isRecurringInstanceId(event.id)) {
+    // Google recurring expansions sometimes emit a generic placeholder instance
+    // and a richer event instance for the same night with slightly different times.
+    // Collapse those by series id + local event date so the better event wins.
+    return `${canonicalId}::${event.dateKey}`;
+  }
+
   const timeKey = event.timeSortKey || getFallbackTimeSortKey(event.date);
   return `${canonicalId}::${event.dateKey}::${timeKey}`;
 }
