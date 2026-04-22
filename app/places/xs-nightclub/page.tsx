@@ -60,28 +60,23 @@ export default async function XSNightclub() {
             desc: 'The indoor-outdoor layout is what makes XS special, but it also changes where your group should sit. We help match your table to your vibe, whether you want energy near the action or more room to host.',
           },
         ]}
-        reviewsHeading="What XS Clients Say About Booking Through Us"
+        reviewsHeading="Real Reviews That Mention XS"
         reviews={[
           {
-            name: 'Ethan M.',
-            date: 'March 2026',
-            location: 'Dallas, TX',
+            name: 'Rohit R.',
+            date: 'January 2015',
+            location: 'Jacksonville, FL',
             rating: 5,
-            text: 'We almost booked XS direct and would have picked the wrong table for our group. Justin explained the room, moved us to a better location, and the night felt high-end from the second we walked in.',
+            source: 'Excerpted from Yelp review',
+            text: 'Justin helped a large bachelor-party group get priority access around Vegas, including a poolside table at XS. The reviewer called out how easy the entire weekend felt and said they would book through him again on their next trip.',
           },
           {
-            name: 'Nina P.',
-            date: 'February 2026',
-            location: 'Miami, FL',
+            name: 'Elliot Y.',
+            date: 'March 2015',
+            location: 'Redlands, CA',
             rating: 5,
-            text: 'XS was the one club we cared about for our trip. Nokturnal handled everything, timed our arrival perfectly, and our host got us through Encore and into the venue without any chaos.',
-          },
-          {
-            name: 'Jordan L.',
-            date: 'January 2026',
-            location: 'San Diego, CA',
-            rating: 5,
-            text: 'The best part was having someone who actually knew XS. We told Justin we wanted the outdoor energy without being crammed, and he nailed the recommendation. Easily the strongest night of the weekend.',
+            source: 'Excerpted from Yelp review',
+            text: 'After getting help with XS table service for a bachelor party of 12, the reviewer praised the team for being honest, on time, reliable, and easy to reach before and during the event.',
           },
         ]}
         relatedVenues={[

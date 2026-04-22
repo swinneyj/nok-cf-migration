@@ -4,9 +4,10 @@ interface ReviewProps {
   rating?: number
   text: string
   location?: string
+  source?: string
 }
 
-export default function ReviewCard({ name, date, rating = 5, text, location }: ReviewProps) {
+export default function ReviewCard({ name, date, rating = 5, text, location, source }: ReviewProps) {
   const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2)
   return (
     <div className="card-dark p-6">
@@ -19,6 +20,7 @@ export default function ReviewCard({ name, date, rating = 5, text, location }: R
         <div>
           <div className="text-white font-semibold text-sm">{name}</div>
           <div className="text-white/30 text-xs">{location ? `${location} · ` : ''}{date}</div>
+          {source && <div className="text-gold-400/80 text-[11px] mt-1 uppercase tracking-wide">{source}</div>}
         </div>
       </div>
     </div>

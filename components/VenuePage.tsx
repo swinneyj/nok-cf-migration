@@ -26,7 +26,7 @@ interface VenuePageProps {
     slug: string
   }
   bookingReasons?: Array<{ title: string; desc: string }>
-  reviews?: Array<{ name: string; date: string; location: string; rating: number; text: string }>
+  reviews?: Array<{ name: string; date: string; location: string; rating: number; text: string; source?: string }>
   reviewsHeading?: string
   relatedVenues?: Array<{ name: string; href: string }>
   useReserveInquiryCta?: boolean
