@@ -1,7 +1,11 @@
 import { getCategoryVenueCards, type CategoryEventsKey } from '@/lib/categoryVenueData';
 import { fetchVenueEvents, CALENDAR_IDS } from '@/lib/googleCalendarClient';
 import { fetchBooketingVenueEvents, isBooketingVenue } from '@/lib/booketingClient';
-import { parseEventDescription } from '@/lib/calendarParser';
+import { parseEventDescription, type ParsedEvent } from '@/lib/calendarParser';
+import {
+  dedupeParsedEvents,
+  getParsedEventDeduplicationKey,
+} from '@/lib/eventDeduplication';
 import { google } from 'googleapis';
 import { setOAuthCredentialsFromRefreshToken } from '@/lib/googleOAuthClient';
 import {
@@ -42,6 +46,96 @@ function getVenueNameBySlug(venueSlug: string) {
 
 function shouldSkipVenueSync(venueSlug: string) {
   return EXCLUDED_SYNC_VENUES.has(venueSlug);
+}
+
+function getTimeSortKey(date: Date) {
+  return `${String(date.getHours()).padStart(2, '0')}:${String(
+    date.getMinutes()
+  ).padStart(2, '0')}`;
+}
+
+function buildParsedSyncEvent(
+  eventId: string,
+  eventTitle: string,
+  eventDescription: string,
+  startTime: Date,
+  dateKey: string
+): ParsedEvent {
+  const parsed = parseEventDescription(
+    eventDescription,
+    eventId,
+    eventTitle,
+    startTime,
+    dateKey,
+    undefined,
+    getTimeSortKey(startTime)
+  );
+
+  if (parsed) {
+    return parsed;
+  }
+
+  return {
+    id: eventId,
+    eventName: eventTitle,
+    date: startTime,
+    dateKey,
+    dateString: startTime.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    }),
+    timeSortKey: getTimeSortKey(startTime),
+    sections: [],
+  };
+}
+
+function dedupeGoogleSyncEvents<T extends {
+  id?: string | null;
+  summary?: string | null;
+  description?: string | null;
+  start?: { dateTime?: string | null; date?: string | null };
+}>(
+  events: T[]
+) {
+  const syncCandidates = events.map((event) => {
+    const startTime = event.start?.dateTime
+      ? new Date(event.start.dateTime)
+      : event.start?.date
+      ? new Date(event.start.date)
+      : new Date();
+
+    const eventId = event.id || '';
+    const eventTitle = event.summary || 'Untitled Event';
+    const eventDescription = event.description || '';
+    const dateKey = startTime.toISOString().split('T')[0];
+    const parsedEvent = buildParsedSyncEvent(
+      eventId,
+      eventTitle,
+      eventDescription,
+      startTime,
+      dateKey
+    );
+
+    return {
+      raw: event,
+      startTime,
+      parsedEvent,
+    };
+  });
+
+  const winners = new Set(
+    dedupeParsedEvents(syncCandidates.map((candidate) => candidate.parsedEvent)).map(
+      getParsedEventDeduplicationKey
+    )
+  );
+
+  return syncCandidates
+    .filter((candidate) =>
+      winners.has(getParsedEventDeduplicationKey(candidate.parsedEvent))
+    )
+    .map((candidate) => candidate.raw);
 }
 
 export async function syncCategoryVenueEvents(
@@ -151,14 +245,21 @@ export async function syncCategoryVenueEvents(
 
           console.log(`[SYNC] ${venue.name}: Found ${events.length} events across ${pageCount} pages`);
 
+          const dedupedEvents = dedupeGoogleSyncEvents(events);
+          if (dedupedEvents.length !== events.length) {
+            console.log(
+              `[SYNC] ${venue.name}: Deduped Google events from ${events.length} to ${dedupedEvents.length}`
+            );
+          }
+
           result.debug?.push({
             venueSlug: venue.venueSlug,
             calendarId,
-            eventsFound: events.length,
+            eventsFound: dedupedEvents.length,
           });
 
           // Insert each event into database
-          for (const event of events) {
+          for (const event of dedupedEvents) {
             const startTime = event.start?.dateTime
               ? new Date(event.start.dateTime)
               : event.start?.date
@@ -343,13 +444,20 @@ export async function syncVenuesBySlug(
         );
       } while (pageToken);
 
+      const dedupedEvents = dedupeGoogleSyncEvents(events);
+      if (dedupedEvents.length !== events.length) {
+        console.log(
+          `[SYNC] ${venueName}: Deduped Google events from ${events.length} to ${dedupedEvents.length}`
+        );
+      }
+
       result.debug.push({
         venueSlug,
         calendarId,
-        eventsFound: events.length,
+        eventsFound: dedupedEvents.length,
       });
 
-      for (const event of events) {
+      for (const event of dedupedEvents) {
         const startTime = event.start?.dateTime
           ? new Date(event.start.dateTime)
           : event.start?.date
