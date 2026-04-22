@@ -51,7 +51,7 @@ export default function BottleServicePage() {
       <section className="relative page-hero overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src="https://images.unsplash.com/photo-1574391884720-bbc3740c59d1?w=1600&q=85"
+            src="/images/venues/bottle-service-hero.png"
             alt="Las Vegas VIP bottle service nightclub table"
             className="w-full h-full object-cover"
           />
