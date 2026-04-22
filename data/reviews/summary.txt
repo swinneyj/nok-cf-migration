@@ -1,0 +1,21 @@
+Total normalized reviews: 161
+
+By source:
+- Google: 38
+- Yelp not recommended: 73
+- Yelp public: 50
+
+Venue mention counts:
+- marquee-nightclub: 10
+- xs-nightclub: 7
+- hakkasan-nightclub: 4
+- surrender-nightclub: 4
+- light-nightclub: 3
+- omnia-nightclub: 3
+- drais-nightclub: 2
+- encore-beach-club: 2
+- jewel-nightclub: 2
+- marquee-dayclub: 1
+- tao-nightclub: 1
+- wet-republic: 1
+- zouk-nightclub: 1

@@ -42,6 +42,24 @@ export default async function XSNightclub() {
           ],
           slug: 'xs-nightclub',
         }}
+        bookingReasons={[
+          {
+            title: 'We Guide You Toward the Right XS Table',
+            desc: 'XS is one of the easiest clubs to overpay at if you do not know the room. We help groups choose between main room, outdoor pool-facing, and value tables based on their budget and how they actually want the night to feel.',
+          },
+          {
+            title: 'Encore and Wynn Guests Get a Smarter Plan',
+            desc: 'If your group is already staying at Wynn or Encore, we can build the night around your hotel logistics and timing so entry, arrival, and table check-in feel seamless instead of rushed.',
+          },
+          {
+            title: 'XS Demand Swings Fast on Headliner Nights',
+            desc: 'XS minimums can move quickly when the right DJ is on. We help you book early when it matters, avoid weak-value positions, and pivot if another venue is a better fit for the same spend.',
+          },
+          {
+            title: 'We Make the Poolside Experience Easier',
+            desc: 'The indoor-outdoor layout is what makes XS special, but it also changes where your group should sit. We help match your table to your vibe, whether you want energy near the action or more room to host.',
+          },
+        ]}
         relatedVenues={[
           { name: 'Hakkasan', href: '/places/hakkasan' },
           { name: 'Omnia', href: '/places/omnia' },

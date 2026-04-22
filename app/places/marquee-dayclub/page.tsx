@@ -42,6 +42,51 @@ export default async function MarqueeDayclub() {
         ],
         slug: 'marquee-dayclub',
       }}
+      bookingReasons={[
+        {
+          title: 'We Help You Choose Between Daybed, Cabana, or Bungalow',
+          desc: 'Marquee Dayclub has a wider range of price points than EBC, but that also means more ways to book the wrong setup. We help groups line up the right spend with the kind of day they actually want.',
+        },
+        {
+          title: 'Cosmopolitan Groups Get a Smoother Plan',
+          desc: 'If your crew is staying at The Cosmopolitan or nearby, Marquee is one of the easiest venues to build around. We help time arrival, table check-in, and the rest of the day so it feels effortless.',
+        },
+        {
+          title: 'Hip-Hop vs EDM Days Change the Value',
+          desc: 'Marquee can feel very different depending on the artist and crowd. We help you book around the right date and table tier instead of assuming every pool day has the same energy.',
+        },
+        {
+          title: 'It Works Especially Well in a Day-to-Night Itinerary',
+          desc: 'Marquee Dayclub and Marquee Nightclub pair well for groups that want one home base at Cosmo. We can build that weekend so the transitions and spend make sense.',
+        },
+      ]}
+      reviewsHeading="What Clients Say About Booking With Nokturnal"
+      reviews={[
+        {
+          name: 'Angel G.',
+          date: 'April 2023',
+          location: 'Bell, CA',
+          rating: 5,
+          source: 'Yelp review',
+          text: 'My boy Justin and his brother took care of us for all of our events. As easy as shooting us a price and coordinating every single detail with TAO nightclub and Marquee Day Party and we just showed up. They were always prompt to greet us and show us around.',
+        },
+        {
+          name: 'Rohit R.',
+          date: 'January 2015',
+          location: 'Jacksonville, FL',
+          rating: 5,
+          source: 'Yelp review',
+          text: 'He hooked us up with a party bus and a table by the pool at XS, it was just amazing and the next time we hung out at Marquee at a pool party all day. We all had a very good time and will definitely reach out to Justin the next time we are in Vegas.',
+        },
+        {
+          name: 'Florencia L.',
+          date: '6/22/2016 Updated review',
+          location: 'México, D.F., Mexico',
+          rating: 5,
+          source: 'Yelp review',
+          text: 'Justin and Josh are by far the best hosts and concierges in Vegas. They are amazing, always taking the best care of you and giving you the best service. I have organized my Vegas time with them a couple of times and I am looking forward to the next time.',
+        },
+      ]}
       relatedVenues={[
         { name: 'Encore Beach Club', href: '/places/encore-beach-club' },
         { name: 'Elia Beach Club', href: '/pool-parties' },
