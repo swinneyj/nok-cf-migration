@@ -1,7 +1,7 @@
 import { sql } from "@vercel/postgres";
 import { getSectionsForEvent } from "@/lib/db/client";
 import { parseEventDescription, type ParsedEvent } from "@/lib/calendarParser";
-import { dedupeParsedEvents } from "@/lib/eventDeduplication";
+import { filterDisplayEvents } from "@/lib/eventDeduplication";
 
 export function clearEventCache() {
   console.log('[CACHE] Cleared month data cache');
@@ -178,7 +178,7 @@ export async function getCachedVenueEvents(
       }
     }
 
-    return dedupeParsedEvents(parsedEvents);
+    return filterDisplayEvents(parsedEvents);
   } catch (error) {
     console.error(
       `Error in getCachedVenueEvents for ${venue} ${month}:`,

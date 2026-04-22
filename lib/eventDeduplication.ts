@@ -14,6 +14,10 @@ function getTierCount(event: ParsedEvent) {
     : 0;
 }
 
+export function hasEventPricing(event: ParsedEvent) {
+  return getTierCount(event) > 0;
+}
+
 function isGenericPlaceholderEventName(name: string | undefined) {
   const normalized = String(name || "").trim().toLowerCase();
 
@@ -103,4 +107,30 @@ export function dedupeParsedEvents(events: ParsedEvent[]) {
   }
 
   return Array.from(map.values());
+}
+
+export function filterDisplayEvents(events: ParsedEvent[]) {
+  const dedupedEvents = dedupeParsedEvents(events);
+  const byDate = new Map<string, ParsedEvent[]>();
+
+  for (const event of dedupedEvents) {
+    const dateEvents = byDate.get(event.dateKey) || [];
+    dateEvents.push(event);
+    byDate.set(event.dateKey, dateEvents);
+  }
+
+  const filteredEvents: ParsedEvent[] = [];
+
+  for (const dateEvents of Array.from(byDate.values())) {
+    const pricedEvents = dateEvents.filter(hasEventPricing);
+
+    if (pricedEvents.length > 0 && dateEvents.length > 1) {
+      filteredEvents.push(...pricedEvents);
+      continue;
+    }
+
+    filteredEvents.push(...dateEvents);
+  }
+
+  return filteredEvents;
 }
