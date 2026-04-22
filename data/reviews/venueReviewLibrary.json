@@ -1,0 +1,2562 @@
+[
+  {
+    "id": "yelp-public-1",
+    "name": "Arthur C.",
+    "date": "November 2014",
+    "location": "Brea, CA",
+    "rating": 4,
+    "text": "I recently went to Vegas on 2 separate occasions, and Justin at NLS really made things come together perfectly. I've gone to many of the clubs in Vegas through many different hosts throughout the years, but how Justin takes care of you makes things just so easy and worry-free.",
+    "source": "Yelp review",
+    "venueSlugs": [
+      "xs-nightclub",
+      "hakkasan-nightclub"
+    ],
+    "matchedTerms": [
+      "XS",
+      "Hakkasan"
+    ],
+    "categoryTags": [
+      "nightclub"
+    ],
+    "priority": 135
+  },
+  {
+    "id": "yelp-public-4",
+    "name": "Elliot Y.",
+    "date": "March 2015",
+    "location": "Redlands, CA",
+    "rating": 2,
+    "text": "I recently had Justin and Jay help me out with table service at XS for a bachelor party of 12. I really can't say enough good things about these guys. They're honest, on time and reliable. They have a good grasp on all the hot spots with all the right connections.",
+    "source": "Yelp review",
+    "venueSlugs": [
+      "xs-nightclub"
+    ],
+    "matchedTerms": [
+      "XS"
+    ],
+    "categoryTags": [
+      "nightclub"
+    ],
+    "priority": 135
+  },
+  {
+    "id": "yelp-public-28",
+    "name": "Elyyse L.",
+    "date": "June 2018",
+    "location": "Summerlin, Las Vegas, NV",
+    "rating": 0,
+    "text": "Top notch! Justin & Josh hooked it UP for my sisters bachelorette party! We did a table at Drais for 2 Chainz with amazing bottle deals - Josh got us upgraded from a patio table to a table on the balcony over looking the stage which literally made the night!",
+    "source": "Yelp review",
+    "venueSlugs": [
+      "marquee-nightclub",
+      "drais-nightclub"
+    ],
+    "matchedTerms": [
+      "Marquee",
+      "Drais"
+    ],
+    "categoryTags": [
+      "nightclub"
+    ],
+    "priority": 135
+  },
+  {
+    "id": "google-36",
+    "name": "Gian Casale",
+    "date": "August 2024",
+    "location": "",
+    "rating": 5,
+    "text": "Justin is the man. Booked a pool party cabana at wet republic and bottle service at marquee. He personally met us at both venues and verified that we were taken care of. Smooth experience",
+    "source": "Google review",
+    "venueSlugs": [
+      "marquee-nightclub",
+      "wet-republic"
+    ],
+    "matchedTerms": [
+      "marquee",
+      "wet republic"
+    ],
+    "categoryTags": [
+      "dayclub",
+      "nightclub"
+    ],
+    "priority": 135
+  },
+  {
+    "id": "yelp-public-2",
+    "name": "Rohit R.",
+    "date": "January 2015",
+    "location": "Jacksonville, FL",
+    "rating": 3,
+    "text": "VEGAS can't get any better Vegas is a party city by itself but Justin just made it a hell lot better for us . It was my 4th trip to Vegas and the last 2 times i was in town was for bachelor parties and Justin took care of everything for us.",
+    "source": "Yelp review",
+    "venueSlugs": [
+      "xs-nightclub",
+      "marquee-nightclub"
+    ],
+    "matchedTerms": [
+      "XS",
+      "Marquee"
+    ],
+    "categoryTags": [
+      "nightclub"
+    ],
+    "priority": 135
+  },
+  {
+    "id": "yelp-public-29",
+    "name": "Amin G.",
+    "date": "January 2019",
+    "location": "Albuquerque, NM",
+    "rating": 1,
+    "text": "Amazing Service! Justin did an amazing job helping us put together night out at Hakkasan! Everything was as promised and on time. Not to mention way better prices compared to going through with the club directly.",
+    "source": "Yelp review",
+    "venueSlugs": [
+      "hakkasan-nightclub"
+    ],
+    "matchedTerms": [
+      "Hakkasan"
+    ],
+    "categoryTags": [
+      "nightclub"
+    ],
+    "priority": 130
+  },
+  {
+    "id": "yelp-public-47",
+    "name": "Angel G.",
+    "date": "April 2023",
+    "location": "Bell, CA",
+    "rating": 0,
+    "text": "My boy Justin and his brother took care of us for all of our events. As easy as shooting us a price and coordinating every single detail with TAO nightclub and Marquee Day Party and we just showed up. They were always prompt to greet us and show us around.",
+    "source": "Yelp review",
+    "venueSlugs": [
+      "marquee-dayclub",
+      "tao-nightclub"
+    ],
+    "matchedTerms": [
+      "Marquee Day Party",
+      "TAO"
+    ],
+    "categoryTags": [
+      "dayclub",
+      "nightclub"
+    ],
+    "priority": 130
+  },
+  {
+    "id": "yelp-public-25",
+    "name": "Corey S.",
+    "date": "August 2017",
+    "location": "Charlotte, NC",
+    "rating": 1,
+    "text": "My man...Justin. He killed it, that's all I have to say. We had a group of 10 looking for a table at a hip hop club. This is how the process went: Communication Justin was on top of it from the get-go. He recommended two places and said Omnia was the place to be for us.",
+    "source": "Yelp review",
+    "venueSlugs": [
+      "omnia-nightclub"
+    ],
+    "matchedTerms": [
+      "Omnia"
+    ],
+    "categoryTags": [
+      "nightclub"
+    ],
+    "priority": 130
+  },
+  {
+    "id": "yelp-public-15",
+    "name": "Daniel E.",
+    "date": "January 2017",
+    "location": "Oceanside, CA",
+    "rating": 1,
+    "text": "Great and outstanding service. I recommend Justin most definitely. He came through for my friends and I at Marquee in the Cosmopolitan. He was quick and accommodating. Can't wait to go back anyone using this service will be in good hands.",
+    "source": "Yelp review",
+    "venueSlugs": [
+      "marquee-nightclub"
+    ],
+    "matchedTerms": [
+      "Marquee"
+    ],
+    "categoryTags": [
+      "nightclub"
+    ],
+    "priority": 130
+  },
+  {
+    "id": "yelp-public-30",
+    "name": "Keith R.",
+    "date": "April 2019",
+    "location": "Cleveland, OH",
+    "rating": 0,
+    "text": "My friends and I have been using Justin for the last couple years when visiting Las Vegas. I have dealt with 4 different people now when coming to party in Vegas and I am happy to say once I was introduced to Justin I deleted the other 3 phone numbers.",
+    "source": "Yelp review",
+    "venueSlugs": [
+      "omnia-nightclub",
+      "marquee-nightclub",
+      "jewel-nightclub"
+    ],
+    "matchedTerms": [
+      "Omnia",
+      "Marquee",
+      "Jewel"
+    ],
+    "categoryTags": [
+      "nightclub"
+    ],
+    "priority": 130
+  },
+  {
+    "id": "yelp-public-14",
+    "name": "Lana F.",
+    "date": "December 2016",
+    "location": "San Diego, CA",
+    "rating": 0,
+    "text": "Justin was my contact for the weekend and he is the most responsive industry person I've ever came across with. He made sure we get a good deal for a great table at Marquee.",
+    "source": "Yelp review",
+    "venueSlugs": [
+      "marquee-nightclub"
+    ],
+    "matchedTerms": [
+      "Marquee"
+    ],
+    "categoryTags": [
+      "nightclub"
+    ],
+    "priority": 130
+  },
+  {
+    "id": "yelp-public-7",
+    "name": "Stephanie G.",
+    "date": "July 2015",
+    "location": "Los Angeles, CA",
+    "rating": 2,
+    "text": "I have to say Justin one of the greatest promoters in Las Vegas. Not only is he quick at responding to text messages but he is so great at recommending and refering you to places. For example, 4 of my girls and I were over in Las Vegas last weekend.",
+    "source": "Yelp review",
+    "venueSlugs": [
+      "marquee-nightclub"
+    ],
+    "matchedTerms": [
+      "marquee"
+    ],
+    "categoryTags": [
+      "nightclub"
+    ],
+    "priority": 130
+  },
+  {
+    "id": "yelp-hidden-bmRu37nPE4ZlMVZfBseQkw",
+    "name": "Dillon R.",
+    "date": "April 2018",
+    "location": "Rossmoor, CA",
+    "rating": 5,
+    "text": "Great service and timely responses!! Definitely recommend their service. Jake was extremely helpful with getting us a table at XS, which allowed us to have a great time for my buddies bachelor party!",
+    "source": "Yelp review",
+    "venueSlugs": [
+      "xs-nightclub"
+    ],
+    "matchedTerms": [
+      "XS"
+    ],
+    "categoryTags": [
+      "nightclub"
+    ],
+    "priority": 125
+  },
+  {
+    "id": "yelp-hidden-higLt2QXc88hh8ebPlNkVw",
+    "name": "Florencia L.",
+    "date": "6/22/2016 Updated review",
+    "location": "México, D.F., Mexico",
+    "rating": 5,
+    "text": "Justin and Josh are by far the best hosts/concierges in Vegas!!!!! They are amazing! Always taking the best Care Of you and giving you the best service. I have organized my vegas time with them a couple Of times and im looking forward for the next time.",
+    "source": "Yelp review",
+    "venueSlugs": [
+      "marquee-nightclub",
+      "encore-beach-club"
+    ],
+    "matchedTerms": [
+      "marquee",
+      "ebc"
+    ],
+    "categoryTags": [
+      "dayclub",
+      "nightclub"
+    ],
+    "priority": 120
+  },
+  {
+    "id": "yelp-hidden-mI5f8KojzxjnIBNE7-n6dA",
+    "name": "Frankie D.",
+    "date": "February 2015",
+    "location": "Henderson, NV",
+    "rating": 5,
+    "text": "Although I live in Las Vegas, I'm a stranger to the clubs. My cousins came into town with some friends and they wanted to go to a club. Not knowing where to start I called Justin at NLS.",
+    "source": "Yelp review",
+    "venueSlugs": [
+      "marquee-nightclub"
+    ],
+    "matchedTerms": [
+      "Marquee"
+    ],
+    "categoryTags": [
+      "nightclub"
+    ],
+    "priority": 120
+  },
+  {
+    "id": "yelp-hidden-e0dtMgzkAGda5dXK3VF8RA",
+    "name": "Neil M.",
+    "date": "February 2015",
+    "location": "Arroyo Grande, CA",
+    "rating": 5,
+    "text": "This company is legit. Justin is the man! After arrival I was scared to even try going to a club seeing those long lines with 100+ people waiting in them. Justin made everything simple and easy.",
+    "source": "Yelp review",
+    "venueSlugs": [
+      "xs-nightclub"
+    ],
+    "matchedTerms": [
+      "XS"
+    ],
+    "categoryTags": [
+      "nightclub"
+    ],
+    "priority": 120
+  },
+  {
+    "id": "yelp-hidden-GHW4rtkCnvTPbzZOho8RpQ",
+    "name": "Nick B.",
+    "date": "June 2017",
+    "location": "Reston, VA",
+    "rating": 5,
+    "text": "Josh from Nokturnal Lifestlye hooked us up! Had a great time at Omnia Night Club and saved us a ton of money on drinks and our VIP table. He was a really genuine guy that wanted us to have a great time. I highly recommend them!!!",
+    "source": "Yelp review",
+    "venueSlugs": [
+      "omnia-nightclub"
+    ],
+    "matchedTerms": [
+      "Omnia"
+    ],
+    "categoryTags": [
+      "nightclub"
+    ],
+    "priority": 120
+  },
+  {
+    "id": "yelp-hidden-HLQ9pAmG9p9J6skYfOr2CQ",
+    "name": "Nick H.",
+    "date": "November 2014",
+    "location": "Berkeley, CA",
+    "rating": 5,
+    "text": "NLS & took great care of us! We all went out to XS and Justin was a wonderful host. For much less than what we would have paid in line, we got priority access to the club and drink service. Justin was on call if we needed anything. Would highly recommend to friends!",
+    "source": "Yelp review",
+    "venueSlugs": [
+      "xs-nightclub"
+    ],
+    "matchedTerms": [
+      "XS"
+    ],
+    "categoryTags": [
+      "nightclub"
+    ],
+    "priority": 120
+  },
+  {
+    "id": "yelp-hidden-f71Q1X9zzDBBLJ8857nkvw",
+    "name": "Nico V.",
+    "date": "December 2014",
+    "location": "Henderson, NV",
+    "rating": 5,
+    "text": "I recently went to Surrender Nightclub for Twerksgiving to see Diplo recommended by Justin at NLS. He not only put my friends and I on a guest list(even ratio), but also took us to a cabana and introduced to people we would have not been comfortable approaching by ourselves.",
+    "source": "Yelp review",
+    "venueSlugs": [
+      "hakkasan-nightclub",
+      "surrender-nightclub"
+    ],
+    "matchedTerms": [
+      "Hakkasan",
+      "Surrender"
+    ],
+    "categoryTags": [
+      "nightclub"
+    ],
+    "priority": 120
+  },
+  {
+    "id": "yelp-hidden-5us9LL-hrwZiBNW8sBCddA",
+    "name": "Rodolfo D.",
+    "date": "March 2018",
+    "location": "Menlo Park, CA",
+    "rating": 5,
+    "text": "Amazing service! Literally contacted them last minute to get into XS and in less than 30 mins from the first phone call I was inside the club while people waited hours outside in the rain. They have me as a client for life",
+    "source": "Yelp review",
+    "venueSlugs": [
+      "xs-nightclub"
+    ],
+    "matchedTerms": [
+      "XS"
+    ],
+    "categoryTags": [
+      "nightclub"
+    ],
+    "priority": 120
+  },
+  {
+    "id": "yelp-hidden-4GeiNUN97ku6k5b2p9SAug",
+    "name": "Sheila E.",
+    "date": "July 2017",
+    "location": "San Francisco, CA",
+    "rating": 5,
+    "text": "Justin is amazing, I cannot recommend him more. He gave us a seriously deal on a table at LIGHT Marquee and Surrender. 10/5 stars, I am recommending him to all of my friends.",
+    "source": "Yelp review",
+    "venueSlugs": [
+      "marquee-nightclub",
+      "surrender-nightclub",
+      "light-nightclub"
+    ],
+    "matchedTerms": [
+      "Marquee",
+      "Surrender",
+      "LIGHT"
+    ],
+    "categoryTags": [
+      "nightclub"
+    ],
+    "priority": 120
+  },
+  {
+    "id": "yelp-hidden-xhOIVFXa_5IjGVw3NAZE4A",
+    "name": "Tyler E.",
+    "date": "October 2017",
+    "location": "Ogden, UT",
+    "rating": 5,
+    "text": "Awesome time at Hakkasan at MGM, thanks to Justin we got in no problem, it was an epic night. Thanks again Justin for coming through bro, I'll highly recommend this for anyone",
+    "source": "Yelp review",
+    "venueSlugs": [
+      "hakkasan-nightclub"
+    ],
+    "matchedTerms": [
+      "Hakkasan"
+    ],
+    "categoryTags": [
+      "nightclub"
+    ],
+    "priority": 120
+  },
+  {
+    "id": "google-20",
+    "name": "Makayla Altfillisch",
+    "date": "August 2022",
+    "location": "",
+    "rating": 5,
+    "text": "I had my first experience at Jewel… let me say the music, the vibes, the people, etc… ITS PERFECT! I had so much fun!",
+    "source": "Google review",
+    "venueSlugs": [
+      "jewel-nightclub"
+    ],
+    "matchedTerms": [
+      "Jewel"
+    ],
+    "categoryTags": [
+      "nightclub"
+    ],
+    "priority": 115
+  },
+  {
+    "id": "yelp-public-3",
+    "name": "Alicia V.",
+    "date": "January 2015",
+    "location": "Denver, CO",
+    "rating": 2,
+    "text": "Justin at NLS was highly recommended to me by a friend when I was planning my best friends 22nd birthday celebration. I had managed to get a large group of 23 people together and Justin got us hooked up at Surrender Nightclub here in Vegas with a cabana and bottle service!",
+    "source": "Yelp review",
+    "venueSlugs": [
+      "surrender-nightclub"
+    ],
+    "matchedTerms": [
+      "Surrender"
+    ],
+    "categoryTags": [
+      "nightclub"
+    ],
+    "priority": 110
+  },
+  {
+    "id": "yelp-public-5",
+    "name": "David L.",
+    "date": "May 2015",
+    "location": "Los Angeles, CA",
+    "rating": 2,
+    "text": "I've had Justin help me out on two occassions now. Once to get line privileges for a large group at Surrender and another time to help coordinate a cabana at Rehab (Hard Rock).",
+    "source": "Yelp review",
+    "venueSlugs": [
+      "surrender-nightclub"
+    ],
+    "matchedTerms": [
+      "Surrender"
+    ],
+    "categoryTags": [
+      "nightclub"
+    ],
+    "priority": 110
+  },
+  {
+    "id": "yelp-public-19",
+    "name": "Nay J.",
+    "date": "February 2017",
+    "location": "Los Angeles, CA",
+    "rating": 0,
+    "text": "Everything was great! We used Nokturnal Lifestvle to go Drais on Saturday! We got in free too! Thank you guys!",
+    "source": "Yelp review",
+    "venueSlugs": [
+      "drais-nightclub"
+    ],
+    "matchedTerms": [
+      "Drais"
+    ],
+    "categoryTags": [
+      "nightclub"
+    ],
+    "priority": 110
+  },
+  {
+    "id": "yelp-public-46",
+    "name": "prashanth m.",
+    "date": "April 2023",
+    "location": "Chicago, IL",
+    "rating": 0,
+    "text": "When I took on the responsibilities of planning a guys weekend in Vegas, I didn't know how deep of a hole I would slip into researching options and things to do. From the very first communication with Justin, I felt a huge weight off my shoulders.",
+    "source": "Yelp review",
+    "venueSlugs": [
+      "zouk-nightclub"
+    ],
+    "matchedTerms": [
+      "Zouk"
+    ],
+    "categoryTags": [
+      "nightclub"
+    ],
+    "priority": 110
+  },
+  {
+    "id": "yelp-hidden-r7ZbX_yqu3rpjm3H_71PTw",
+    "name": "Jonathan C.",
+    "date": "April 2016",
+    "location": "Las Vegas, NV",
+    "rating": 5,
+    "text": "Sick service and everything is clear when I had to book a table for encore beach club. Easy to contact with fast replies. Made the whole partying process a breeze. A must if you wanna party in Vegas!",
+    "source": "Yelp review",
+    "venueSlugs": [
+      "encore-beach-club"
+    ],
+    "matchedTerms": [
+      "encore beach club"
+    ],
+    "categoryTags": [
+      "dayclub"
+    ],
+    "priority": 100
+  },
+  {
+    "id": "yelp-hidden-LGeKr5IqqVYz0Dg9RiFNmA",
+    "name": "Mark S.",
+    "date": "October 2017",
+    "location": "Littleton, CO",
+    "rating": 5,
+    "text": "Let me light up another 5 stars for Justin. He helped me coordinate a trip for 11 guys with a wide age and income range. Justin was available and anxious to offer options from lodging to restaurants to entertainment. We worked on plans from weeks before and through the stay.",
+    "source": "Yelp review",
+    "venueSlugs": [
+      "light-nightclub"
+    ],
+    "matchedTerms": [
+      "light"
+    ],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 100
+  },
+  {
+    "id": "yelp-hidden-Eh5okqRxkcBXqskWfyKvrw",
+    "name": "Michael N.",
+    "date": "March 2018",
+    "location": "Baltimore, MD",
+    "rating": 5,
+    "text": "So now that I'm recovered from my Vegas trip a couple of weeks ago, I wanted to let people know how great of a time my group had dealing with Justin at Nokturnal.",
+    "source": "Yelp review",
+    "venueSlugs": [
+      "light-nightclub"
+    ],
+    "matchedTerms": [
+      "Light"
+    ],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 100
+  },
+  {
+    "id": "google-31",
+    "name": "Raeghan Albright",
+    "date": "April 2024",
+    "location": "",
+    "rating": 5,
+    "text": "I had my bachelorette trip in Vegas and Justin helped us plan the most amazing night!! We can’t wait to come back!!",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 20
+  },
+  {
+    "id": "google-48",
+    "name": "Thom Jackson",
+    "date": "October 2025",
+    "location": "",
+    "rating": 5,
+    "text": "If you are planning a bachelor party, birthday or other large group party in Vegas, you need Nokturnal. We hired them to help plan our bachelor party. Justin was professional; and his responses were prompt and informative.",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 20
+  },
+  {
+    "id": "google-29",
+    "name": "Aarti Kumar",
+    "date": "February 2024",
+    "location": "",
+    "rating": 5,
+    "text": "Thanks to Justin's attentive service, each of our visits to the city has been filled with unforgettable nights out and exclusive experiences at top-tier establishments. For anyone looking to elevate their Las Vegas nightlife experience, I recommend Justin and the team.",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-40",
+    "name": "Akhil R",
+    "date": "October 2024",
+    "location": "",
+    "rating": 5,
+    "text": "We had an amazing experience in Vegas. All thanks to Nokturnal Lifestyle concierge. Justin helped with all the reservations and in a smooth manner. He was quick to respond to our questions and also gave us some good deals on table reservations in nightclubs. 100% recommend!",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-43",
+    "name": "akshai naidu",
+    "date": "January 2025",
+    "location": "",
+    "rating": 5,
+    "text": "Thank You for making our trip to Vegas memorable. We had a great time and it was really great working with Justin. He was on point with everything and made the communication very easy. He was available and has patiently responded to all our questions. Thank you for that.",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-25",
+    "name": "Alejandro Avila",
+    "date": "October 2022",
+    "location": "",
+    "rating": 5,
+    "text": "If you're looking for a personalized experience, excellent service, and VIP access on your trip to Las Vegas, you have to hire Justin.",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-45",
+    "name": "Aparna Vis",
+    "date": "June 2025",
+    "location": "",
+    "rating": 4,
+    "text": "Great experience at the night clubs , we were able to get into some good night clubs and Justin was very helpful in setting everything up for our groups .",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-39",
+    "name": "Blake Oppenheim",
+    "date": "October 2024",
+    "location": "",
+    "rating": 5,
+    "text": "Justin is awesome. Helps with anything u need before, during, and after anything you book. Wouldn’t go with anyone else.",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-21",
+    "name": "Brian Collins",
+    "date": "August 2022",
+    "location": "",
+    "rating": 5,
+    "text": "Justin has extensive knowledge of the Vegas nightlife scene and made sure we had an amazing weekend. He helped us discover the best options in terms of clubs and tables, negotiated rates that fit our budget, and ensured priority treatment upon arrival.",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-47",
+    "name": "Carolina Valdes",
+    "date": "August 2025",
+    "location": "",
+    "rating": 5,
+    "text": "Justin was amazing! Always texting for follow up and offering different types of plans at top places. Highly recommended",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "yelp-public-37",
+    "name": "Chelsea H.",
+    "date": "September 2021",
+    "location": "Los Angeles, CA",
+    "rating": 0,
+    "text": "How does anyone do a bachelorette without Nokturnal services??? From patiently working around the many needs of a group to providing a multitude of choices and ideas to make an experience fun and in budget, Justin really went the extra mile for a recent bachelorette for a friend.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-18",
+    "name": "Cinthia Bustamante",
+    "date": "July 2022",
+    "location": "",
+    "rating": 5,
+    "text": "Excellent service and attention, they help you in everything you need, recommended 100%",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-33",
+    "name": "David Abittan",
+    "date": "June 2024",
+    "location": "",
+    "rating": 5,
+    "text": "Best customer service! Super professional and helpful. Couldn’t say enough great things!!",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-11",
+    "name": "Dilip Khatri",
+    "date": "March 2022",
+    "location": "",
+    "rating": 5,
+    "text": "Thank you providing nightclub entry at the last moment. We enjoyed a lot.",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-42",
+    "name": "Drishti Agarwal",
+    "date": "December 2024",
+    "location": "",
+    "rating": 5,
+    "text": "Justin made the whole experience so seamless and got the best tables for us within our budgets! He followed up everyday and asked for feedback - excellent customer service. I’d definitely recommend booking places with Justin to anyone who’s going to vegas!",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-24",
+    "name": "Eden Assa",
+    "date": "October 2022",
+    "location": "",
+    "rating": 5,
+    "text": "Thanks for an awesome vacation!! For sure will be back🙏",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-23",
+    "name": "Eric Baker",
+    "date": "September 2022",
+    "location": "",
+    "rating": 5,
+    "text": "These fellas took care of us last night man. From the first contract they were making sure we had everything we needed. Hit ‘em up if you and your crew are looking up have a good time.",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-16",
+    "name": "Frank Martin",
+    "date": "May 2022",
+    "location": "",
+    "rating": 5,
+    "text": "We highly recommend using Justin and team for your Las Vegas VIP dayclub, nightclub, and transportation needs. We had a group of 14 people and wanted to plan everything ahead of time for peace of mind.",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "yelp-public-26",
+    "name": "Freddie G.",
+    "date": "September 2017",
+    "location": "Ventura, CA",
+    "rating": 0,
+    "text": "Justin helped set up all the events needed for an epic bachelor party. Him and his staff can take car of all your Vegas needs. Even when some plans changed he went above and beyond to meet our needs.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-4",
+    "name": "Gadi Federgreen",
+    "date": "July 2019",
+    "location": "",
+    "rating": 5,
+    "text": "Justin and his crew are professionals, they have upgraded our Vegas experience. We got a personal treat for any of our requests. Don't think twice, use Nokturnal service, it saves a lot of head aches and worth every dollar. Thanks Guys",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "yelp-public-41",
+    "name": "Justin M.",
+    "date": "January 2022",
+    "location": "Galveston, TX",
+    "rating": 0,
+    "text": "Worked with Justin from Nokturnal over the last few months helping make the bachelor party I planned a major success. Just was super responsive with any questions I had. He was very easy to deal with and would recommend 10 out of 10 times!!!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-10",
+    "name": "Justin Montez",
+    "date": "January 2022",
+    "location": "",
+    "rating": 5,
+    "text": "Justin from Nokturnal was super responsive and easy to work with! I would recommend 100 out of 100 times. Hit him up for Your weekend in Vegas!!",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-2",
+    "name": "L W",
+    "date": "July 2017",
+    "location": "",
+    "rating": 5,
+    "text": "Omg had a blast on the party bus. Justin was amazing and very helpful with all of my questions. My friends and I did the Saturday nightclub crawl. Alcohol was good and plentiful. Other bus passengers were great to be around and kept the party lively.",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-34",
+    "name": "Laura Gzz Furber",
+    "date": "July 2024",
+    "location": "",
+    "rating": 5,
+    "text": "Excellent service. They respond really quickly and are very helpful. Super recommended!",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-32",
+    "name": "Marc Lussier",
+    "date": "May 2024",
+    "location": "",
+    "rating": 5,
+    "text": "Justin has been great and has hooked it up for me for years. He will save you so much time and money if you are looking for a party in Vegas.",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-28",
+    "name": "Maryam",
+    "date": "June 2023",
+    "location": "",
+    "rating": 5,
+    "text": "These guys are amazing! Quick communication and set up whatever you need at any time. Justin made sure that our girl squad had the best time the entire weekend. Your Vegas trip will only be complete if you connect with these guys!",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-37",
+    "name": "Morgan Boyd",
+    "date": "August 2024",
+    "location": "",
+    "rating": 5,
+    "text": "Well, well, well… a time was had. Justin and his team didn’t disappoint! From his quick turn around to get my friends and I what we needed, to his check ins to make sure everything went smoothly- I couldn’t have asked for a better service.",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-5",
+    "name": "Moyura Anna Hang",
+    "date": "September 2019",
+    "location": "",
+    "rating": 5,
+    "text": "Best contacts if you want to party in Vegas !!!!!",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-49",
+    "name": "Narendra Kanugo",
+    "date": "April 2026",
+    "location": "",
+    "rating": 5,
+    "text": "Amazing service , really loved the overall experience from Day 1 😍👌 Thanks to Justin & Team",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-30",
+    "name": "Nicholas Shum",
+    "date": "March 2024",
+    "location": "",
+    "rating": 5,
+    "text": "Have had a great experience with Justin. He’s the man - he’s got the connects, is super responsive, helpful, and honestly just a great dude. 100% going through him again when I come back to LV.",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-8",
+    "name": "Nick Kazmer",
+    "date": "January 2022",
+    "location": "",
+    "rating": 5,
+    "text": "For a first timer coming to Vegas you are always nervous about the experience. Well Nokturnal set up an incredible night for my buddies and I! Upgraded table, upgraded service and a night to remember!",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-44",
+    "name": "Paola Gamba",
+    "date": "January 2025",
+    "location": "",
+    "rating": 5,
+    "text": "Excellent service. I have been in Las Vegas twice and it has helped me in everything, recommendation bars, limousine, restaurants, super recommend!!",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "yelp-public-42",
+    "name": "Patrick A.",
+    "date": "May 2022",
+    "location": "Houston, TX",
+    "rating": 0,
+    "text": "I have been using Nokturnal Lifestyle for over 8 years. Justin has been my main guy. I go to Vegas at least 3 times a year and he always takes care of me and my group. Last time was my Bachelor Party and he put in the works for us.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-9",
+    "name": "patrick almendarez",
+    "date": "January 2022",
+    "location": "",
+    "rating": 5,
+    "text": "Nokturnal Lifestyle is the only company I go through with when I come to Las Vegas. Justin is my go to person when it comes to Vegas. Have been doing business with him since 2016. From clubs to pool parties to anything Vegas, Justin is your guy. Treats me and my crew like family.",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-27",
+    "name": "Paulina Fernández",
+    "date": "February 2023",
+    "location": "",
+    "rating": 5,
+    "text": "The place was awesome, Justin got us a great table were all my friends had a great time, danced all night to Tiesto! Great service.",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "yelp-public-13",
+    "name": "Scott E.",
+    "date": "November 2016",
+    "location": "La Puente, CA",
+    "rating": 0,
+    "text": "Justin's the best, he was friendly and very accommodating. I used his services for the first time for my buddy's bachelor party and was thoroughly impressed with his service. He helped plan all our events and he worked within our budget.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-1",
+    "name": "sonny purewal",
+    "date": "March 2017",
+    "location": "",
+    "rating": 5,
+    "text": "I've had the pleasure of knowing Josh and Justin for 3 years now and they have been a class act every single time I have vacationed in Las Vegas. They will give you the best service at the best price.",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-15",
+    "name": "Suzette Rosenwald",
+    "date": "May 2022",
+    "location": "",
+    "rating": 5,
+    "text": "I had been referred to Josh and Justin by a friend and our experience with them was great! Both were responsive and attentive and made the booking process easy. Would definitely recommend and we will be using them for future Vegas trips!",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-17",
+    "name": "Sydney Koh",
+    "date": "June 2022",
+    "location": "",
+    "rating": 5,
+    "text": "Justin was so friendly and patient. He explained everything in detail and made sure we understood. It was our first time trying to navigate Vegas and couldn’t have done it without him",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-14",
+    "name": "Tesia Tangonan",
+    "date": "May 2022",
+    "location": "",
+    "rating": 5,
+    "text": "Justin is amazing! Very responsive and friendly. I told him exactly what I wanted and he told me his honest opinion of probably not being able to help… but surprise, he ended up pulling through anyways 🔥 This isn’t the only time he’s helped me get into clubs.",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "google-19",
+    "name": "Virmania Salas",
+    "date": "July 2022",
+    "location": "",
+    "rating": 5,
+    "text": "Justin was great! Responded to our requests in a timely manner. Was very friendly and would check up on our experience the next day. He really listened to what it was we were looking to do. Would highly recommend!",
+    "source": "Google review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 15
+  },
+  {
+    "id": "yelp-public-21",
+    "name": "Akhila R.",
+    "date": "May 2017",
+    "location": "Fairfield, CT",
+    "rating": 0,
+    "text": "If your looking for the best experience of Las Vegas do contact Justin or his brother. They get you the best of out of all they were really helpful. Best for any size of the group. They have a good idea about hotels or restaurants or events all around Vegas.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-34",
+    "name": "Bernadette G.",
+    "date": "June 2021",
+    "location": "Naglee Park, San Jose, CA",
+    "rating": 0,
+    "text": "Nokturnal provided stellar services to help me celebrate my 50th birthday! It was a last minute booking for table service at Chateaux, with some last minute changes a few days before.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-24",
+    "name": "Christalle D.",
+    "date": "August 2017",
+    "location": "Denver, CO",
+    "rating": 1,
+    "text": "Justin is the real deal!! Very professional, quick & easy to work with!! Highly recommend!!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-10",
+    "name": "David T.",
+    "date": "August 2016",
+    "location": "Orlando, FL",
+    "rating": 0,
+    "text": "Definitely consider this group when you're heading out to Las Vegas and need reliable, solid connection for both day and nightclubs. They will be part of my event planning every time we head to Vegas for sure. And I'll be recommending them for my friends as well.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-22",
+    "name": "David W.",
+    "date": "June 2017",
+    "location": "San Diego, CA",
+    "rating": 1,
+    "text": "Justin, Justin, Justin. There is no other person that pops into my mind when a trip to Vegas is starting to brew. I call this guy for EVERYTHING, room, clubs, events, everything. Extremely reliable and always available to take great care of you and your friends.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-45",
+    "name": "Eddie P.",
+    "date": "April 2023",
+    "location": "Cypress, CA",
+    "rating": 0,
+    "text": "Very exclusive and very helpful partied like fucking celebrities! much respect! you will hear from me always when we're in town! always",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-31",
+    "name": "Elizabeth A.",
+    "date": "June 2019",
+    "location": "Little River, SC",
+    "rating": 0,
+    "text": "These guys are first class very professional and took great care of us from start to finish over the course of our trip in Vegas. Justin was extremely easy to communicate with and always responsive with detailed information regarding each and every venue we went to.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-23",
+    "name": "Han M.",
+    "date": "July 2017",
+    "location": "San Jose, CA",
+    "rating": 0,
+    "text": "I got Justin's contact information through a friend and he's the best promoter I've ever worked with! Very prompt responses and he was able to get my group of friends on the guest list for 2 clubs without a hitch (or a wait).",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-17",
+    "name": "J A.",
+    "date": "February 2017",
+    "location": "San Diego, CA",
+    "rating": 0,
+    "text": "If you're looking for something fun to do in Vegas, look no further. Justin at Nokturnal-lifestyle is awesome, responsive, and sets you up! My girlfriend send I wanted something fun to do on a Wednesday.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-33",
+    "name": "Jasley C.",
+    "date": "May 2021",
+    "location": "Granada Hills, CA",
+    "rating": 0,
+    "text": "JUSTIN IS THE MAN!!! Shout out to his hospitality when helping you book any hotel and any club. He went above and beyond for my group of 18 people even thought it was his birthday weekend! He arranged our rooms, Day Club, & Party Bus without any hassle.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-38",
+    "name": "Jeff F.",
+    "date": "September 2021",
+    "location": "Santa Ana, CA",
+    "rating": 0,
+    "text": "Nokturnal Lifestyle is the embodiment of what a true concierge company should be. I had the absolute pleasure of being taken care of by Justin whom I was referred to by a good friend of mine who only has the best in life.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-44",
+    "name": "Joanne G.",
+    "date": "March 2023",
+    "location": "Las Vegas, NV",
+    "rating": 0,
+    "text": "Justin is the best. He's always super fast and very responsive. I texted him last minute with some changes and he never disappoints. Thanks for being awesome Justin!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-9",
+    "name": "June V.",
+    "date": "February 2016",
+    "location": "Los Angeles, CA",
+    "rating": 0,
+    "text": "Amazing experience in Las Vegas. Thank you Nokturnal (wonderful staff) and especially Justin for making our trip great.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-20",
+    "name": "Kathy H.",
+    "date": "May 2017",
+    "location": "Huntington Beach, CA",
+    "rating": 1,
+    "text": "Justin was wonderful and a great help with Day Pool, clubs, and strip clubs! He stayed in contact with me and made sure everything was ok! My experience was amazing in vegas!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-18",
+    "name": "Kim J.",
+    "date": "February 2017",
+    "location": "Los Angeles, CA",
+    "rating": 0,
+    "text": "I went a vegas several times and I met a great concierge Justin, I went a Feb 3-5 its was a great trip ever because of him Nokturnal life is so great nightlife company I get a free pass and short time to wait a club. It was really awsome trip.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-27",
+    "name": "Lex K.",
+    "date": "November 2017",
+    "location": "La Crescenta, CA",
+    "rating": 1,
+    "text": "The man, the myth, the legend. Don't waste your time with anyone else. That is all. Thank me later",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-12",
+    "name": "Lincoln S.",
+    "date": "September 2016",
+    "location": "Pomona, CA",
+    "rating": 0,
+    "text": "Took a trip to Vegas last weekend for my birthday and it was absolutely one of the best experiences I've ever had. Justin is incredible and extremely helpful. Will definitely continue to return!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-39",
+    "name": "Marvin K.",
+    "date": "November 2021",
+    "location": "Irvine, CA",
+    "rating": 1,
+    "text": "These guys always hook it up whether I'm reaching out ahead of time or last minute. I highly recommend using this service because they make it so easy, skip the line, get the best deals, and have the best time!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-35",
+    "name": "Matt H.",
+    "date": "August 2021",
+    "location": "Scottsdale, AZ",
+    "rating": 0,
+    "text": "I've used a few promoters in Vegas before, but Justin was hands down the best! Zero issues skipping lines and both of our tables were in the best locations. If you're looking for a good time in Vegas, 10/10 recommend.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-49",
+    "name": "Mervin C.",
+    "date": "November 2023",
+    "location": "Riverview, SAN BERNARDINO, CA",
+    "rating": 0,
+    "text": "As always, Justin with Nukturnal Lifestyle never fails to amaze. He took care of us in spite of a very late request. I highly recommend him for any of your concierge needs in Las Vegas.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-11",
+    "name": "Michael N.",
+    "date": "August 2016",
+    "location": "Mission Viejo, CA",
+    "rating": 0,
+    "text": "Justin and Josh, and their company, are my go to's when my friends I and visit Vegas! They are very accommodating to our needs and are very detailed in club and pool party options! They work within our budget and are not always trying to up sell higher priced tables or locations.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-50",
+    "name": "Michelle W.",
+    "date": "August 2025",
+    "location": "McKinney, TX",
+    "rating": 0,
+    "text": "Seriously the most amazing concierge service I have ever used. We tried to work with another company (that I won't name) and they kept pushing me off and taking weeks to respond. I found Nokturnal on google, and the reviews were top notch so I called.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-43",
+    "name": "Phillip G.",
+    "date": "March 2023",
+    "location": "Atlanta, GA",
+    "rating": 0,
+    "text": "Highly recommend using them for any of your Vegas nightlife needs. Justin and Josh were awesome and delivered above and beyond. They were super responsive and attentive and set up a seamless club experience for us.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-32",
+    "name": "Richard H.",
+    "date": "June 2019",
+    "location": "Westbury, NY",
+    "rating": 0,
+    "text": "Justin helped me to reserve a few rooms at Caesar's Palace and I was thoroughly impressed by his customer service. Let me first say that his rates are 100% guaranteed. Caesar's tried to charge me a higher rate for one of the rooms Justin helped me to reserve.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-6",
+    "name": "Shely S.",
+    "date": "July 2015",
+    "location": "Beverly Hills, CA",
+    "rating": 2,
+    "text": "I've come twice so far from la and have had a great time. Justin is so nice, responds quickly, and wants to ensure you and your group have an incredible time. Tell him where you want to go and he will make sure you get what you want.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-8",
+    "name": "Talal A.",
+    "date": "November 2015",
+    "location": "Vancouver, WA",
+    "rating": 1,
+    "text": "Very great service. Justin took care of me and his service was great. Communicated very well with me and got me into the clubs within less than 5 minutes of waiting. Definitely worth going through. I'll be using this company again in the future!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-48",
+    "name": "Tam T.",
+    "date": "September 2023",
+    "location": "SC, SC",
+    "rating": 0,
+    "text": "Phenomenal experience with Nokturnal Lifestyle. They made sure I was taken care of when I was in Vegas. Answered all my questions and always answered my phone calls and replied to my texts on the spot!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-16",
+    "name": "Tamir E.",
+    "date": "January 2017",
+    "location": "Mission, San Francisco, CA",
+    "rating": 0,
+    "text": "Know this guys for almost 3 years.. taking care of you with asap replies and of course the best prices you can get! They are the best !",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-36",
+    "name": "Taylor O.",
+    "date": "August 2021",
+    "location": "San Diego, CA",
+    "rating": 0,
+    "text": "Had the best experience with Nokturnal Lifestyle! Justin was extremely attentive and helpful! My group and I had the best time in Vegas all thanks to Nokturnal Lifestyle!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-public-40",
+    "name": "Vince D.",
+    "date": "December 2021",
+    "location": "NV, NV",
+    "rating": 1,
+    "text": "Justin was hands down the most professional host I have ever worked with in Las Vegas. He has connections everywhere and really really cares about everything going they way you wanted it. I am truly blown away by the level of service Nokturnal always gives me...",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 10
+  },
+  {
+    "id": "yelp-hidden-6X12pC-BWE-98S7hlLiGeg",
+    "name": "Craig W.",
+    "date": "April 2017",
+    "location": "San Diego, CA",
+    "rating": 5,
+    "text": "All I can say is WOW! Justin and Nokturnal Lifestyle are amazing. I was in charge of planning a bachelor party for 9 guys from all over the country, many who have never been to Vegas before, and the pressure of making it a great trip was intense.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 5
+  },
+  {
+    "id": "yelp-hidden-bOIDeOpIiJzChtbVvDfMPw",
+    "name": "Erin B.",
+    "date": "February 2017",
+    "location": "Santa Clarita, CA",
+    "rating": 5,
+    "text": "Justin with Nokturnal Lifestyle is a life saver. Our bachelor party of 12 people in Las Vegas went off without a hitch due to Justin's assistance, expertise, and professionalism. Anything we wanted, we just told Justin and he made it happen.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 5
+  },
+  {
+    "id": "yelp-hidden-mx9QHNBdzRXdeYP6BPVqzw",
+    "name": "Georgia H.",
+    "date": "February 2018",
+    "location": "Dexter, MO",
+    "rating": 5,
+    "text": "My friends and I went to Vegas for my bachelorette party, and Justin was awesome!! He helped us plan our stay so that we'd have a great time. He made great suggestions and was quick to respond. He also was good with our last minute requests, which I tremendously appreciated!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 5
+  },
+  {
+    "id": "yelp-hidden-u27kfmGWDXob900ahgw1eg",
+    "name": "Gwan J.",
+    "date": "March 2018",
+    "location": "West Simsbury, CT",
+    "rating": 5,
+    "text": "Justin went above and beyond to help plan my friend's bachelor party. I gave him a small list of things we wanted and he whipped up a big list with a ton of great suggestions and awesome prices.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 5
+  },
+  {
+    "id": "yelp-hidden-opP7IFDzTDa2DPPmWN7Jbw",
+    "name": "Huy T.",
+    "date": "October 2016",
+    "location": "Dallas, TX",
+    "rating": 5,
+    "text": "Justin provided great, friendly and professional service during a bachelor party we had for my cousin. I will definitely hit him up next time we need entertainment services. Overall awesome dude!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 5
+  },
+  {
+    "id": "yelp-hidden--7l-b9FubczbR7bgd_DSjw",
+    "name": "Jeffrey L.",
+    "date": "February 2018",
+    "location": "San Clemente, CA",
+    "rating": 5,
+    "text": "I contacted Justin kind of last minute to round up some plans for my buddys bachelor party over super bowl weekend. Justin responded immediately and was always prompt about communicating, was extremely helpful and easy to work with.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 5
+  },
+  {
+    "id": "yelp-hidden-gEfvIzm5vB2v-uo4vBAYTQ",
+    "name": "Jordan P.",
+    "date": "October 2021",
+    "location": "Whittier, CA",
+    "rating": 5,
+    "text": "100% recommend. Justin took care of us from A-Z while we were in town celebrating my bachelor weekend. Everything went smoothly according to our plans with no surprises! Service is reliable, friendly, efficient, and Convenient! I'll definitely be a returning customer",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 5
+  },
+  {
+    "id": "yelp-hidden-p2A8s5ABhB2AiSELY2L7RA",
+    "name": "Kyle S.",
+    "date": "June 2023",
+    "location": "Los Angeles, CA",
+    "rating": 5,
+    "text": "I recently planned my brothers bachelor party in Vegas for 20 guys, and it was a daunting task. I reached out to Justin who I had used a few years before for my cousins bachelor party and let me tell you this guy DELIVERS.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 5
+  },
+  {
+    "id": "yelp-hidden-RJQMaQpaQfYwav109UxUhA",
+    "name": "Matt H.",
+    "date": "August 2015",
+    "location": "Santa Rosa, CA",
+    "rating": 5,
+    "text": "Justin was awesome. He helped me plan a bachelor party for 9 and from the get go he was super helpful in figuring out what we wanted and made suggestions based on what he thought we might like.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 5
+  },
+  {
+    "id": "yelp-hidden-foTPkhW0yTKpnvLepu8YIA",
+    "name": "May H.",
+    "date": "April 2018",
+    "location": "Stockton, CA",
+    "rating": 5,
+    "text": "Justin made my life so much easier planning my cousin's bachelorette party weekend in Vegas. I cant thank you enough for all of the help and even for adding a lil bit of extra surprises. The girls loved and enjoyed every event that you had set us up with.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 5
+  },
+  {
+    "id": "yelp-hidden-iuabjSkZkEqflqmjsQQigQ",
+    "name": "Pavita P.",
+    "date": "July 2016",
+    "location": "Winnipeg, Canada",
+    "rating": 5,
+    "text": "I recently was in Vegas Jul 2016 for a bachelorette party with 10 girls. Justin was able to help me plan before I arrived in Vegas and txted me each day to confirm our plans. We had a great time and he even thanked us and made sure we had fun after the weekend ended.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 5
+  },
+  {
+    "id": "yelp-hidden-fvSpfcqnLifJ-ByT55C7iA",
+    "name": "Roy C.",
+    "date": "March 2018",
+    "location": "Tampa, FL",
+    "rating": 5,
+    "text": "I recently planned a bachelor party to Vegas for March Madness, and Justin from Nokturnal Lifestyle hooked us up from the start. He was on point with multiple night club, gentleman's club, and pool party options.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 5
+  },
+  {
+    "id": "yelp-hidden-1qpEi1FR1dRLGzgpPEA9eA",
+    "name": "Trenton E.",
+    "date": "April 2017",
+    "location": "Tacoma, WA",
+    "rating": 5,
+    "text": "Justin came in clutch. For the people who got suckered into the club's \"Guest List\" there was a 2 hour wait, and for the rest of us there was a $60/person entrance and an hour wait. Nokturnal came in and basically ended my friend's bachelor party with a bang.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 5
+  },
+  {
+    "id": "yelp-hidden-x80Cs1oB1QQPSS3T20JRSQ",
+    "name": "Adriana R.",
+    "date": "June 2017",
+    "location": "Hacienda los Morales 3er Sector, Monterrey, Mexico",
+    "rating": 5,
+    "text": "Excelente servicio, acceso sin fila para los mejores antros en Las Vegas. Muy recomendable!!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-wvaOiijL2Dy-hV_7YKnVPw",
+    "name": "Alicia M.",
+    "date": "February 2017",
+    "location": "Aurora, CO",
+    "rating": 5,
+    "text": "Justin is highly responsive and does what he says he is going to do. We had a bit of a mishap with our limo reservation but Justin quickly rectified the situation by refunding us and giving us alternative options. The table service Justin set up was SUPERB!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-ffkjAg3-YkGXWAEmbG7LCg",
+    "name": "Anilu D.",
+    "date": "June 2016",
+    "location": "México, D.F., Mexico",
+    "rating": 5,
+    "text": "We had the best attention ever. Twins Justin and Josh were always taking care of us and making sure we had everything we needed. I will definitely contact them again in my next visit to Vegas.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-guYIkWFHTilXEeBh2X2tPw",
+    "name": "Annamarie L.",
+    "date": "September 2016",
+    "location": "Rancho Cucamonga, CA",
+    "rating": 5,
+    "text": "All I can say is Justin and Josh never let me down every time I come to Vegas. Whether it's a planned or last minute trip they are always there no matter what.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-qX2FOSHuzr10bYiZKirvmg",
+    "name": "B J.",
+    "date": "April 2015",
+    "location": "New Smyrna Beach, FL",
+    "rating": 5,
+    "text": "We worked with Justin a couple of weeks ago to book a hotel in Vegas. Justin was very easy to work with, prompt in providing a great selection of hotels to choose from, and in an easy to read format.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-iGEffGDW3XjV2I-vHotqUQ",
+    "name": "Benjamin R.",
+    "date": "June 2016",
+    "location": "Los Angeles, CA",
+    "rating": 5,
+    "text": "Justin hooked up me and my friends with a great room at Paris for just 1 night when we came in for WWE Money in the Bank last weekend. Will definitely be calling him again next time I go, and will definitely be going again sooner rather than later now that I know Justin !",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-fNva-EGG0Dcf_VuBTsBI0g",
+    "name": "Bryce L.",
+    "date": "July 2017",
+    "location": "Kansas City, MO",
+    "rating": 5,
+    "text": "Justin was great! He gave a lot of good recommendations for our weekend and we had an awesome time at Rehab thanks to him. Highly recommended!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-wtMJwDNwZStz_11447Thsw",
+    "name": "Carmen G.",
+    "date": "February 2016",
+    "location": "Las Vegas, NV",
+    "rating": 5,
+    "text": "Had a great experience with this company! Justin S. really came through, my family was able to see great shows with premium front row seating for a great price. Definitely worth your time to check them out! Will use again and again!!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-xIqL2yZ94shJnwJueFyDUQ",
+    "name": "Chris A.",
+    "date": "October 2021",
+    "location": "Waikiki, Honolulu, HI",
+    "rating": 5,
+    "text": "Service was amazing, helped with any questions I had and everything was straight forward no unexpected charges.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-q_K_qgE_T-LZsyZJ6ZiGwA",
+    "name": "Colt S.",
+    "date": "April 2016",
+    "location": "Philadelphia, PA",
+    "rating": 5,
+    "text": "My first trip to Las Vegas and I was introduced to Justin. Let me tell you, this dude hooked it up! He got our whole party one of the best tables in the entire Omniya Club and made sure we had everything we needed.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-rUCuKbsY-q9FKd486KQatw",
+    "name": "Cory W.",
+    "date": "December 2014",
+    "location": "Las Vegas, NV",
+    "rating": 5,
+    "text": "I recently turned to NLS to help plan a night out at life nightclub with friends. They definitely took care of us and the night was a blast. I will definitely use them again.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-js7dE9rhfU4o7YSX_CC5Ow",
+    "name": "Dan F.",
+    "date": "May 2016",
+    "location": "Orange, CA",
+    "rating": 5,
+    "text": "I don't think my recent trip to Vegas would have been the same without NLS. Justin was extremely helpful and always there when I needed him. If I had a question, concern, or just didn't know what to do with my night, Justin was there to offer his services.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-olCQmR9xBdmsVzggt4Simg",
+    "name": "David H.",
+    "date": "April 2015",
+    "location": "Glendale, CA",
+    "rating": 5,
+    "text": "Best promoter for vegas Justin if you trying to have a great time hit up justin he will make your weekend a success can't wait for next weekend of vegas",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-TCqCzsx5-wDDuWy5EmfVeA",
+    "name": "Dayna C.",
+    "date": "July 2023",
+    "location": "Maple Shade Township, NJ",
+    "rating": 5,
+    "text": "Concierge services was awesome. Punctual with efficient communication throughout a group stay in Vegas. Provided good discounts and information needed! Highly would recommend others to book with nokturnal lifestyle!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-U-_VUqumqtjJl8cb2uDQFQ",
+    "name": "Eric S.",
+    "date": "September 2017",
+    "location": "Buckhead, Atlanta, GA",
+    "rating": 5,
+    "text": "Justin was awesome - took care of us leading up to and during our trip, was very flexible, responsive and clearly knew what he was doing. Absolutely will hit Justin up next time I come to town and would recommend to friends that they do the same.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-Bckc6V21TqffZWRZvBpZHg",
+    "name": "Erika T.",
+    "date": "April 2018",
+    "location": "Saint Charles, MO",
+    "rating": 5,
+    "text": "I had been to Vegas couple of times and I have always enjoyed and truly loved the Vegas experience thanks to Justin!!, he gets the best deals and gives you the best personalized attention!!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-qqQ4MsXgWAyd3yfJQOMU3g",
+    "name": "Felicia B.",
+    "date": "May 2016",
+    "location": "Las Vegas, NV",
+    "rating": 5,
+    "text": "Thank you for such an amazing experience. You always come thru for every occasion that i need. Thank you for being such an awesome promoter and always getting me in wherever i need.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-7SVnJP4ecraRT_bv4vh5qQ",
+    "name": "Gabriela G.",
+    "date": "June 2016",
+    "location": "México, D.F., Mexico",
+    "rating": 5,
+    "text": "I LOVE IT!!!! We could not have best night Ever!! you should have the contacto from this guy if you really want to have a VIP experience at Vegas!!!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-zWbBY_Ulnb7R4u4HjhDAaQ",
+    "name": "Gorak P.",
+    "date": "January 2018",
+    "location": "Fort Lauderdale, FL",
+    "rating": 5,
+    "text": "Wanna make it a memorable trip in you life , don't forget a reach out to Justin, these guys are the best , they provide best services you never find anywhere , kudos to the team nokturnal, keep up the good work!!!!!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-m8irLJy-T_-QyIFSqFV4Ow",
+    "name": "Haroon Y.",
+    "date": "February 2017",
+    "location": "Fullerton, CA",
+    "rating": 5,
+    "text": "Highly recommend going through to book anything you need in Vegas from rooms, shows and clubs. Best deals and great service. Justin is the man!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-lTRXY163C31fdz1dbMK2Tg",
+    "name": "Ivan R.",
+    "date": "January 2024",
+    "location": "Shenandoah, TX",
+    "rating": 5,
+    "text": "Great Service, Justin was always so patient and he had a great feeling of what was best for us. Definietly getting back in contact with them when we get back to Vegas.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-ovSPHS4H0DMF2I_va8paXA",
+    "name": "Jag T.",
+    "date": "June 2023",
+    "location": "San Francisco, CA",
+    "rating": 5,
+    "text": "Nokturnal Lifestyle we're absolutely incredible prior to our party arriving in vegas and throughout our time in vegas. Justin and Josh were always contactable to support our queries and to ensure we were having the best time possible.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-svWCgwey48ARL_v3BgLB6Q",
+    "name": "Jason L.",
+    "date": "5/31/2017 Updated review",
+    "location": "El Sobrante, CA",
+    "rating": 5,
+    "text": "Once again Justin And Josh made me and my group of friends Vegas experience the best it could be. Always on top of everything and never failing to get us in all the clubs and day pool parties. Very cool guys and I highly recommend contacting them if your heading to Las Vegas!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-K-p8yZXZRpNrWFY3oQJldg",
+    "name": "Jay D.",
+    "date": "April 2023",
+    "location": "San Francisco, CA",
+    "rating": 5,
+    "text": "I had a fantastic experience planning my Vegas trip with Justin from Nokturnal Lifestyle - he responds pretty much immediately to all my queries, gets the best deals available in Vegas (especially for a group of girls), always keeps me updated and most of all he is HONEST!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-9ikQbIWi0LFib9yMWmaQKQ",
+    "name": "Jennifer R.",
+    "date": "February 2015",
+    "location": "Las Vegas, NV",
+    "rating": 5,
+    "text": "I have nothing but praise for Nokturnal Lifestyles. I've worked with both Josh and Justin for everything ranging from restaurant and hotel reservations to VIP treatment at nightclubs for my clients.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-aPQ3_8tzn6QrdlhjRkHhtg",
+    "name": "John S.",
+    "date": "February 2018",
+    "location": "San Francisco, CA",
+    "rating": 5,
+    "text": "Justin is always on point with solid recommendations, has great Vegas knowledge and knows where the best deals are at for big events. Definitely appreciate his honesty and ability to come through in the clutch.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-aHCJUIC9cfqcPy8-dUtSEw",
+    "name": "Josh S.",
+    "date": "December 2014",
+    "location": "Las Vegas, NV",
+    "rating": 5,
+    "text": "The first couple of times I've been to Vegas, we would just \"wing it\" Then I ran into a rep for NLS, and it took planning and BS out of my trips! Now I fly in and let them now when Im coming and I have a list of options to pick from! These guys you can trust!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-kUg7TWz0yY01Fa5sykF1tQ",
+    "name": "Kevin C.",
+    "date": "April 2023",
+    "location": "SoMa, San Francisco, CA",
+    "rating": 5,
+    "text": "Justin took care of me and the fellas, advised where the best places were to go and made sure we all had a good night. Highly recommend him.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-0bob-jyWvbF-akJO320omA",
+    "name": "Kuldeep B.",
+    "date": "February 2019",
+    "location": "Wolverhampton, United Kingdom",
+    "rating": 5,
+    "text": "UK tourist here and must say service was on point. Felt well taken care of, the guys worked around me and my times locally to sort packages and activities out. Requirements and were fullfilled and exceeded expectations. Could not of asked for a better service with great prices.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-0aDC2IPcsh-MoKMApKoYxg",
+    "name": "Martin X.",
+    "date": "March 2015",
+    "location": "Albuquerque, NM",
+    "rating": 5,
+    "text": "Justin is the man when it comes to hooking it up in Vegas! Just got back from Vegas and he was always there to provide fast service. I've known justin for about a year and have gone to Vegas about 3 times since and every time I give Justin a call he is always willing to help!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-RqAOob38z21p9X4VAG26UA",
+    "name": "Maryam A.",
+    "date": "June 2023",
+    "location": "San Francisco, CA",
+    "rating": 5,
+    "text": "these guys are amazing! quick communication and set up the best vibes for your Vegas trip! they are here to make sure you have the best trip of your life!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-BOww9RlYc9dBqhWE19U7LA",
+    "name": "Matthew M.",
+    "date": "April 2017",
+    "location": "Tacoma, WA",
+    "rating": 5,
+    "text": "I was very skeptical of Josh and what this business had to offer however he was able to get my friends and I into the club with no wait and at close to have the price. I plan on contacting them anytime I am in town from now on to see what other deals they have available.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-6-J1UgjUSqHl6TCd5GzgKw",
+    "name": "Maude T. J.",
+    "date": "October 2018",
+    "location": "Baton Rouge, LA",
+    "rating": 5,
+    "text": "I GREATLY appreciate the time he took to find venues for our group. We were in Vegas for a wedding, and I was attempting to make all of these plans as requested by the bride.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-AWRh1HKmhKBnzLszPYoyCg",
+    "name": "Mervin C.",
+    "date": "July 2017",
+    "location": "San Bernardino, CA",
+    "rating": 5,
+    "text": "Justin and his crew always delivers! I booked late on a party bus and he took care of it in an instance. No doubt we'll be using his services again and will definitely recommend this to everybody I know of.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-xe49_IhlM0wR3BEMKo31qA",
+    "name": "Mike C.",
+    "date": "April 2016",
+    "location": "Carlsbad, CA",
+    "rating": 5,
+    "text": "These guys are awesome! I've been using them for a few years and they always take the best care of me. They always get back to ASAP with the best prices and deals around from clubs to hotels to pool parties and where to even eat. They know all the best spots in Vegas.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-sMdopmWLibOr-4MhAh5elg",
+    "name": "Neal S.",
+    "date": "March 2016",
+    "location": "Manhattan, NY",
+    "rating": 5,
+    "text": "Justin made our experience incredible - we had 15 guys, and thanks to him every need we had was met efficiently. The best part about it is that everyone Justin and his team works with his professional, efficient, sharp, and looks out for his clients. Best Vegas experience ever.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-SCvpiTmYS327Gt78cXKY8g",
+    "name": "Nina S.",
+    "date": "April 2017",
+    "location": "Las Vegas, NV",
+    "rating": 5,
+    "text": "Justin is so helpful and nice! I was always able to reach him. He was always able to answer my questions and get me what I needed. I highly recommend him.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-x6AQ8x1a2HBnux4xcZr-ig",
+    "name": "Novelle N.",
+    "date": "December 2014",
+    "location": "Henderson, NV",
+    "rating": 5,
+    "text": "NLS always takes care of me and Justin is a fantastic promoter. Definitely the guy to go to!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-p2I90oMoMBMEOGNIkgK4fQ",
+    "name": "Pamela G.",
+    "date": "July 2017",
+    "location": "Rincón de Anáhuac, San Nicolás de los Garza, Mexico",
+    "rating": 5,
+    "text": "Thanks to Justin I had a wonderful night in one of best clubs in Vegas!!!! He was so kind and make sure everything was ok all the time. It was am a amazing experience!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-St_4gsICGIOaSizoH_B1_w",
+    "name": "Paola C.",
+    "date": "February 2016",
+    "location": "Santa Rosa Jáuregui, Mexico",
+    "rating": 5,
+    "text": "Justin helped me and my friends throughtout our entire trip, he was very kind and got us amazing seats for shows at a very good price, he also helped us out to get into nightclubs for free. He was so attentive!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-Qt0NTXCmdq_ZI0cQCX4VPQ",
+    "name": "Rakesh S.",
+    "date": "April 2019",
+    "location": "North Dallas, Dallas, TX",
+    "rating": 5,
+    "text": "Great service. On time pickup and drop off.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-6GRSCd6xaasYkdpK8JVdWg",
+    "name": "Rudy M.",
+    "date": "May 2017",
+    "location": "Albuquerque, NM",
+    "rating": 5,
+    "text": "For sure going to call them again when I go back to Vegas .. they get the job done ..loved the help with everything",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-9csozyt58MUOuOQrqsd1EA",
+    "name": "Shon B.",
+    "date": "July 2016",
+    "location": "Las Vegas, NV",
+    "rating": 5,
+    "text": "Justin you the best He helped me so much with everything If you planning to come to vegas and you want unforgettable vacation....justin he's the right guy for you!!!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-oGusc3-Tm6667cFl2I-NCQ",
+    "name": "Theresa S.",
+    "date": "May 2018",
+    "location": "Deerfield Beach, FL",
+    "rating": 5,
+    "text": "Justin helped us find an amazing local band for our VIP Party in Vegas. We had over 500 guests and everyone had an amazing time. The band Justin recommended was awesome! Justin thank you again, you were great to work with! So helpful and responsive.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-NXFEWjWzklK1lA7S2nOD3Q",
+    "name": "Tim S.",
+    "date": "February 2018",
+    "location": "Hacienda Heights, CA",
+    "rating": 5,
+    "text": "Justin and Josh came through. No bs, good guys who deliver on what they say. Vegas is fun but there is a lot of bs promoters, no Line no wait all guy ratio is fine, you end up waiting in line and pulling out more cash. Seen the story play out more times than I can count.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-dYn3MGmsQveGtVDBbEOstA",
+    "name": "Tin S.",
+    "date": "May 2017",
+    "location": "Las Vegas, NV",
+    "rating": 5,
+    "text": "Oh they are awesome because they help us a lot! They are so smart in responding on our queries and concerns! Trust me you'll be needing them as well in your vegas trip! Thanks a lot Justin! You did a great job!",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  },
+  {
+    "id": "yelp-hidden-Z8k7UfETpFl8n7u0GPJ7ZA",
+    "name": "Tottie W.",
+    "date": "December 2014",
+    "location": "Sacramento, CA",
+    "rating": 5,
+    "text": "I was in town for my God Daughter 21st birthday. It really was a weekend to remember. The venue, Ghostbar was perfect for her group of friends and family.",
+    "source": "Yelp review",
+    "venueSlugs": [],
+    "matchedTerms": [],
+    "categoryTags": [
+      "general"
+    ],
+    "priority": 0
+  }
+]

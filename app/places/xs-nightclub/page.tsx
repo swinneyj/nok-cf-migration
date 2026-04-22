@@ -60,25 +60,6 @@ export default async function XSNightclub() {
             desc: 'The indoor-outdoor layout is what makes XS special, but it also changes where your group should sit. We help match your table to your vibe, whether you want energy near the action or more room to host.',
           },
         ]}
-        reviewsHeading="Real Reviews That Mention XS"
-        reviews={[
-          {
-            name: 'Rohit R.',
-            date: 'January 2015',
-            location: 'Jacksonville, FL',
-            rating: 5,
-            source: 'Excerpted from Yelp review',
-            text: 'Justin helped a large bachelor-party group get priority access around Vegas, including a poolside table at XS. The reviewer called out how easy the entire weekend felt and said they would book through him again on their next trip.',
-          },
-          {
-            name: 'Elliot Y.',
-            date: 'March 2015',
-            location: 'Redlands, CA',
-            rating: 5,
-            source: 'Excerpted from Yelp review',
-            text: 'After getting help with XS table service for a bachelor party of 12, the reviewer praised the team for being honest, on time, reliable, and easy to reach before and during the event.',
-          },
-        ]}
         relatedVenues={[
           { name: 'Hakkasan', href: '/places/hakkasan' },
           { name: 'Omnia', href: '/places/omnia' },
