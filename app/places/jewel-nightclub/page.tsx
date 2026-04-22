@@ -42,6 +42,51 @@ export default async function JewelNightclub() {
         ],
         slug: 'jewel-nightclub',
       }}
+      bookingReasons={[
+        {
+          title: 'Jewel Is Best for Groups That Want Intimacy Over Chaos',
+          desc: 'Jewel is not trying to be the biggest room in Vegas, and that is exactly why some groups love it. We help you choose it when you want a boutique feel and avoid it when your crew expects mega-club energy.',
+        },
+        {
+          title: 'Smaller Room Does Not Mean Lower Stakes',
+          desc: 'Because Jewel is more intimate, table location and timing still matter. We help groups book the sections that actually preserve the luxury feel instead of ending up in a weaker spot.',
+        },
+        {
+          title: 'ARIA Guests Can Build Around Jewel Easily',
+          desc: 'If your group is staying at ARIA or nearby, Jewel can be one of the easiest premium nights to organize. We make that convenience work in your favor.',
+        },
+        {
+          title: 'It Is a Strong Play for Smaller Groups',
+          desc: 'For groups in the 4 to 12 range, Jewel can deliver a more controlled and polished night than the bigger venues. We help you know when it is the right fit.',
+        },
+      ]}
+      reviewsHeading="What Clients Say About Booking With Nokturnal"
+      reviews={[
+        {
+          name: 'Keith R.',
+          date: 'April 2019',
+          location: 'Cleveland, OH',
+          rating: 5,
+          source: 'Yelp review',
+          text: 'My friends and I have been using Justin for the last couple years when visiting Las Vegas. I have dealt with 4 different people now when coming to party in Vegas and I am happy to say once I was introduced to Justin I deleted the other 3 phone numbers.',
+        },
+        {
+          name: 'Makayla Altfillisch',
+          date: 'August 2022',
+          location: '',
+          rating: 5,
+          source: 'Google review',
+          text: 'I had my first experience at Jewel. Let me say the music, the vibes, the people, and everything else were perfect. I had so much fun!',
+        },
+        {
+          name: 'Nick Kazmer',
+          date: 'January 2022',
+          location: '',
+          rating: 5,
+          source: 'Google review',
+          text: 'For a first timer coming to Vegas you are always nervous about the experience. Nokturnal set up an incredible night for my buddies and me, with an upgraded table, upgraded service, and a night to remember.',
+        },
+      ]}
       relatedVenues={[
         { name: 'XS Nightclub', href: '/places/xs-nightclub' },
         { name: 'Omnia', href: '/places/omnia' },
