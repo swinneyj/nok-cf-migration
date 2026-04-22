@@ -1,6 +1,6 @@
 import { getCategoryVenueCards, type CategoryEventsKey } from '@/lib/categoryVenueData';
 import { fetchVenueEvents, CALENDAR_IDS } from '@/lib/googleCalendarClient';
-import { fetchBooketingVenueEvents } from '@/lib/booketingClient';
+import { fetchBooketingVenueEvents, isBooketingVenue } from '@/lib/booketingClient';
 import { parseEventDescription } from '@/lib/calendarParser';
 import { google } from 'googleapis';
 import { setOAuthCredentialsFromRefreshToken } from '@/lib/googleOAuthClient';
@@ -83,8 +83,8 @@ export async function syncCategoryVenueEvents(
       result.venuesProcessed++;
 
       try {
-        // Stadium Swim uses Booketing API instead of Google Calendar
-        if (venue.venueSlug === 'stadium-swim') {
+        // Some venues use Booketing instead of Google Calendar
+        if (isBooketingVenue(venue.venueSlug)) {
           console.log(`[SYNC-VENUE] ${venue.name} (${venue.venueSlug}): Using Booketing API`);
 
           const booketingEvents = await fetchBooketingVenueEvents(venue.venueSlug, startDate, endDate);
@@ -282,7 +282,7 @@ export async function syncVenuesBySlug(
     const venueName = getVenueNameBySlug(venueSlug);
 
     try {
-      if (venueSlug === 'stadium-swim') {
+      if (isBooketingVenue(venueSlug)) {
         console.log(`[SYNC-VENUE] ${venueName} (${venueSlug}): Using Booketing API`);
         const booketingEvents = await fetchBooketingVenueEvents(venueSlug, startDate, endDate);
 

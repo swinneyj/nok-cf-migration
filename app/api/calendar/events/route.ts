@@ -3,8 +3,9 @@ export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
 import { getCachedVenueEvents } from "@/lib/getCachedVenueEvents";
 import { CALENDAR_IDS } from "@/lib/googleCalendarClient";
+import { BOOKETING_VENUE_SLUGS } from "@/lib/booketingClient";
 
-const ALLOWED_VENUES = new Set(Object.keys(CALENDAR_IDS));
+const ALLOWED_VENUES = new Set([...Object.keys(CALENDAR_IDS), ...BOOKETING_VENUE_SLUGS]);
 const MONTH_PATTERN = /^\d{4}-(0[1-9]|1[0-2])$/;
 
 export async function GET(request: NextRequest) {

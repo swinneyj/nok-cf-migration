@@ -3,14 +3,39 @@ import type { EventSection, ParsedEvent, PricingTier } from "./calendarParser";
 
 const VEGAS_TIME_ZONE = "America/Los_Angeles";
 
-const BOOKETING_STADIUM_SWIM = {
-  manageentId: "1183",
-  venueId: "535556",
-  venueCode: "VEN535556",
-  venueSlug: "stadium-swim",
-  sourceCode: "microsite",
-  sourceLoc: "bluvalue",
+interface BooketingVenueConfig {
+  manageentId: string;
+  venueId: string;
+  venueCode: string;
+  venueSlug: string;
+  sourceCode: string;
+  sourceLoc: string;
+}
+
+const BOOKETING_VENUES: Record<string, BooketingVenueConfig> = {
+  "stadium-swim": {
+    manageentId: "1183",
+    venueId: "535556",
+    venueCode: "VEN535556",
+    venueSlug: "stadium-swim",
+    sourceCode: "microsite",
+    sourceLoc: "bluvalue",
+  },
+  "tailgate-beach-club": {
+    manageentId: "1951",
+    venueId: "40919405411",
+    venueCode: "VEN40919405411",
+    venueSlug: "tailgate-beach-club",
+    sourceCode: "microsite",
+    sourceLoc: "24614",
+  },
 };
+
+export const BOOKETING_VENUE_SLUGS = Object.keys(BOOKETING_VENUES);
+
+export function isBooketingVenue(venueSlug: string) {
+  return venueSlug in BOOKETING_VENUES;
+}
 
 interface BooketingEventSummary {
   eventCode: string;
@@ -233,25 +258,25 @@ async function fetchBooketingJson<T>(url: string, retries: number = 2): Promise<
   throw lastError ?? new Error(`Booketing JSON request failed for ${url}`);
 }
 
-async function fetchMonthEvents(monthKey: string) {
+async function fetchMonthEvents(config: BooketingVenueConfig, monthKey: string) {
   const monthDate = parseMonthKey(monthKey);
   const formattedDate = formatBooketingShortDate(monthDate);
 
   const monthUrl =
-    `https://booketing.com/uvcore/${BOOKETING_STADIUM_SWIM.sourceLoc}/uvcore.proxy.html` +
+    `https://booketing.com/uvcore/${config.sourceLoc}/uvcore.proxy.html` +
     `?action=uvpx_loadcalmonth` +
-    `&sourcecode=${BOOKETING_STADIUM_SWIM.sourceCode}` +
-    `&sourceloc=${BOOKETING_STADIUM_SWIM.sourceLoc}` +
-    `&manageents=${BOOKETING_STADIUM_SWIM.manageentId}` +
-    `&venueid=${BOOKETING_STADIUM_SWIM.venueId}` +
-    `&feedtoken=venuecodes=${BOOKETING_STADIUM_SWIM.venueCode}` +
+    `&sourcecode=${config.sourceCode}` +
+    `&sourceloc=${config.sourceLoc}` +
+    `&manageents=${config.manageentId}` +
+    `&venueid=${config.venueId}` +
+    `&feedtoken=venuecodes=${config.venueCode}` +
     `&fd=${formattedDate}`;
 
   const html = await fetchBooketingText(monthUrl);
   const $ = load(html);
   const seen = new Map<string, BooketingEventSummary>();
 
-  $("a[href*='/microsite/bluvalue/event/']").each((_, element) => {
+  $("a[href*='/microsite/'][href*='/event/']").each((_, element) => {
     const href = $(element).attr("href") || "";
     const absoluteHref = toAbsoluteBooketingUrl(href);
     const eventCodeMatch = absoluteHref.match(/[?&]eventcode=([^&]+)/i);
@@ -319,15 +344,34 @@ function mapItemsToTiers(items: BooketingInventoryItem[]): PricingTier[] {
     .filter((tier) => tier.name && (tier.price > 0 || tier.capacity > 0 || tier.soldOut));
 }
 
+function buildSectionsFromBooktypes(items: BooketingInventoryItem[]): EventSection[] {
+  const grouped = new Map<string, BooketingInventoryItem[]>();
+
+  for (const item of items) {
+    const key = String(item.booktypename || "Main").trim() || "Main";
+    const bucket = grouped.get(key) || [];
+    bucket.push(item);
+    grouped.set(key, bucket);
+  }
+
+  return Array.from(grouped.entries())
+    .map(([title, groupedItems]) => ({
+      title,
+      tiers: mapItemsToTiers(groupedItems),
+    }))
+    .filter((section) => section.tiers.length > 0);
+}
+
 async function fetchInventoryForEventCode(
+  config: BooketingVenueConfig,
   eventCode: string,
   homeEventCode = "",
   homeName = ""
 ) {
   const url =
-    `https://booketing.com/uws/${BOOKETING_STADIUM_SWIM.sourceLoc}/proxy` +
+    `https://booketing.com/uws/${config.sourceLoc}/proxy` +
     `?action=uvpx` +
-    `&manageentid=${BOOKETING_STADIUM_SWIM.manageentId}` +
+    `&manageentid=${config.manageentId}` +
     `&uvaction=uwspx_inventoryinit` +
     `&eventcode=${encodeURIComponent(eventCode)}` +
     `&cartcode=` +
@@ -338,8 +382,11 @@ async function fetchInventoryForEventCode(
   return fetchBooketingJson<BooketingInventoryResponse>(url);
 }
 
-async function buildParsedBooketingEvent(summary: BooketingEventSummary): Promise<ParsedEvent | null> {
-  const initialResponse = await fetchInventoryForEventCode(summary.eventCode);
+async function buildParsedBooketingEvent(
+  config: BooketingVenueConfig,
+  summary: BooketingEventSummary
+): Promise<ParsedEvent | null> {
+  const initialResponse = await fetchInventoryForEventCode(config, summary.eventCode);
   const baseDateKey = initialResponse.eventdata?.date || summary.dateKey;
   if (!baseDateKey) return null;
 
@@ -351,6 +398,7 @@ async function buildParsedBooketingEvent(summary: BooketingEventSummary): Promis
       ecozoneOptions.map(async (option) => {
         try {
           const response = await fetchInventoryForEventCode(
+            config,
             option.eventCode,
             summary.eventCode,
             option.label
@@ -382,13 +430,7 @@ async function buildParsedBooketingEvent(summary: BooketingEventSummary): Promis
       });
     }
   } else {
-    const tiers = mapItemsToTiers(getInventoryItemsForEcozone(initialResponse, ""));
-    if (tiers.length > 0) {
-      sections.push({
-        title: "Main",
-        tiers,
-      });
-    }
+    sections.push(...buildSectionsFromBooktypes(getInventoryItemsForEcozone(initialResponse, "")));
   }
 
   return {
@@ -419,14 +461,17 @@ export async function fetchBooketingVenueEvents(
   startDate?: Date,
   endDate?: Date
 ): Promise<ParsedEvent[]> {
-  if (venueSlug !== BOOKETING_STADIUM_SWIM.venueSlug) {
+  const config = BOOKETING_VENUES[venueSlug];
+  if (!config) {
     return [];
   }
 
   const start = startDate || new Date();
   const end = endDate || new Date(start.getTime() + 45 * 24 * 60 * 60 * 1000);
   const monthKeys = getMonthKeysInRange(start, end);
-  const monthResults = await Promise.all(monthKeys.map((monthKey) => fetchMonthEvents(monthKey)));
+  const monthResults = await Promise.all(
+    monthKeys.map((monthKey) => fetchMonthEvents(config, monthKey))
+  );
   const summaries = monthResults
     .flat()
     .filter((event) => {
@@ -441,7 +486,7 @@ export async function fetchBooketingVenueEvents(
   const parsedEvents = await Promise.all(
     uniqueSummaries.map(async (summary) => {
       try {
-        return await buildParsedBooketingEvent(summary);
+        return await buildParsedBooketingEvent(config, summary);
       } catch (error) {
         console.error("Booketing event parse failed", {
           eventCode: summary.eventCode,
