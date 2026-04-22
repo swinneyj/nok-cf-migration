@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Phone, Check } from 'lucide-react'
 import InquiryForm from '@/components/InquiryForm'
+import { nightclubVenues } from '@/lib/categoryVenueData'
 
 export const metadata: Metadata = {
   title: 'Las Vegas Bottle Service | VIP Table Reservations at Top Nightclubs',
@@ -9,14 +10,31 @@ export const metadata: Metadata = {
     'Reserve VIP bottle service at Hakkasan, XS, Omnia, Marquee & more. Skip the line, best price guaranteed. Personal host included. Call (702) 996-4884.',
 }
 
+const nightclubVenueImageMap = new Map(
+  nightclubVenues.map((venue) => [venue.venueSlug, { img: venue.img, alt: venue.alt }])
+)
+
+function getNightclubVenueImage(venueSlug: string) {
+  const venueImage = nightclubVenueImageMap.get(venueSlug)
+
+  if (!venueImage) {
+    throw new Error(`Missing nightclub venue image for ${venueSlug}`)
+  }
+
+  return venueImage
+}
+
 const venues = [
-  { name: 'XS Nightclub', venue: 'Encore', min: '$500', img: 'https://images.unsplash.com/photo-1574391884720-bbc3740c59d1?w=400&q=80', alt: 'XS Nightclub Las Vegas bottle service VIP table' },
-  { name: 'Hakkasan', venue: 'MGM Grand', min: '$400', img: 'https://images.unsplash.com/photo-1566417713940-fe7c737a9ef2?w=400&q=80', alt: 'Hakkasan Las Vegas VIP bottle service table reservation' },
-  { name: 'Omnia', venue: 'Caesars Palace', min: '$450', img: 'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=400&q=80', alt: 'Omnia nightclub Las Vegas VIP table' },
-  { name: 'Marquee', venue: 'The Cosmopolitan', min: '$400', img: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400&q=80', alt: 'Marquee nightclub Las Vegas bottle service' },
-  { name: 'TAO Nightclub', venue: 'Venetian', min: '$350', img: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=400&q=80', alt: 'TAO nightclub Las Vegas VIP' },
-  { name: 'Zouk', venue: 'Resorts World', min: '$400', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&q=80', alt: 'Zouk Las Vegas nightclub VIP table' },
-]
+  { name: 'XS Nightclub', venue: 'Encore', min: '$500', venueSlug: 'xs-nightclub' },
+  { name: 'Hakkasan', venue: 'MGM Grand', min: '$400', venueSlug: 'hakkasan-nightclub' },
+  { name: 'Omnia', venue: 'Caesars Palace', min: '$450', venueSlug: 'omnia-nightclub' },
+  { name: 'Marquee', venue: 'The Cosmopolitan', min: '$400', venueSlug: 'marquee-nightclub' },
+  { name: 'TAO Nightclub', venue: 'Venetian', min: '$350', venueSlug: 'tao-nightclub' },
+  { name: 'Zouk', venue: 'Resorts World', min: '$400', venueSlug: 'zouk-nightclub' },
+].map((venue) => ({
+  ...venue,
+  ...getNightclubVenueImage(venue.venueSlug),
+}))
 
 const perks = [
   'Skip the line — VIP entrance every time',
