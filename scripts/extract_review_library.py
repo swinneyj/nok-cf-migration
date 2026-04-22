@@ -183,7 +183,7 @@ def load_yelp_export() -> list[ReviewRecord]:
 
             author = row[2].strip()
             date = format_date(row[3])
-            rating = int(row[7] or "0")
+            rating = int(row[8] or "0")
             text = normalize_space(row[9])
             location = row[13].strip()
             review_url = row[16].strip()
