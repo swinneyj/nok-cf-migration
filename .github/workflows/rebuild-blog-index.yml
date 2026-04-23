@@ -1,0 +1,70 @@
+name: Rebuild Blog Index
+
+on:
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: 'Only ensure assets for this slug (optional)'
+        required: false
+      placeholder_cover:
+        description: 'Create a placeholder cover.jpg if missing (true/false)'
+        required: false
+        default: 'true'
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Ensure public/blog assets
+        shell: bash
+        run: |
+          set -e
+
+          SLUG_INPUT="${{ github.event.inputs.slug }}"
+          PLACEHOLDER_INPUT="${{ github.event.inputs.placeholder_cover }}"
+
+          if [ -n "$SLUG_INPUT" ]; then
+            if [ "$PLACEHOLDER_INPUT" = "true" ]; then
+              node scripts/ensure-blog-public-assets.mjs --slug "$SLUG_INPUT" --placeholder-cover
+            else
+              node scripts/ensure-blog-public-assets.mjs --slug "$SLUG_INPUT"
+            fi
+          else
+            if [ "$PLACEHOLDER_INPUT" = "true" ]; then
+              node scripts/ensure-blog-public-assets.mjs --placeholder-cover
+            else
+              node scripts/ensure-blog-public-assets.mjs
+            fi
+          fi
+
+      - name: Rebuild blog index
+        run: node scripts/rebuild-blog-index.mjs
+
+      - name: Commit and push changes
+        shell: bash
+        run: |
+          set -e
+
+          if git diff --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+          git config user.email "justin.swinney88@gmail.com"
+          git config user.name "Auto-Publisher"
+
+          git add app/blog/generated-posts.ts public/blog/ scripts/ensure-blog-public-assets.mjs
+          git commit -m "Rebuild blog index $(date -u +%Y-%m-%d)"
+          git push
