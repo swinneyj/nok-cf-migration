@@ -287,21 +287,40 @@ async function fetchBooketingMonthEvents(config, monthKey) {
 
 function getBooketingFlyerImagePath(response) {
   return (
-    response?.eventdata?.flyers?.share?.url ||
+    response?.eventdata?.flyers?.eventpage?.full ||
+    response?.eventdata?.flyers?.list?.full ||
+    response?.eventdata?.flyers?.share?.full ||
     response?.eventdata?.flyers?.eventpage?.url ||
     response?.eventdata?.flyers?.list?.url ||
+    response?.eventdata?.flyers?.share?.url ||
     undefined
   );
 }
 
 async function buildBooketingFlyerEntries(config, monthKey) {
   const summaries = await fetchBooketingMonthEvents(config, monthKey);
-  return summaries.map((summary) => ({
-    venueSlug: config.venueSlug,
-    eventName: summary.eventName,
-    date: summary.dateKey,
-    imagePath: summary.imagePath,
-  }));
+  return Promise.all(
+    summaries.map(async (summary) => {
+      try {
+        const response = await fetchBooketingJson(
+          toBooketingInventoryUrl(config, summary.eventCode)
+        );
+        return {
+          venueSlug: config.venueSlug,
+          eventName: summary.eventName,
+          date: summary.dateKey,
+          imagePath: getBooketingFlyerImagePath(response) || summary.imagePath,
+        };
+      } catch {
+        return {
+          venueSlug: config.venueSlug,
+          eventName: summary.eventName,
+          date: summary.dateKey,
+          imagePath: summary.imagePath,
+        };
+      }
+    })
+  );
 }
 
 function getBooketingConfigForParsedVenue(booketingVenues, parsedVenue) {

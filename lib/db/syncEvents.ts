@@ -5,6 +5,7 @@ import { parseEventDescription, type ParsedEvent } from '@/lib/calendarParser';
 import {
   filterDisplayEvents,
 } from '@/lib/eventDeduplication';
+import path from 'node:path';
 import { google } from 'googleapis';
 import { setOAuthCredentialsFromRefreshToken } from '@/lib/googleOAuthClient';
 import {
@@ -52,6 +53,28 @@ function getTimeSortKey(date: Date) {
   return `${String(date.getHours()).padStart(2, '0')}:${String(
     date.getMinutes()
   ).padStart(2, '0')}`;
+}
+
+function slugify(value: string) {
+  return String(value || "")
+    .normalize("NFKD")
+    .replace(/[^\w\s-]/g, "")
+    .toLowerCase()
+    .replace(/_/g, "-")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function buildBooketingLocalFlyerPath(
+  venueSlug: string,
+  eventName: string,
+  dateKey: string,
+  sourceUrl?: string
+) {
+  const ext = sourceUrl ? path.extname(new URL(sourceUrl).pathname) || ".jpg" : ".jpg";
+  const fileName = `${dateKey}_${slugify(eventName)}${ext}`;
+  return `/event-flyers/${venueSlug}/${fileName}`;
 }
 
 function buildParsedSyncEvent(
@@ -192,6 +215,17 @@ export async function syncCategoryVenueEvents(
 
           // Insert each Booketing event into database
           for (const event of booketingEvents) {
+            const sourceFlyerUrl = event.flyerImagePath;
+            const localFlyerPath =
+              sourceFlyerUrl
+                ? buildBooketingLocalFlyerPath(
+                    venue.venueSlug,
+                    event.eventName || "Untitled Event",
+                    event.dateKey,
+                    sourceFlyerUrl
+                  )
+                : undefined;
+
             await insertOrUpdateEvent({
               event_id: event.id || '',
               venue_id: venue.venueSlug,
@@ -202,7 +236,11 @@ export async function syncCategoryVenueEvents(
               end_time: undefined,
               calendar_id: 'booketing',
               event_url: undefined,
-              raw_data: event,
+              raw_data: {
+                ...event,
+                flyerImagePath: localFlyerPath || event.flyerImagePath,
+                flyerSourceUrl: sourceFlyerUrl,
+              },
             });
 
             await storeSectionsForEvent(event.id || '', event.sections || []);
@@ -418,6 +456,17 @@ export async function syncVenuesBySlug(
         });
 
         for (const event of booketingEvents) {
+          const sourceFlyerUrl = event.flyerImagePath;
+          const localFlyerPath =
+            sourceFlyerUrl
+              ? buildBooketingLocalFlyerPath(
+                  venueSlug,
+                  event.eventName || "Untitled Event",
+                  event.dateKey,
+                  sourceFlyerUrl
+                )
+              : undefined;
+
           await insertOrUpdateEvent({
             event_id: event.id || '',
             venue_id: venueSlug,
@@ -428,7 +477,11 @@ export async function syncVenuesBySlug(
             end_time: undefined,
             calendar_id: 'booketing',
             event_url: undefined,
-            raw_data: event,
+            raw_data: {
+              ...event,
+              flyerImagePath: localFlyerPath || event.flyerImagePath,
+              flyerSourceUrl: sourceFlyerUrl,
+            },
           });
 
           await storeSectionsForEvent(event.id || '', event.sections || []);

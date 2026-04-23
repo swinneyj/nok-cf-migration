@@ -165,6 +165,10 @@ export async function getCachedVenueEvents(
           typeof rawData?.flyerImagePath === "string"
             ? rawData.flyerImagePath
             : undefined,
+        flyerSourceUrl:
+          typeof rawData?.flyerSourceUrl === "string"
+            ? rawData.flyerSourceUrl
+            : undefined,
         pricingNote:
           typeof rawData?.pricingNote === "string" ? rawData.pricingNote : undefined,
         minimumSpendNote:

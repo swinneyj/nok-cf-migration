@@ -56,6 +56,7 @@ interface StepSectionsProps {
   eventName: string;
   eventDate: string;
   eventFlyerPath?: string;
+  eventFlyerSourceUrl?: string;
   pricingNote?: string;
   sections: StepSection[];
   selectedSectionName?: string;
@@ -193,6 +194,11 @@ function scoreFlyerMatch(
 
   return score;
 }
+
+type ResolvedFlyer = {
+  imagePath: string;
+  fallbackImagePath?: string;
+};
 
 function findBestFlyer(
   manifest: FlyerManifestEntry[],
@@ -500,6 +506,7 @@ export default function StepSections({
   eventName,
   eventDate,
   eventFlyerPath,
+  eventFlyerSourceUrl,
   pricingNote,
   sections,
   selectedSectionName,
@@ -667,34 +674,35 @@ export default function StepSections({
     [sections, venueSlug]
   );
 
-  const flyer = useMemo(
+  const flyer = useMemo<FlyerManifestEntry | null>(
     () => findBestFlyer(flyerManifest, venueSlug, eventName, eventDate),
     [flyerManifest, venueSlug, eventName, eventDate]
   );
 
-  const resolvedFlyer = useMemo(() => {
-    // Booketing-backed venues should trust the live event flyer URL from the DB row
-    // before falling back to the static manifest, which can lag behind.
+  const resolvedFlyer = useMemo<ResolvedFlyer | null>(() => {
     if (isBooketingVenue(venueSlug) && eventFlyerPath) {
       return {
         imagePath: eventFlyerPath,
+        fallbackImagePath: eventFlyerSourceUrl || flyer?.imagePath || undefined,
       };
     }
 
     if (flyer) {
       return {
         imagePath: flyer.imagePath,
+        fallbackImagePath: eventFlyerPath || undefined,
       };
     }
 
     if (eventFlyerPath) {
       return {
         imagePath: eventFlyerPath,
+        fallbackImagePath: eventFlyerSourceUrl || undefined,
       };
     }
 
     return null;
-  }, [eventFlyerPath, flyer]);
+  }, [eventFlyerPath, eventFlyerSourceUrl, flyer, venueSlug]);
 
   const [venueMapConfig, setVenueMapConfig] = useState<VenueMapConfig>(
     getFallbackVenueMapConfig()
@@ -753,6 +761,38 @@ export default function StepSections({
     return null;
   }, [sections, selectedSectionName, selectedTableName, selectedTablePrice]);
 
+  const ResilientFlyerImage = ({
+    src,
+    fallbackSrc,
+    alt,
+    className,
+  }: {
+    src: string;
+    fallbackSrc?: string;
+    alt: string;
+    className: string;
+  }) => {
+    const [useFallback, setUseFallback] = useState(false);
+    const activeSrc = useFallback && fallbackSrc ? fallbackSrc : src;
+
+    useEffect(() => {
+      setUseFallback(false);
+    }, [src, fallbackSrc]);
+
+    return (
+      <img
+        src={activeSrc}
+        alt={alt}
+        className={className}
+        onError={() => {
+          if (fallbackSrc && !useFallback) {
+            setUseFallback(true);
+          }
+        }}
+      />
+    );
+  };
+
   return (
     <div ref={stepContainerRef} className="scroll-mt-24">
       <VenueMapModal
@@ -788,8 +828,9 @@ export default function StepSections({
           <div className="flex items-center gap-3 px-3 py-2.5 text-left text-white">
             <div className="h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-white/10 ring-1 ring-white/10">
               {resolvedFlyer ? (
-                <img
+                <ResilientFlyerImage
                   src={resolvedFlyer.imagePath}
+                  fallbackSrc={resolvedFlyer.fallbackImagePath}
                   alt={`${eventName} flyer thumbnail`}
                   className="h-full w-full object-cover"
                 />
@@ -843,8 +884,9 @@ export default function StepSections({
           >
             {resolvedFlyer ? (
               <div className="flex h-[260px] items-center justify-center overflow-hidden bg-black p-2 sm:h-[320px] sm:p-3 xl:block xl:aspect-[4/5] xl:h-auto xl:p-0">
-                <img
+                <ResilientFlyerImage
                   src={resolvedFlyer.imagePath}
+                  fallbackSrc={resolvedFlyer.fallbackImagePath}
                   alt={`${eventName} flyer`}
                   className="h-full w-full rounded-md object-contain xl:rounded-none xl:object-cover xl:object-top"
                 />
