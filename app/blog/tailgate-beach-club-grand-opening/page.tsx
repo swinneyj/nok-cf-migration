@@ -2,11 +2,11 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Tailgate Beach Club Grand Opening 2026 | Las Vegas Newest Dayclub',
+  title: "Tailgate Beach Club Grand Opening: Vegas's Newest Dayclub Experience",
   description: 'Everything you need to know about Tailgate Beach Club\'s Grand Opening at Mandalay Bay. Premium cabanas, world-class DJs, beachfront atmosphere. Reservations now open.',
   alternates: { canonical: 'https://www.nokturnallifestyle.com/blog/tailgate-beach-club-grand-opening' },
   openGraph: {
-    title: 'Tailgate Beach Club Grand Opening 2026',
+    title: "Tailgate Beach Club Grand Opening 2026",
     description: 'Tailgate Beach Club just opened at Mandalay Bay — Vegas\'s newest dayclub experience.',
     images: [{ url: '/blog/tailgate-beach-club-grand-opening/cover.jpg' }],
   },

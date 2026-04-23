@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Male Strip Clubs Las Vegas 2026 | Bachelorette Guide to Male Revues',
+  title: 'Male Strip Clubs & Revues in Las Vegas 2026: The Complete Bachelorette Guide',
   description: 'The complete guide to male strip clubs and revues in Las Vegas — Magic Mike Live, Chippendales, Thunder From Down Under and more. Which is best for your bachelorette party?',
   alternates: { canonical: 'https://www.nokturnallifestyle.com/blog/male-strip-clubs-las-vegas' },
 }
