@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getEventByEventId, getSectionsForEvent } from '@/lib/db/client'
 import {
+  enforceFormRateLimit,
   forwardToFormspree,
   parseReservationSubmission,
+  normalizeComparableName,
   verifyTurnstileToken,
 } from '@/lib/formSecurity'
 
@@ -10,49 +12,84 @@ const DEFAULT_RESERVATION_FORM_ID = 'mvzvobod'
 
 export async function POST(request: NextRequest) {
   try {
+    const rateLimit = enforceFormRateLimit(request, 'reservation')
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Too many reservation attempts. Please wait a few minutes and try again.' },
+        { status: 429, headers: rateLimit.headers }
+      )
+    }
+
     const body = await request.json()
     const turnstileToken = String(body.turnstileToken || '')
 
     if (!turnstileToken) {
-      return NextResponse.json({ error: 'Missing spam protection token' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Missing spam protection token' },
+        { status: 400, headers: rateLimit.headers }
+      )
     }
 
     if (body.website) {
-      return NextResponse.json({ error: 'Spam detected' }, { status: 400 })
+      return NextResponse.json({ error: 'Spam detected' }, { status: 400, headers: rateLimit.headers })
     }
 
     const submission = parseReservationSubmission(body)
     if (!submission) {
-      return NextResponse.json({ error: 'Invalid reservation payload' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Invalid reservation payload' },
+        { status: 400, headers: rateLimit.headers }
+      )
     }
 
     const totalGuests = submission.numGuys + submission.numGirls
     if (totalGuests <= 0) {
-      return NextResponse.json({ error: 'Guest count must be at least 1' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Guest count must be at least 1' },
+        { status: 400, headers: rateLimit.headers }
+      )
     }
 
     const isValid = await verifyTurnstileToken(request, turnstileToken, 'reservation')
     if (!isValid) {
-      return NextResponse.json({ error: 'Spam protection verification failed' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Spam protection verification failed' },
+        { status: 400, headers: rateLimit.headers }
+      )
     }
 
     const event = await getEventByEventId(submission.eventId)
     if (!event || event.venue_id !== submission.venueSlug) {
-      return NextResponse.json({ error: 'Reservation event could not be verified' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Reservation event could not be verified' },
+        { status: 400, headers: rateLimit.headers }
+      )
     }
 
     const sections = await getSectionsForEvent(submission.eventId)
+    const submittedSectionName = normalizeComparableName(submission.tableSection || '')
+    const submittedTableName = normalizeComparableName(submission.tableName)
     const matchingSection = sections.find((section) => {
-      if (submission.tableSection && section.title !== submission.tableSection) {
+      if (
+        submittedSectionName &&
+        normalizeComparableName(section.title) !== submittedSectionName
+      ) {
         return false
       }
 
-      return section.tiers.some((tier) => tier.name === submission.tableName)
+      return section.tiers.some(
+        (tier) => normalizeComparableName(tier.name) === submittedTableName
+      )
     })
 
-    const matchingTier = matchingSection?.tiers.find((tier) => tier.name === submission.tableName)
+    const matchingTier = matchingSection?.tiers.find(
+      (tier) => normalizeComparableName(tier.name) === submittedTableName
+    )
     if (!matchingSection || !matchingTier) {
-      return NextResponse.json({ error: 'Reservation table could not be verified' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Reservation table could not be verified' },
+        { status: 400, headers: rateLimit.headers }
+      )
     }
 
     const reservationStatus =
@@ -90,10 +127,13 @@ export async function POST(request: NextRequest) {
 
     const response = await forwardToFormspree(formId, payload)
     if (!response.ok) {
-      return NextResponse.json({ error: 'Failed to submit reservation' }, { status: 502 })
+      return NextResponse.json(
+        { error: 'Failed to submit reservation' },
+        { status: 502, headers: rateLimit.headers }
+      )
     }
 
-    return NextResponse.json({ ok: true })
+    return NextResponse.json({ ok: true }, { headers: rateLimit.headers })
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to submit reservation' },
