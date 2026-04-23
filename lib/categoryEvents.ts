@@ -7,13 +7,7 @@ import {
   type CategoryEventsKey,
   type CategoryVenueCard,
 } from "@/lib/categoryVenueData";
-
-interface FlyerManifestEntry {
-  venueSlug: string;
-  eventName: string;
-  date: string;
-  imagePath: string;
-}
+import type { FlyerManifestEntry } from "@/lib/flyerMatching";
 
 export interface CategoryEventItem {
   id: string;
@@ -129,26 +123,37 @@ function findBestFlyer(
   dateKey: string
 ) {
   const targetSlug = slugify(normalizeEventName(eventName));
-
   const sameDateEntries = manifest.filter(
     (entry) => entry.venueSlug === venueSlug && entry.date === dateKey
   );
 
-  const exactMatch = sameDateEntries.find(
-    (entry) => slugify(normalizeEventName(entry.eventName)) === targetSlug
-  );
-  if (exactMatch) return exactMatch.imagePath;
+  if (!sameDateEntries.length) return undefined;
 
-  const looseMatch = sameDateEntries.find((entry) => {
+  let bestEntry: FlyerManifestEntry | undefined;
+  let bestScore = 0;
+
+  for (const entry of sameDateEntries) {
     const entrySlug = slugify(normalizeEventName(entry.eventName));
-    return (
-      entrySlug &&
-      targetSlug &&
-      (entrySlug.includes(targetSlug) || targetSlug.includes(entrySlug))
-    );
-  });
+    let score = 0;
 
-  return looseMatch?.imagePath;
+    if (entrySlug === targetSlug) {
+      score += 30;
+    } else if (entrySlug && targetSlug && (entrySlug.includes(targetSlug) || targetSlug.includes(entrySlug))) {
+      score += 18;
+    }
+
+    const entryWords = new Set(entrySlug.split("-").filter(Boolean));
+    const targetWords = targetSlug.split("-").filter(Boolean);
+    score += targetWords.filter((word) => entryWords.has(word)).length * 3;
+    score += Math.min(6, Math.max(0, entryWords.size - 2));
+
+    if (score > bestScore || (score === bestScore && bestEntry)) {
+      bestScore = score;
+      bestEntry = entry;
+    }
+  }
+
+  return bestScore > 0 ? bestEntry?.imagePath : undefined;
 }
 
 function buildEventHref(venue: CategoryVenueCard, eventName: string, dateKey: string) {
