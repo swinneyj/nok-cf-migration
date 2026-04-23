@@ -4,6 +4,7 @@ import {
   enforceFormRateLimit,
   forwardToFormspree,
   parseReservationSubmission,
+  normalizeComparableName,
   verifyTurnstileToken,
 } from '@/lib/formSecurity'
 
@@ -66,15 +67,24 @@ export async function POST(request: NextRequest) {
     }
 
     const sections = await getSectionsForEvent(submission.eventId)
+    const submittedSectionName = normalizeComparableName(submission.tableSection || '')
+    const submittedTableName = normalizeComparableName(submission.tableName)
     const matchingSection = sections.find((section) => {
-      if (submission.tableSection && section.title !== submission.tableSection) {
+      if (
+        submittedSectionName &&
+        normalizeComparableName(section.title) !== submittedSectionName
+      ) {
         return false
       }
 
-      return section.tiers.some((tier) => tier.name === submission.tableName)
+      return section.tiers.some(
+        (tier) => normalizeComparableName(tier.name) === submittedTableName
+      )
     })
 
-    const matchingTier = matchingSection?.tiers.find((tier) => tier.name === submission.tableName)
+    const matchingTier = matchingSection?.tiers.find(
+      (tier) => normalizeComparableName(tier.name) === submittedTableName
+    )
     if (!matchingSection || !matchingTier) {
       return NextResponse.json(
         { error: 'Reservation table could not be verified' },

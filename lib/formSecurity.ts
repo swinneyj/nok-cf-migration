@@ -247,6 +247,15 @@ function isValidDateKey(value: string) {
   return /^\d{4}-\d{2}-\d{2}$/.test(value)
 }
 
+export function normalizeComparableName(value: string) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+}
+
 export interface InquirySubmission {
   name: string
   phone: string
