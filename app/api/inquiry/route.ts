@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { forwardToFormspree, verifyTurnstileToken } from '@/lib/formSecurity'
+import {
+  forwardToFormspree,
+  parseInquirySubmission,
+  verifyTurnstileToken,
+} from '@/lib/formSecurity'
 
 const DEFAULT_INQUIRY_FORM_ID = 'mvzvobod'
 
@@ -16,7 +20,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Spam detected' }, { status: 400 })
     }
 
-    const isValid = await verifyTurnstileToken(request, turnstileToken)
+    const submission = parseInquirySubmission(body)
+    if (!submission) {
+      return NextResponse.json({ error: 'Invalid inquiry payload' }, { status: 400 })
+    }
+
+    const isValid = await verifyTurnstileToken(request, turnstileToken, 'inquiry')
     if (!isValid) {
       return NextResponse.json({ error: 'Spam protection verification failed' }, { status: 400 })
     }
@@ -26,9 +35,7 @@ export async function POST(request: NextRequest) {
       process.env.NEXT_PUBLIC_FORMSPREE_FORM_ID ||
       DEFAULT_INQUIRY_FORM_ID
 
-    const { turnstileToken: _turnstileToken, website: _website, ...payload } = body
-
-    const response = await forwardToFormspree(formId, payload)
+    const response = await forwardToFormspree(formId, submission)
     if (!response.ok) {
       return NextResponse.json({ error: 'Failed to submit inquiry' }, { status: 502 })
     }

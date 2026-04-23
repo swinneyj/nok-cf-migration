@@ -254,6 +254,7 @@ export default function InquiryForm({
         key={turnstileResetKey}
         onTokenChange={handleTurnstileTokenChange}
         onStatusChange={handleTurnstileStatusChange}
+        action="inquiry"
       />
 
       <button

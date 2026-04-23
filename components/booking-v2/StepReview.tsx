@@ -110,6 +110,9 @@ export default function StepReview({
           </div>
 
           <ReservationForm
+            venueSlug={venueSlug}
+            eventId={event.id}
+            eventDateKey={event.dateKey}
             venueName={venueName}
             eventName={event.eventName}
             eventDate={event.dateString}
