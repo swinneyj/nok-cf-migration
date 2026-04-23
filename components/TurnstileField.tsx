@@ -10,6 +10,7 @@ declare global {
         container: HTMLElement,
         options: {
           sitekey: string
+          action?: string
           theme?: 'light' | 'dark' | 'auto'
           callback?: (token: string) => void
           'expired-callback'?: () => void
@@ -25,6 +26,7 @@ interface TurnstileFieldProps {
   onTokenChange: (token: string | null) => void
   onStatusChange?: (status: TurnstileStatus, message?: string | null) => void
   resetKey?: number
+  action?: string
   theme?: 'light' | 'dark' | 'auto'
   className?: string
 }
@@ -40,6 +42,7 @@ export default function TurnstileField({
   onTokenChange,
   onStatusChange,
   resetKey = 0,
+  action,
   theme = 'dark',
   className = '',
 }: TurnstileFieldProps) {
@@ -159,6 +162,7 @@ export default function TurnstileField({
     try {
       widgetIdRef.current = window.turnstile.render(containerRef.current, {
         sitekey: siteKey,
+        action,
         theme,
         callback: (token) => {
           onTokenChange(token)
@@ -182,7 +186,7 @@ export default function TurnstileField({
       console.error('[Turnstile] Failed to render widget.', error)
       updateStatus('error', 'Spam protection could not render. Please refresh and try again.')
     }
-  }, [onTokenChange, scriptReady, siteKey, theme])
+  }, [action, onTokenChange, scriptReady, siteKey, theme])
 
   useEffect(() => {
     if (!widgetIdRef.current || !window.turnstile) {
