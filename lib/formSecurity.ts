@@ -2,15 +2,115 @@ import type { NextRequest } from 'next/server'
 
 const TURNSTILE_VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
 const MAX_TURNSTILE_AGE_MS = 10 * 60 * 1000
+const FORM_RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000
+const FORM_RATE_LIMIT_MAX_REQUESTS = 5
+
+type FormRateLimitScope = 'inquiry' | 'reservation'
+
+interface RateLimitEntry {
+  count: number
+  resetAt: number
+}
+
+const formRateLimitStore = new Map<string, RateLimitEntry>()
 
 function getTurnstileSecretKey() {
-  return process.env.TURNSTILE_SECRET_KEY || process.env.NEXT_PUBLIC_TURNSTILE_SECRET_KEY || ''
+  return process.env.TURNSTILE_SECRET_KEY || ''
 }
 
 function getForwardedIp(request: NextRequest) {
   const forwardedFor = request.headers.get('x-forwarded-for')
   if (!forwardedFor) return undefined
   return forwardedFor.split(',')[0]?.trim() || undefined
+}
+
+function getRateLimitClientId(request: NextRequest) {
+  const forwardedIp = getForwardedIp(request)
+  if (forwardedIp) {
+    return forwardedIp
+  }
+
+  const realIp = request.headers.get('x-real-ip')?.trim()
+  if (realIp) {
+    return realIp
+  }
+
+  const userAgent = request.headers.get('user-agent')?.trim() || 'unknown-agent'
+  return `ua:${userAgent.slice(0, 120)}`
+}
+
+function pruneExpiredRateLimitEntries(now: number) {
+  for (const [key, entry] of Array.from(formRateLimitStore.entries())) {
+    if (entry.resetAt <= now) {
+      formRateLimitStore.delete(key)
+    }
+  }
+}
+
+function buildRateLimitHeaders(limit: number, remaining: number, resetAt: number, retryAfterSeconds?: number) {
+  const headers = new Headers({
+    'X-RateLimit-Limit': String(limit),
+    'X-RateLimit-Remaining': String(Math.max(remaining, 0)),
+    'X-RateLimit-Reset': String(Math.ceil(resetAt / 1000)),
+  })
+
+  if (typeof retryAfterSeconds === 'number') {
+    headers.set('Retry-After', String(Math.max(retryAfterSeconds, 1)))
+  }
+
+  return headers
+}
+
+export function enforceFormRateLimit(request: NextRequest, scope: FormRateLimitScope) {
+  const now = Date.now()
+  pruneExpiredRateLimitEntries(now)
+
+  const clientId = getRateLimitClientId(request)
+  const key = `${scope}:${clientId}`
+  const existing = formRateLimitStore.get(key)
+
+  if (!existing || existing.resetAt <= now) {
+    const resetAt = now + FORM_RATE_LIMIT_WINDOW_MS
+    formRateLimitStore.set(key, {
+      count: 1,
+      resetAt,
+    })
+
+    return {
+      allowed: true,
+      headers: buildRateLimitHeaders(
+        FORM_RATE_LIMIT_MAX_REQUESTS,
+        FORM_RATE_LIMIT_MAX_REQUESTS - 1,
+        resetAt
+      ),
+    }
+  }
+
+  if (existing.count >= FORM_RATE_LIMIT_MAX_REQUESTS) {
+    const retryAfterSeconds = Math.ceil((existing.resetAt - now) / 1000)
+
+    return {
+      allowed: false,
+      headers: buildRateLimitHeaders(
+        FORM_RATE_LIMIT_MAX_REQUESTS,
+        0,
+        existing.resetAt,
+        retryAfterSeconds
+      ),
+    }
+  }
+
+  existing.count += 1
+  formRateLimitStore.set(key, existing)
+
+  return {
+    allowed: true,
+    headers: buildRateLimitHeaders(
+      FORM_RATE_LIMIT_MAX_REQUESTS,
+      FORM_RATE_LIMIT_MAX_REQUESTS - existing.count,
+      existing.resetAt
+    ),
+  }
 }
 
 function getExpectedTurnstileHostnames(request: NextRequest) {
