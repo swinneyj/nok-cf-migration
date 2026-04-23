@@ -560,9 +560,12 @@ async function buildParsedBooketingEvent(
     ...normalizeBooketingTime(initialResponse.eventdata?.dstarttime),
     sections,
     flyerImagePath:
-      initialResponse.eventdata?.flyers?.share?.url ||
+      initialResponse.eventdata?.flyers?.eventpage?.full ||
+      initialResponse.eventdata?.flyers?.list?.full ||
+      initialResponse.eventdata?.flyers?.share?.full ||
       initialResponse.eventdata?.flyers?.eventpage?.url ||
       initialResponse.eventdata?.flyers?.list?.url ||
+      initialResponse.eventdata?.flyers?.share?.url ||
       undefined,
     pricingNote: "Pricing and availability are sourced live from Booketing.",
   };
