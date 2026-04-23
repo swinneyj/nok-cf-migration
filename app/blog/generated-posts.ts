@@ -11,6 +11,16 @@ export type GeneratedPost = {
 
 export const posts: GeneratedPost[] = [
   {
+    "slug": "las-vegas-all-inclusive-packages",
+    "title": "Las Vegas All-Inclusive Party Packages: What's Actually Included",
+    "excerpt": "What do Las Vegas all-inclusive party packages actually include? Honest breakdown of what's covered, what's not, and how to get the best deal. From a VIP concierge.",
+    "date": "April 24, 2026",
+    "readTime": "7 min read",
+    "category": "Packages",
+    "image": "/blog/las-vegas-all-inclusive-packages/cover.jpg",
+    "imageAlt": "Las Vegas all-inclusive party packages what is included 2026"
+  },
+  {
     "slug": "omnia-nightclub-review",
     "title": "Omnia Nightclub Las Vegas Review 2026: Is It Worth It?",
     "excerpt": "Honest Omnia Nightclub review — table quality, DJs, kinetic chandelier, pricing, crowd, and whether it's worth booking for your group in 2026. From a VIP host.",
