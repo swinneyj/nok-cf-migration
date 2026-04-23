@@ -7,6 +7,7 @@ import {
   type CategoryEventsKey,
   type CategoryVenueCard,
 } from "@/lib/categoryVenueData";
+import { isBooketingVenue } from "@/lib/booketingClient";
 import type { FlyerManifestEntry } from "@/lib/flyerMatching";
 
 export interface CategoryEventItem {
@@ -207,7 +208,7 @@ async function loadCategoryMonthEvents(category: CategoryEventsKey, monthKey: st
 
   const result = await sql.query(
     `
-      SELECT event_id, venue_id, event_title, start_time
+      SELECT event_id, venue_id, event_title, start_time, raw_data
       FROM events
       WHERE venue_id = ANY($1::text[])
         AND start_time >= $2
@@ -237,13 +238,25 @@ async function loadCategoryMonthEvents(category: CategoryEventsKey, monthKey: st
     }
 
     const eventName = String((row as any).event_title || "");
+    const rawData =
+      (row as any).raw_data && typeof (row as any).raw_data === "object"
+        ? ((row as any).raw_data as Record<string, any>)
+        : undefined;
     const eventCategory = poolPartyVenues.some((card) => card.venueSlug === venue.venueSlug)
       ? "pool-parties"
       : "nightclubs";
     const displayTime = CATEGORY_DISPLAY_TIMES[eventCategory];
+    const booketingFlyerPath =
+      isBooketingVenue(venue.venueSlug) &&
+      typeof rawData?.flyerImagePath === "string" &&
+      rawData.flyerImagePath.trim()
+        ? rawData.flyerImagePath
+        : undefined;
 
     const imagePath =
-      findBestFlyer(manifest, venue.venueSlug, eventName, dateKey) || venue.img;
+      booketingFlyerPath ||
+      findBestFlyer(manifest, venue.venueSlug, eventName, dateKey) ||
+      venue.img;
 
     items.push({
       id: `${venue.venueSlug}:${(row as any).event_id}:${dateKey}`,
@@ -292,7 +305,7 @@ export async function searchCategoryEvents(
 
   const result = await sql.query(
     `
-      SELECT event_id, venue_id, event_title, start_time
+      SELECT event_id, venue_id, event_title, start_time, raw_data
       FROM events
       WHERE venue_id = ANY($1::text[])
         AND start_time >= $2
@@ -318,13 +331,25 @@ export async function searchCategoryEvents(
     const [monthStr, dayStr, yearStr] = formattedDate.split("/");
     const dateKey = `${yearStr}-${monthStr}-${dayStr}`;
     const eventName = String((row as any).event_title || "");
+    const rawData =
+      (row as any).raw_data && typeof (row as any).raw_data === "object"
+        ? ((row as any).raw_data as Record<string, any>)
+        : undefined;
     const eventCategory = poolPartyVenues.some((card) => card.venueSlug === venue.venueSlug)
       ? "pool-parties"
       : "nightclubs";
     const displayTime = CATEGORY_DISPLAY_TIMES[eventCategory];
+    const booketingFlyerPath =
+      isBooketingVenue(venue.venueSlug) &&
+      typeof rawData?.flyerImagePath === "string" &&
+      rawData.flyerImagePath.trim()
+        ? rawData.flyerImagePath
+        : undefined;
 
     const imagePath =
-      findBestFlyer(manifest, venue.venueSlug, eventName, dateKey) || venue.img;
+      booketingFlyerPath ||
+      findBestFlyer(manifest, venue.venueSlug, eventName, dateKey) ||
+      venue.img;
 
     items.push({
       id: `${venue.venueSlug}:${(row as any).event_id}:${dateKey}`,

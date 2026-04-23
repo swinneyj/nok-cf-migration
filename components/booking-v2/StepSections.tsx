@@ -16,6 +16,7 @@ import {
   getFallbackVenueMapConfig,
   type VenueMapConfig,
 } from "@/lib/venueMaps";
+import { isBooketingVenue } from "@/lib/booketingClient";
 import type { FlyerManifestEntry } from "@/lib/flyerMatching";
 
 // Helper to extract venue slug from URL path
@@ -672,6 +673,14 @@ export default function StepSections({
   );
 
   const resolvedFlyer = useMemo(() => {
+    // Booketing-backed venues should trust the live event flyer URL from the DB row
+    // before falling back to the static manifest, which can lag behind.
+    if (isBooketingVenue(venueSlug) && eventFlyerPath) {
+      return {
+        imagePath: eventFlyerPath,
+      };
+    }
+
     if (flyer) {
       return {
         imagePath: flyer.imagePath,
