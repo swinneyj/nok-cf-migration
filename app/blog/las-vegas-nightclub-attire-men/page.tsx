@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Las Vegas Nightclub Attire for Men 2026 | What to Wear (Full Guide)',
+  title: 'Las Vegas Nightclub Attire for Men 2026: The Complete Guide',
   description: 'Complete guide to Las Vegas nightclub attire for men — what to wear, what gets you denied, the sneaker question, outfit ideas for every budget, and venue-specific tips.',
   alternates: { canonical: 'https://www.nokturnallifestyle.com/blog/las-vegas-nightclub-attire-men' },
   openGraph: {

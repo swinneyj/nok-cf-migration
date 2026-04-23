@@ -12,7 +12,7 @@ export type GeneratedPost = {
 export const posts: GeneratedPost[] = [
   {
     "slug": "omnia-nightclub-review",
-    "title": "Omnia Nightclub Las Vegas Review 2026 | Is It Worth It?",
+    "title": "Omnia Nightclub Las Vegas Review 2026: Is It Worth It?",
     "excerpt": "Honest Omnia Nightclub review — table quality, DJs, kinetic chandelier, pricing, crowd, and whether it\\",
     "date": "April 22, 2026",
     "readTime": "7 min read",
@@ -22,7 +22,7 @@ export const posts: GeneratedPost[] = [
   },
   {
     "slug": "tailgate-beach-club-grand-opening",
-    "title": "Tailgate Beach Club Grand Opening 2026 | Las Vegas Newest Dayclub",
+    "title": "Tailgate Beach Club Grand Opening: Vegas's Newest Dayclub Experience",
     "excerpt": "Everything you need to know about Tailgate Beach Club\\",
     "date": "April 21, 2026",
     "readTime": "7 min read",
@@ -32,7 +32,7 @@ export const posts: GeneratedPost[] = [
   },
   {
     "slug": "male-strip-clubs-las-vegas",
-    "title": "Male Strip Clubs Las Vegas 2026 | Bachelorette Guide to Male Revues",
+    "title": "Male Strip Clubs & Revues in Las Vegas 2026: The Complete Bachelorette Guide",
     "excerpt": "The complete guide to male strip clubs and revues in Las Vegas — Magic Mike Live, Chippendales, Thunder From Down Under and more. Which is best for your bachelorette party?",
     "date": "April 17, 2026",
     "readTime": "8 min read",
@@ -42,7 +42,7 @@ export const posts: GeneratedPost[] = [
   },
   {
     "slug": "las-vegas-nightclub-attire-men",
-    "title": "Las Vegas Nightclub Attire for Men 2026 | What to Wear (Full Guide)",
+    "title": "Las Vegas Nightclub Attire for Men 2026: The Complete Guide",
     "excerpt": "Complete guide to Las Vegas nightclub attire for men — what to wear, what gets you denied, the sneaker question, outfit ideas for every budget, and venue-specific tips.",
     "date": "April 15, 2026",
     "readTime": "8 min read",
@@ -62,7 +62,7 @@ export const posts: GeneratedPost[] = [
   },
   {
     "slug": "las-vegas-gentlemens-club-guide",
-    "title": "Las Vegas Gentleman\\",
+    "title": "Las Vegas Gentleman's Club Guide 2026: What to Know Before You Go",
     "excerpt": "Complete guide to Las Vegas gentleman\\",
     "date": "April 8, 2026",
     "readTime": "9 min read",
