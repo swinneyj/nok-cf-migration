@@ -16,6 +16,7 @@ import {
   getFallbackVenueMapConfig,
   type VenueMapConfig,
 } from "@/lib/venueMaps";
+import type { FlyerManifestEntry } from "@/lib/flyerMatching";
 
 // Helper to extract venue slug from URL path
 function getUrlPathSlug(): string {
@@ -46,15 +47,6 @@ interface SelectedTablePayload {
   section: string;
   capacity?: number;
   soldOut?: boolean;
-}
-
-interface FlyerManifestEntry {
-  venueSlug: string;
-  venueName?: string;
-  eventName: string;
-  date: string;
-  imagePath: string;
-  sourceUrl?: string;
 }
 
 interface StepSectionsProps {
@@ -680,13 +672,19 @@ export default function StepSections({
   );
 
   const resolvedFlyer = useMemo(() => {
+    if (flyer) {
+      return {
+        imagePath: flyer.imagePath,
+      };
+    }
+
     if (eventFlyerPath) {
       return {
         imagePath: eventFlyerPath,
       };
     }
 
-    return flyer;
+    return null;
   }, [eventFlyerPath, flyer]);
 
   const [venueMapConfig, setVenueMapConfig] = useState<VenueMapConfig>(
