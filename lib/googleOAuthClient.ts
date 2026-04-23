@@ -10,13 +10,14 @@ export function getOAuthClient() {
   );
 }
 
-export function getAuthUrl() {
+export function getAuthUrl(state?: string) {
   const client = getOAuthClient();
 
   return client.generateAuthUrl({
     access_type: "offline",
     prompt: "consent",
     scope: SCOPES,
+    state,
   });
 }
 

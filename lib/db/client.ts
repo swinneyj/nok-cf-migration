@@ -61,6 +61,17 @@ export async function getEventsByVenueAndDateRange(
   return result.rows as Event[];
 }
 
+export async function getEventByEventId(eventId: string): Promise<Event | null> {
+  const result = await sql`
+    SELECT *
+    FROM events
+    WHERE event_id = ${eventId}
+    LIMIT 1
+  `;
+
+  return (result.rows[0] as Event | undefined) ?? null;
+}
+
 /**
  * Get events for multiple venues within a date range
  */
