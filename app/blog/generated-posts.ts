@@ -21,6 +21,16 @@ export const posts: GeneratedPost[] = [
     "imageAlt": "Omnia Nightclub Caesars Palace Las Vegas review 2026"
   },
   {
+    "slug": "tailgate-beach-club-grand-opening",
+    "title": "Tailgate Beach Club Grand Opening 2026 | Las Vegas Newest Dayclub",
+    "excerpt": "Everything you need to know about Tailgate Beach Club\\",
+    "date": "April 21, 2026",
+    "readTime": "7 min read",
+    "category": "Venue Review",
+    "image": "/blog/tailgate-beach-club-grand-opening/cover.jpg",
+    "imageAlt": "Tailgate Beach Club Grand Opening 2026 Las Vegas dayclub"
+  },
+  {
     "slug": "male-strip-clubs-las-vegas",
     "title": "Male Strip Clubs Las Vegas 2026 | Bachelorette Guide to Male Revues",
     "excerpt": "The complete guide to male strip clubs and revues in Las Vegas — Magic Mike Live, Chippendales, Thunder From Down Under and more. Which is best for your bachelorette party?",
