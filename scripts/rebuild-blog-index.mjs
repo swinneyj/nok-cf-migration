@@ -22,6 +22,19 @@ function extractAll(pattern, text) {
   return [...text.matchAll(pattern)].map((m) => m[1]?.trim()).filter(Boolean);
 }
 
+function unescapeJsString(value) {
+  return value
+    .replace(/\\'/g, "'")
+    .replace(/\\"/g, '"')
+    .replace(/\\\\/g, '\\');
+}
+
+function extractTopLevelString(metadataBlock, key) {
+  const pattern = new RegExp(`^\\s{2}${key}:\\s*(['"])((?:\\\\.|(?!\\1).)*)\\1`, 'ms');
+  const match = metadataBlock.match(pattern);
+  return match?.[2] ? unescapeJsString(match[2].trim()) : '';
+}
+
 function parsePost(slug) {
   const filePath = path.join(blogDir, slug, 'page.tsx');
   if (!fs.existsSync(filePath)) return null;
@@ -38,9 +51,7 @@ function parsePost(slug) {
     extract(/export const metadata\s*=\s*\{([\s\S]*?)\n\}/s, source);
 
   // 🔥 Step 2: Extract title ONLY from metadata
-  const metadataTitle =
-    extract(/title:\s*'([^']+)'/s, metadataBlock) ||
-    extract(/title:\s*"([^"]+)"/s, metadataBlock);
+  const metadataTitle = extractTopLevelString(metadataBlock, 'title');
 
   // 🔥 Step 3: fallback to <h1> if needed
   const h1Title =
@@ -48,9 +59,7 @@ function parsePost(slug) {
 
   const title = metadataTitle || h1Title;
 
-  const excerpt =
-    extract(/description:\s*'([^']+)'/s, metadataBlock) ||
-    extract(/description:\s*"([^"]+)"/s, metadataBlock);
+  const excerpt = extractTopLevelString(metadataBlock, 'description');
 
   const image =
     extract(/images:\s*\[\{\s*url:\s*'([^']+)'/s, metadataBlock) ||

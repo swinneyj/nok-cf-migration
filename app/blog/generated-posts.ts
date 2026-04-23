@@ -13,7 +13,7 @@ export const posts: GeneratedPost[] = [
   {
     "slug": "omnia-nightclub-review",
     "title": "Omnia Nightclub Las Vegas Review 2026: Is It Worth It?",
-    "excerpt": "Honest Omnia Nightclub review — table quality, DJs, kinetic chandelier, pricing, crowd, and whether it\\",
+    "excerpt": "Honest Omnia Nightclub review — table quality, DJs, kinetic chandelier, pricing, crowd, and whether it's worth booking for your group in 2026. From a VIP host.",
     "date": "April 22, 2026",
     "readTime": "7 min read",
     "category": "Venue Reviews",
@@ -23,7 +23,7 @@ export const posts: GeneratedPost[] = [
   {
     "slug": "tailgate-beach-club-grand-opening",
     "title": "Tailgate Beach Club Grand Opening: Vegas's Newest Dayclub Experience",
-    "excerpt": "Everything you need to know about Tailgate Beach Club\\",
+    "excerpt": "Everything you need to know about Tailgate Beach Club's Grand Opening at Mandalay Bay. Premium cabanas, world-class DJs, beachfront atmosphere. Reservations now open.",
     "date": "April 21, 2026",
     "readTime": "7 min read",
     "category": "Venue Review",
@@ -53,7 +53,7 @@ export const posts: GeneratedPost[] = [
   {
     "slug": "what-time-do-vegas-clubs-close",
     "title": "What Time Do Las Vegas Clubs Close? (Every Major Venue, 2026)",
-    "excerpt": "Exact closing times for every major Las Vegas nightclub — XS, Hakkasan, Omnia, Marquee, TAO, Zouk, LIV, Drai\\",
+    "excerpt": "Exact closing times for every major Las Vegas nightclub — XS, Hakkasan, Omnia, Marquee, TAO, Zouk, LIV, Drai's and more. Plus last entry times and after-hours options.",
     "date": "April 10, 2026",
     "readTime": "5 min read",
     "category": "Nightlife Guide",
@@ -63,7 +63,7 @@ export const posts: GeneratedPost[] = [
   {
     "slug": "las-vegas-gentlemens-club-guide",
     "title": "Las Vegas Gentleman's Club Guide 2026: What to Know Before You Go",
-    "excerpt": "Complete guide to Las Vegas gentleman\\",
+    "excerpt": "Complete guide to Las Vegas gentleman's clubs — the best venues, what to expect, how pricing works, how to get VIP access, and mistakes to avoid. Updated for 2026.",
     "date": "April 8, 2026",
     "readTime": "9 min read",
     "category": "Strip Clubs",
