@@ -291,6 +291,7 @@ export async function syncCategoryVenueEvents(
               event_url: undefined,
               raw_data: {
                 ...event,
+                syncSource: "google",
                 flyerImagePath: localFlyerPath || event.flyerImagePath,
                 flyerSourceUrl: sourceFlyerUrl,
                 booketingEventId: booketingMatch?.id,
@@ -398,7 +399,10 @@ export async function syncCategoryVenueEvents(
               end_time: endTime,
               calendar_id: calendarId,
               event_url: event.htmlLink || undefined,
-              raw_data: event,
+              raw_data: {
+                ...event,
+                syncSource: "google",
+              },
             });
 
             // Parse event description to extract sections and pricing
@@ -542,6 +546,7 @@ export async function syncVenuesBySlug(
             event_url: undefined,
             raw_data: {
               ...event,
+              syncSource: "google",
               flyerImagePath: localFlyerPath || event.flyerImagePath,
               flyerSourceUrl: sourceFlyerUrl,
               booketingEventId: booketingMatch?.id,
@@ -644,7 +649,10 @@ export async function syncVenuesBySlug(
           end_time: endTime,
           calendar_id: calendarId,
           event_url: event.htmlLink || undefined,
-          raw_data: event,
+          raw_data: {
+            ...event,
+            syncSource: "google",
+          },
         });
 
         const dateKey = startTime.toISOString().split('T')[0];

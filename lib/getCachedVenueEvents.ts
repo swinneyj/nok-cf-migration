@@ -61,7 +61,7 @@ async function getMonthEventsFromDB(month: string) {
     console.log(`[DB-QUERY] Fetching events for ${month}: ${queryStart.toISOString()} to ${queryEnd.toISOString()}`);
 
     const result = await sql`
-      SELECT event_id, venue_id, event_title, event_description, start_time, raw_data
+      SELECT event_id, venue_id, event_title, event_description, start_time, calendar_id, raw_data
       FROM events
       WHERE start_time >= ${queryStart.toISOString()}
         AND start_time < ${queryEnd.toISOString()}
@@ -109,6 +109,14 @@ export async function getCachedVenueEvents(
       const startDate = new Date(event.start_time);
       const rawData =
         event.raw_data && typeof event.raw_data === "object" ? event.raw_data : undefined;
+      const source: ParsedEvent["source"] =
+        rawData?.syncSource === "google" || rawData?.source === "google"
+          ? "google"
+          : rawData?.syncSource === "booketing" || rawData?.source === "booketing"
+            ? "booketing"
+            : event.calendar_id === "booketing"
+              ? "booketing"
+              : "google";
 
       // Format dates in Las Vegas timezone (America/Los_Angeles)
       const laFormatter = new Intl.DateTimeFormat("en-US", {
@@ -172,6 +180,7 @@ export async function getCachedVenueEvents(
           typeof rawData?.timeLabel === "string" ? rawData.timeLabel : undefined,
         timeSortKey:
           typeof rawData?.timeSortKey === "string" ? rawData.timeSortKey : undefined,
+        source,
         rawDescription:
           typeof rawData?.rawDescription === "string"
             ? rawData.rawDescription
