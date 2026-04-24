@@ -298,7 +298,13 @@ export async function syncCategoryVenueEvents(
               },
             });
 
-            await storeSectionsForEvent(event.id || '', event.sections || []);
+            if (event.sections && event.sections.length > 0) {
+              await storeSectionsForEvent(event.id || "", event.sections);
+            } else {
+              console.log(
+                `[SYNC] ${venue.name} - ${event.eventName}: No Google sections found; leaving existing sections untouched`
+              );
+            }
 
             result.eventsInserted++;
           }
@@ -543,7 +549,13 @@ export async function syncVenuesBySlug(
             },
           });
 
-          await storeSectionsForEvent(event.id || '', event.sections || []);
+          if (event.sections && event.sections.length > 0) {
+            await storeSectionsForEvent(event.id || "", event.sections);
+          } else {
+            console.log(
+              `[SYNC] ${venueName} - ${event.eventName}: No Google sections found; leaving existing sections untouched`
+            );
+          }
           result.eventsInserted++;
         }
 

@@ -1,5 +1,6 @@
 import { sql } from "@vercel/postgres";
 import { getSectionsForEvent } from "@/lib/db/client";
+import { isBooketingVenue } from "@/lib/booketingClient";
 import { parseEventDescription, type ParsedEvent } from "@/lib/calendarParser";
 import { filterDisplayEvents } from "@/lib/eventDeduplication";
 
@@ -122,19 +123,29 @@ export async function getCachedVenueEvents(
 
       // Fetch sections and pricing tiers for this event
       let sections = await getSectionsForEvent(event.event_id);
+      const rawDescription =
+        typeof event.event_description === "string" ? event.event_description : undefined;
 
-      // Some older synced rows stored weekday headings like "Thursday" as section titles.
-      // Reparse from the raw description at read time so the UI can recover immediately.
-      if (
-        shouldReparseSectionsFromDescription(
-          sections,
-          typeof event.event_description === "string" ? event.event_description : undefined
-        ) &&
-        typeof event.event_description === "string" &&
-        event.event_description.trim()
+      // Booketing-backed venues should always trust the Google description first at read time,
+      // so an empty or stale stored section set doesn't wipe out pricing on the page.
+      if (rawDescription && rawDescription.trim() && isBooketingVenue(venue)) {
+        const reparsed = parseEventDescription(
+          rawDescription,
+          event.event_id,
+          event.event_title,
+          startDate,
+          dateKey
+        );
+        if (reparsed?.sections.length) {
+          sections = reparsed.sections;
+        }
+      } else if (
+        shouldReparseSectionsFromDescription(sections, rawDescription) &&
+        rawDescription &&
+        rawDescription.trim()
       ) {
         const reparsed = parseEventDescription(
-          event.event_description,
+          rawDescription,
           event.event_id,
           event.event_title,
           startDate,
