@@ -76,6 +76,43 @@ function normalizeLabel(label: string) {
   return label.toLowerCase().replace(/[^\w\s]/g, "").replace(/\s+/g, " ").trim();
 }
 
+function getFlyerSources(imagePath?: string, sourceUrl?: string) {
+  const sources = [imagePath?.trim(), sourceUrl?.trim()].filter(
+    (source): source is string => Boolean(source)
+  );
+  const localWebpSource =
+    imagePath && imagePath.startsWith("/")
+      ? imagePath.replace(/\.(?:jpe?g|png)(?=$|\?)/i, ".webp")
+      : "";
+
+  return Array.from(new Set([localWebpSource, ...sources].filter(Boolean)));
+}
+
+function CalendarFlyerImage({
+  sources,
+  alt,
+}: {
+  sources: string[];
+  alt: string;
+}) {
+  const [sourceIndex, setSourceIndex] = useState(0);
+  const src = sources[sourceIndex] || "";
+
+  if (!src) return null;
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+      loading="lazy"
+      onError={() => {
+        setSourceIndex((index) => Math.min(index + 1, sources.length));
+      }}
+    />
+  );
+}
+
 export default function EventCalendar({
   venueSlug,
   onEventSelected,
@@ -329,13 +366,13 @@ export default function EventCalendar({
     const hasEvents = dayEvents.length > 0;
 
     return (
-      <div className="flex h-full flex-col">
-        <div className={`text-sm font-semibold ${isPastDate ? "text-gray-400" : "text-gray-700"}`}>
+      <div className="relative h-full">
+        <div className={`relative z-10 text-sm font-semibold ${isPastDate ? "text-gray-400" : "text-gray-700"}`}>
           {day}
         </div>
 
         {hasEvents && (
-          <div className="flex flex-1 flex-wrap content-center items-center gap-1">
+          <div className="absolute inset-0 flex flex-wrap content-center items-center justify-center gap-1 px-1">
             {dayEvents.slice(0, 3).map((event) => {
               const isSelected = selectedEventId === event.id;
 
@@ -365,7 +402,7 @@ export default function EventCalendar({
         )}
 
         {isToday && !hasEvents && (
-          <div className="flex flex-1 items-center">
+          <div className="absolute inset-0 flex items-center justify-center">
             <div className="h-2.5 w-2.5 rounded-full bg-purple-900" />
           </div>
         )}
@@ -385,10 +422,11 @@ export default function EventCalendar({
     const hasEvents = dayEvents.length > 0;
     const cellDate = new Date(`${dateKey}T12:00:00`);
     const cellLabel = formatCellLabel(cellDate);
-    const flyerSrc =
-      primaryEvent?.flyerImagePath?.trim() ||
-      primaryEvent?.flyerSourceUrl?.trim() ||
-      "";
+    const flyerSources = getFlyerSources(
+      primaryEvent?.flyerImagePath,
+      primaryEvent?.flyerSourceUrl
+    );
+    const hasFlyer = flyerSources.length > 0;
     const normalizedVenue = normalizeLabel(venueLabel);
     const desktopEventName = (() => {
       if (!primaryEvent?.eventName) return "";
@@ -422,13 +460,11 @@ export default function EventCalendar({
                 : "border-gray-100 bg-gray-50"
         }`}
       >
-        {hasEvents && flyerSrc ? (
+        {hasEvents && hasFlyer ? (
           <>
-            <img
-              src={flyerSrc}
+            <CalendarFlyerImage
+              sources={flyerSources}
               alt={`${primaryEvent.eventName} flyer`}
-              className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
-              loading="lazy"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
           </>
@@ -447,7 +483,7 @@ export default function EventCalendar({
         <div className="relative z-10 flex h-full w-full flex-col justify-between p-2">
           <div className="flex items-start justify-between gap-2">
             <div className={`rounded-full px-2 py-1 text-[10px] font-semibold tracking-[0.14em] ${
-              hasEvents && flyerSrc
+              hasEvents && hasFlyer
                 ? "bg-black/40 text-white backdrop-blur-sm"
                 : "bg-white/80 text-gray-700"
             }`}>
@@ -462,15 +498,15 @@ export default function EventCalendar({
           </div>
 
           <div>
-            <div className={`text-sm font-semibold ${hasEvents && flyerSrc ? "text-white/90" : "text-gray-700"}`}>
+            <div className={`text-sm font-semibold ${hasEvents && hasFlyer ? "text-white/90" : "text-gray-700"}`}>
               {day}
             </div>
             {hasEvents ? (
               <div className="mt-1">
-                <div className={`text-[11px] font-medium ${hasEvents && flyerSrc ? "text-white/80" : "text-gray-500"}`}>
+                <div className={`text-[11px] font-medium ${hasEvents && hasFlyer ? "text-white/80" : "text-gray-500"}`}>
                   {primaryEvent.timeLabel || "Event"}
                 </div>
-                <div className={`line-clamp-2 text-sm font-bold leading-tight ${hasEvents && flyerSrc ? "text-white" : "text-gray-800"}`}>
+                <div className={`line-clamp-2 text-sm font-bold leading-tight ${hasEvents && hasFlyer ? "text-white" : "text-gray-800"}`}>
                   {desktopEventName || primaryEvent.eventName}
                 </div>
               </div>
