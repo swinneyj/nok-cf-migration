@@ -43,6 +43,19 @@ function shouldReparseSectionsFromDescription(
   return false;
 }
 
+function hasUsableSections(value: unknown): value is ParsedEvent["sections"] {
+  return (
+    Array.isArray(value) &&
+    value.some(
+      (section) =>
+        section &&
+        typeof section === "object" &&
+        Array.isArray((section as { tiers?: unknown[] }).tiers) &&
+        (section as { tiers: unknown[] }).tiers.length > 0
+    )
+  );
+}
+
 async function getMonthEventsFromDB(month: string) {
   // Note: In-memory caching doesn't work reliably in serverless/distributed environment
   // Each request might go to a different process instance, making cache invalidation unreliable
@@ -133,6 +146,13 @@ export async function getCachedVenueEvents(
       let sections = await getSectionsForEvent(event.event_id);
       const rawDescription =
         typeof event.event_description === "string" ? event.event_description : undefined;
+
+      // Booketing sync already stores parsed sections in raw_data. Prefer that payload
+      // whenever the normalized relational tables are empty so the page still renders
+      // even if a deployment is pointed at rows without matching event_sections.
+      if (!sections.length && hasUsableSections(rawData?.sections)) {
+        sections = rawData.sections;
+      }
 
       // Booketing-backed venues should always trust the Google description first at read time,
       // so an empty or stale stored section set doesn't wipe out pricing on the page.

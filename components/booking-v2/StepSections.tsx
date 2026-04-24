@@ -58,6 +58,7 @@ interface StepSectionsProps {
   venueSlug: string;
   eventName: string;
   eventDate: string;
+  eventDateKey?: string;
   eventFlyerPath?: string;
   eventFlyerSourceUrl?: string;
   pricingNote?: string;
@@ -507,6 +508,7 @@ export default function StepSections({
   venueSlug,
   eventName,
   eventDate,
+  eventDateKey,
   eventFlyerPath,
   eventFlyerSourceUrl,
   pricingNote,
@@ -677,8 +679,8 @@ export default function StepSections({
   );
 
   const flyer = useMemo<FlyerManifestEntry | null>(
-    () => findBestFlyer(flyerManifest, venueSlug, eventName, eventDate),
-    [flyerManifest, venueSlug, eventName, eventDate]
+    () => findBestFlyer(flyerManifest, venueSlug, eventName, eventDateKey || eventDate),
+    [flyerManifest, venueSlug, eventName, eventDate, eventDateKey]
   );
 
   const resolvedFlyer = useMemo<ResolvedFlyer | null>(() => {
@@ -686,7 +688,7 @@ export default function StepSections({
       flyerManifest,
       venueSlug,
       eventName,
-      eventDate,
+      eventDateKey || eventDate,
       isBooketingVenue(venueSlug)
         ? {
             preferredPath: flyer?.imagePath,
@@ -705,7 +707,7 @@ export default function StepSections({
     }
 
     return { imagePaths };
-  }, [eventFlyerPath, eventFlyerSourceUrl, eventName, eventDate, flyer, flyerManifest, venueSlug]);
+  }, [eventFlyerPath, eventFlyerSourceUrl, eventName, eventDate, eventDateKey, flyer, flyerManifest, venueSlug]);
 
   const [venueMapConfig, setVenueMapConfig] = useState<VenueMapConfig>(
     getFallbackVenueMapConfig()
