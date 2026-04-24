@@ -72,6 +72,10 @@ function formatCellLabel(date: Date) {
   });
 }
 
+function normalizeLabel(label: string) {
+  return label.toLowerCase().replace(/[^\w\s]/g, "").replace(/\s+/g, " ").trim();
+}
+
 export default function EventCalendar({
   venueSlug,
   onEventSelected,
@@ -325,13 +329,13 @@ export default function EventCalendar({
     const hasEvents = dayEvents.length > 0;
 
     return (
-      <>
+      <div className="flex h-full flex-col">
         <div className={`text-sm font-semibold ${isPastDate ? "text-gray-400" : "text-gray-700"}`}>
           {day}
         </div>
 
         {hasEvents && (
-          <div className="mt-2 flex flex-wrap items-center gap-1">
+          <div className="flex flex-1 flex-wrap content-center items-center gap-1">
             {dayEvents.slice(0, 3).map((event) => {
               const isSelected = selectedEventId === event.id;
 
@@ -361,9 +365,11 @@ export default function EventCalendar({
         )}
 
         {isToday && !hasEvents && (
-          <div className="mt-2 h-2.5 w-2.5 rounded-full bg-purple-900" />
+          <div className="flex flex-1 items-center">
+            <div className="h-2.5 w-2.5 rounded-full bg-purple-900" />
+          </div>
         )}
-      </>
+      </div>
     );
   };
 
@@ -383,6 +389,18 @@ export default function EventCalendar({
       primaryEvent?.flyerImagePath?.trim() ||
       primaryEvent?.flyerSourceUrl?.trim() ||
       "";
+    const normalizedVenue = normalizeLabel(venueLabel);
+    const desktopEventName = (() => {
+      if (!primaryEvent?.eventName) return "";
+      const splitName = primaryEvent.eventName.split(/\s[-–—]\s/);
+      if (splitName.length < 2) return primaryEvent.eventName;
+      const suffix = splitName[splitName.length - 1];
+      const normalizedSuffix = normalizeLabel(suffix);
+      if (!normalizedSuffix.includes(normalizedVenue)) {
+        return primaryEvent.eventName;
+      }
+      return splitName.slice(0, -1).join(" - ");
+    })();
 
     return (
       <button
@@ -433,7 +451,7 @@ export default function EventCalendar({
                 ? "bg-black/40 text-white backdrop-blur-sm"
                 : "bg-white/80 text-gray-700"
             }`}>
-              {cellLabel.toUpperCase()}
+              {cellLabel}
             </div>
 
             {dayEvents.length > 1 && (
@@ -453,7 +471,7 @@ export default function EventCalendar({
                   {primaryEvent.timeLabel || "Event"}
                 </div>
                 <div className={`line-clamp-2 text-sm font-bold leading-tight ${hasEvents && flyerSrc ? "text-white" : "text-gray-800"}`}>
-                  {primaryEvent.eventName}
+                  {desktopEventName || primaryEvent.eventName}
                 </div>
               </div>
             ) : (
