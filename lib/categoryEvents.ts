@@ -8,7 +8,10 @@ import {
   type CategoryVenueCard,
 } from "@/lib/categoryVenueData";
 import { isBooketingVenue } from "@/lib/booketingClient";
-import type { FlyerManifestEntry } from "@/lib/flyerMatching";
+import {
+  buildFlyerCandidates,
+  type FlyerManifestEntry,
+} from "@/lib/flyerMatching";
 
 export interface CategoryEventItem {
   id: string;
@@ -117,46 +120,6 @@ async function getFlyerManifest() {
   return flyerManifestPromise;
 }
 
-function findBestFlyer(
-  manifest: FlyerManifestEntry[],
-  venueSlug: string,
-  eventName: string,
-  dateKey: string
-) {
-  const targetSlug = slugify(normalizeEventName(eventName));
-  const sameDateEntries = manifest.filter(
-    (entry) => entry.venueSlug === venueSlug && entry.date === dateKey
-  );
-
-  if (!sameDateEntries.length) return undefined;
-
-  let bestEntry: FlyerManifestEntry | undefined;
-  let bestScore = 0;
-
-  for (const entry of sameDateEntries) {
-    const entrySlug = slugify(normalizeEventName(entry.eventName));
-    let score = 0;
-
-    if (entrySlug === targetSlug) {
-      score += 30;
-    } else if (entrySlug && targetSlug && (entrySlug.includes(targetSlug) || targetSlug.includes(entrySlug))) {
-      score += 18;
-    }
-
-    const entryWords = new Set(entrySlug.split("-").filter(Boolean));
-    const targetWords = targetSlug.split("-").filter(Boolean);
-    score += targetWords.filter((word) => entryWords.has(word)).length * 3;
-    score += Math.min(6, Math.max(0, entryWords.size - 2));
-
-    if (score > bestScore || (score === bestScore && bestEntry)) {
-      bestScore = score;
-      bestEntry = entry;
-    }
-  }
-
-  return bestScore > 0 ? bestEntry?.imagePath : undefined;
-}
-
 function buildEventHref(venue: CategoryVenueCard, eventName: string, dateKey: string) {
   const params = new URLSearchParams({
     event: slugify(normalizeEventName(eventName)),
@@ -246,17 +209,34 @@ async function loadCategoryMonthEvents(category: CategoryEventsKey, monthKey: st
       ? "pool-parties"
       : "nightclubs";
     const displayTime = CATEGORY_DISPLAY_TIMES[eventCategory];
-    const booketingFlyerPath =
-      isBooketingVenue(venue.venueSlug) &&
-      typeof rawData?.flyerImagePath === "string" &&
-      rawData.flyerImagePath.trim()
-        ? rawData.flyerImagePath
-        : undefined;
+    const flyerCandidates = buildFlyerCandidates(
+      manifest,
+      venue.venueSlug,
+      eventName,
+      dateKey,
+      isBooketingVenue(venue.venueSlug)
+        ? {
+            preferredPath:
+              typeof rawData?.flyerSourceUrl === "string" &&
+              rawData.flyerSourceUrl.trim()
+                ? rawData.flyerSourceUrl
+                : undefined,
+            fallbackPath:
+              typeof rawData?.flyerImagePath === "string" &&
+              rawData.flyerImagePath.trim()
+                ? rawData.flyerImagePath
+                : undefined,
+          }
+        : {
+            preferredPath:
+              typeof rawData?.flyerImagePath === "string" &&
+              rawData.flyerImagePath.trim()
+                ? rawData.flyerImagePath
+                : undefined,
+          }
+    );
 
-    const imagePath =
-      booketingFlyerPath ||
-      findBestFlyer(manifest, venue.venueSlug, eventName, dateKey) ||
-      venue.img;
+    const imagePath = flyerCandidates[0] || venue.img;
 
     items.push({
       id: `${venue.venueSlug}:${(row as any).event_id}:${dateKey}`,
@@ -339,17 +319,34 @@ export async function searchCategoryEvents(
       ? "pool-parties"
       : "nightclubs";
     const displayTime = CATEGORY_DISPLAY_TIMES[eventCategory];
-    const booketingFlyerPath =
-      isBooketingVenue(venue.venueSlug) &&
-      typeof rawData?.flyerImagePath === "string" &&
-      rawData.flyerImagePath.trim()
-        ? rawData.flyerImagePath
-        : undefined;
+    const flyerCandidates = buildFlyerCandidates(
+      manifest,
+      venue.venueSlug,
+      eventName,
+      dateKey,
+      isBooketingVenue(venue.venueSlug)
+        ? {
+            preferredPath:
+              typeof rawData?.flyerSourceUrl === "string" &&
+              rawData.flyerSourceUrl.trim()
+                ? rawData.flyerSourceUrl
+                : undefined,
+            fallbackPath:
+              typeof rawData?.flyerImagePath === "string" &&
+              rawData.flyerImagePath.trim()
+                ? rawData.flyerImagePath
+                : undefined,
+          }
+        : {
+            preferredPath:
+              typeof rawData?.flyerImagePath === "string" &&
+              rawData.flyerImagePath.trim()
+                ? rawData.flyerImagePath
+                : undefined,
+          }
+    );
 
-    const imagePath =
-      booketingFlyerPath ||
-      findBestFlyer(manifest, venue.venueSlug, eventName, dateKey) ||
-      venue.img;
+    const imagePath = flyerCandidates[0] || venue.img;
 
     items.push({
       id: `${venue.venueSlug}:${(row as any).event_id}:${dateKey}`,

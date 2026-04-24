@@ -161,6 +161,10 @@ export async function getCachedVenueEvents(
           typeof rawData?.timeLabel === "string" ? rawData.timeLabel : undefined,
         timeSortKey:
           typeof rawData?.timeSortKey === "string" ? rawData.timeSortKey : undefined,
+        rawDescription:
+          typeof rawData?.rawDescription === "string"
+            ? rawData.rawDescription
+            : undefined,
         flyerImagePath:
           typeof rawData?.flyerImagePath === "string"
             ? rawData.flyerImagePath

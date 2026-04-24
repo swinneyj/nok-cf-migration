@@ -77,6 +77,54 @@ function buildBooketingLocalFlyerPath(
   return `/event-flyers/${venueSlug}/${fileName}`;
 }
 
+function matchBooketingEventToGoogleEvent(
+  booketingEvents: ParsedEvent[],
+  googleEvent: ParsedEvent
+) {
+  const sameDateEvents = booketingEvents.filter(
+    (event) => event.dateKey === googleEvent.dateKey
+  );
+
+  if (sameDateEvents.length === 0) {
+    return null;
+  }
+
+  if (sameDateEvents.length === 1) {
+    return sameDateEvents[0];
+  }
+
+  const targetSlug = slugify(googleEvent.eventName);
+
+  let bestMatch: ParsedEvent | null = null;
+  let bestScore = 0;
+
+  for (const candidate of sameDateEvents) {
+    const candidateSlug = slugify(candidate.eventName);
+    let score = 0;
+
+    if (candidateSlug === targetSlug) {
+      score += 30;
+    } else if (
+      candidateSlug &&
+      targetSlug &&
+      (candidateSlug.includes(targetSlug) || targetSlug.includes(candidateSlug))
+    ) {
+      score += 18;
+    }
+
+    const candidateWords = new Set(candidateSlug.split("-").filter(Boolean));
+    const targetWords = targetSlug.split("-").filter(Boolean);
+    score += targetWords.filter((word) => candidateWords.has(word)).length * 3;
+
+    if (score > bestScore || (score === bestScore && bestMatch)) {
+      bestScore = score;
+      bestMatch = candidate;
+    }
+  }
+
+  return bestScore > 0 ? bestMatch : sameDateEvents[0];
+}
+
 function buildParsedSyncEvent(
   eventId: string,
   eventTitle: string,
@@ -204,8 +252,11 @@ export async function syncCategoryVenueEvents(
         if (isBooketingVenue(venue.venueSlug)) {
           console.log(`[SYNC-VENUE] ${venue.name} (${venue.venueSlug}): Using Booketing API`);
 
+          const googleEvents = await fetchVenueEvents(venue.venueSlug, startDate, endDate);
           const booketingEvents = await fetchBooketingVenueEvents(venue.venueSlug, startDate, endDate);
-          console.log(`[SYNC] ${venue.name}: Found ${booketingEvents.length} events from Booketing`);
+          console.log(
+            `[SYNC] ${venue.name}: Found ${googleEvents.length} Google events and ${booketingEvents.length} Booketing events`
+          );
 
           result.debug?.push({
             venueSlug: venue.venueSlug,
@@ -213,14 +264,16 @@ export async function syncCategoryVenueEvents(
             eventsFound: booketingEvents.length,
           });
 
-          // Insert each Booketing event into database
-          for (const event of booketingEvents) {
-            const sourceFlyerUrl = event.flyerImagePath;
+          // Use Google Calendar as the source of truth for sections/pricing.
+          // Overlay Booketing titles/flyers where we can match them by date/name.
+          for (const event of googleEvents) {
+            const booketingMatch = matchBooketingEventToGoogleEvent(booketingEvents, event);
+            const sourceFlyerUrl = booketingMatch?.flyerImagePath;
             const localFlyerPath =
               sourceFlyerUrl
                 ? buildBooketingLocalFlyerPath(
                     venue.venueSlug,
-                    event.eventName || "Untitled Event",
+                    booketingMatch?.eventName || event.eventName || "Untitled Event",
                     event.dateKey,
                     sourceFlyerUrl
                   )
@@ -230,8 +283,8 @@ export async function syncCategoryVenueEvents(
               event_id: event.id || '',
               venue_id: venue.venueSlug,
               venue_name: venue.name,
-              event_title: event.eventName || 'Untitled Event',
-              event_description: event.pricingNote || '',
+              event_title: booketingMatch?.eventName || event.eventName || 'Untitled Event',
+              event_description: event.rawDescription || '',
               start_time: event.date,
               end_time: undefined,
               calendar_id: 'booketing',
@@ -240,6 +293,8 @@ export async function syncCategoryVenueEvents(
                 ...event,
                 flyerImagePath: localFlyerPath || event.flyerImagePath,
                 flyerSourceUrl: sourceFlyerUrl,
+                booketingEventId: booketingMatch?.id,
+                booketingEventName: booketingMatch?.eventName,
               },
             });
 
@@ -252,7 +307,7 @@ export async function syncCategoryVenueEvents(
             venue.venueSlug,
             startDate,
             endDate,
-            booketingEvents.map((event) => event.id || '').filter(Boolean)
+            googleEvents.map((event) => event.id || '').filter(Boolean)
           );
           if (deletedCount > 0) {
             console.log(
@@ -447,21 +502,23 @@ export async function syncVenuesBySlug(
     try {
       if (isBooketingVenue(venueSlug)) {
         console.log(`[SYNC-VENUE] ${venueName} (${venueSlug}): Using Booketing API`);
+        const googleEvents = await fetchVenueEvents(venueSlug, startDate, endDate);
         const booketingEvents = await fetchBooketingVenueEvents(venueSlug, startDate, endDate);
 
         result.debug.push({
           venueSlug,
           calendarId: 'booketing-api',
-          eventsFound: booketingEvents.length,
+          eventsFound: googleEvents.length,
         });
 
-        for (const event of booketingEvents) {
-          const sourceFlyerUrl = event.flyerImagePath;
+        for (const event of googleEvents) {
+          const booketingMatch = matchBooketingEventToGoogleEvent(booketingEvents, event);
+          const sourceFlyerUrl = booketingMatch?.flyerImagePath;
           const localFlyerPath =
             sourceFlyerUrl
               ? buildBooketingLocalFlyerPath(
                   venueSlug,
-                  event.eventName || "Untitled Event",
+                  booketingMatch?.eventName || event.eventName || "Untitled Event",
                   event.dateKey,
                   sourceFlyerUrl
                 )
@@ -471,8 +528,8 @@ export async function syncVenuesBySlug(
             event_id: event.id || '',
             venue_id: venueSlug,
             venue_name: venueName,
-            event_title: event.eventName || 'Untitled Event',
-            event_description: event.pricingNote || '',
+            event_title: booketingMatch?.eventName || event.eventName || 'Untitled Event',
+            event_description: event.rawDescription || '',
             start_time: event.date,
             end_time: undefined,
             calendar_id: 'booketing',
@@ -481,6 +538,8 @@ export async function syncVenuesBySlug(
               ...event,
               flyerImagePath: localFlyerPath || event.flyerImagePath,
               flyerSourceUrl: sourceFlyerUrl,
+              booketingEventId: booketingMatch?.id,
+              booketingEventName: booketingMatch?.eventName,
             },
           });
 
@@ -492,7 +551,7 @@ export async function syncVenuesBySlug(
           venueSlug,
           startDate,
           endDate,
-          booketingEvents.map((event) => event.id || '').filter(Boolean)
+          googleEvents.map((event) => event.id || '').filter(Boolean)
         );
         if (deletedCount > 0) {
           console.log(
