@@ -259,6 +259,7 @@ export default function BookingFlowV2({
             venueSlug={venueSlug}
             eventName={state.selectedEvent.eventName}
             eventDate={state.selectedEvent.dateString}
+            eventDateKey={state.selectedEvent.dateKey}
             eventFlyerPath={state.selectedEvent.flyerImagePath}
             eventFlyerSourceUrl={state.selectedEvent.flyerSourceUrl}
             pricingNote={state.selectedEvent.pricingNote}

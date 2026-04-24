@@ -30,6 +30,7 @@ export interface ParsedEvent {
   timeLabel?: string;
   timeSortKey?: string;
   sections: EventSection[];
+  source?: "google" | "booketing";
   rawDescription?: string;
   flyerImagePath?: string;
   flyerSourceUrl?: string;

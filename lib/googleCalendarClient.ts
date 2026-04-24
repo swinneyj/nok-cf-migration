@@ -324,6 +324,7 @@ export async function fetchVenueEvents(
       if (parsed && parsed.sections.length > 0) {
         parsedEvents.push({
           ...parsed,
+          source: "google",
           rawDescription: description,
         });
         continue;
@@ -343,6 +344,7 @@ export async function fetchVenueEvents(
         timeLabel,
         timeSortKey,
         sections: [],
+        source: "google",
         rawDescription: description,
       });
     }

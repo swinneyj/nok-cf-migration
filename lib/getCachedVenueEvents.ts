@@ -1,5 +1,6 @@
 import { sql } from "@vercel/postgres";
 import { getSectionsForEvent } from "@/lib/db/client";
+import { isBooketingVenue } from "@/lib/booketingClient";
 import { parseEventDescription, type ParsedEvent } from "@/lib/calendarParser";
 import { filterDisplayEvents } from "@/lib/eventDeduplication";
 
@@ -42,6 +43,19 @@ function shouldReparseSectionsFromDescription(
   return false;
 }
 
+function hasUsableSections(value: unknown): value is ParsedEvent["sections"] {
+  return (
+    Array.isArray(value) &&
+    value.some(
+      (section) =>
+        section &&
+        typeof section === "object" &&
+        Array.isArray((section as { tiers?: unknown[] }).tiers) &&
+        (section as { tiers: unknown[] }).tiers.length > 0
+    )
+  );
+}
+
 async function getMonthEventsFromDB(month: string) {
   // Note: In-memory caching doesn't work reliably in serverless/distributed environment
   // Each request might go to a different process instance, making cache invalidation unreliable
@@ -60,7 +74,7 @@ async function getMonthEventsFromDB(month: string) {
     console.log(`[DB-QUERY] Fetching events for ${month}: ${queryStart.toISOString()} to ${queryEnd.toISOString()}`);
 
     const result = await sql`
-      SELECT event_id, venue_id, event_title, event_description, start_time, raw_data
+      SELECT event_id, venue_id, event_title, event_description, start_time, calendar_id, raw_data
       FROM events
       WHERE start_time >= ${queryStart.toISOString()}
         AND start_time < ${queryEnd.toISOString()}
@@ -108,6 +122,14 @@ export async function getCachedVenueEvents(
       const startDate = new Date(event.start_time);
       const rawData =
         event.raw_data && typeof event.raw_data === "object" ? event.raw_data : undefined;
+      const source: ParsedEvent["source"] =
+        rawData?.syncSource === "google" || rawData?.source === "google"
+          ? "google"
+          : rawData?.syncSource === "booketing" || rawData?.source === "booketing"
+            ? "booketing"
+            : event.calendar_id === "booketing"
+              ? "booketing"
+              : "google";
 
       // Format dates in Las Vegas timezone (America/Los_Angeles)
       const laFormatter = new Intl.DateTimeFormat("en-US", {
@@ -122,19 +144,36 @@ export async function getCachedVenueEvents(
 
       // Fetch sections and pricing tiers for this event
       let sections = await getSectionsForEvent(event.event_id);
+      const rawDescription =
+        typeof event.event_description === "string" ? event.event_description : undefined;
 
-      // Some older synced rows stored weekday headings like "Thursday" as section titles.
-      // Reparse from the raw description at read time so the UI can recover immediately.
-      if (
-        shouldReparseSectionsFromDescription(
-          sections,
-          typeof event.event_description === "string" ? event.event_description : undefined
-        ) &&
-        typeof event.event_description === "string" &&
-        event.event_description.trim()
+      // Booketing sync already stores parsed sections in raw_data. Prefer that payload
+      // whenever the normalized relational tables are empty so the page still renders
+      // even if a deployment is pointed at rows without matching event_sections.
+      if (!sections.length && hasUsableSections(rawData?.sections)) {
+        sections = rawData.sections;
+      }
+
+      // Booketing-backed venues should always trust the Google description first at read time,
+      // so an empty or stale stored section set doesn't wipe out pricing on the page.
+      if (rawDescription && rawDescription.trim() && isBooketingVenue(venue)) {
+        const reparsed = parseEventDescription(
+          rawDescription,
+          event.event_id,
+          event.event_title,
+          startDate,
+          dateKey
+        );
+        if (reparsed?.sections.length) {
+          sections = reparsed.sections;
+        }
+      } else if (
+        shouldReparseSectionsFromDescription(sections, rawDescription) &&
+        rawDescription &&
+        rawDescription.trim()
       ) {
         const reparsed = parseEventDescription(
-          event.event_description,
+          rawDescription,
           event.event_id,
           event.event_title,
           startDate,
@@ -161,6 +200,7 @@ export async function getCachedVenueEvents(
           typeof rawData?.timeLabel === "string" ? rawData.timeLabel : undefined,
         timeSortKey:
           typeof rawData?.timeSortKey === "string" ? rawData.timeSortKey : undefined,
+        source,
         rawDescription:
           typeof rawData?.rawDescription === "string"
             ? rawData.rawDescription

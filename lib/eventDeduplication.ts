@@ -50,10 +50,20 @@ function isRecurringInstanceId(id: string | undefined) {
   return typeof id === "string" && /_(R)?\d{8}T\d{6}Z?$/.test(id);
 }
 
+function getSourcePriority(event: ParsedEvent) {
+  if (event.source === "google") return 2;
+  if (event.source === "booketing") return 0;
+  return 1;
+}
+
 export function pickPreferredEvent(a: ParsedEvent, b: ParsedEvent) {
   const aPlaceholder = isGenericPlaceholderEventName(a.eventName);
   const bPlaceholder = isGenericPlaceholderEventName(b.eventName);
   if (aPlaceholder !== bPlaceholder) return aPlaceholder ? b : a;
+
+  const aSource = getSourcePriority(a);
+  const bSource = getSourcePriority(b);
+  if (aSource !== bSource) return aSource > bSource ? a : b;
 
   const aSections = getSectionCount(a);
   const bSections = getSectionCount(b);
@@ -122,6 +132,16 @@ export function filterDisplayEvents(events: ParsedEvent[]) {
   const filteredEvents: ParsedEvent[] = [];
 
   for (const dateEvents of Array.from(byDate.values())) {
+    dateEvents.sort((a, b) => {
+      const sourceCompare = getSourcePriority(b) - getSourcePriority(a);
+      if (sourceCompare !== 0) return sourceCompare;
+      const sectionCompare = getSectionCount(b) - getSectionCount(a);
+      if (sectionCompare !== 0) return sectionCompare;
+      const tierCompare = getTierCount(b) - getTierCount(a);
+      if (tierCompare !== 0) return tierCompare;
+      return 0;
+    });
+
     const pricedEvents = dateEvents.filter(hasEventPricing);
 
     if (pricedEvents.length > 0 && dateEvents.length > 1) {

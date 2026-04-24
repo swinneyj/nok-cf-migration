@@ -559,6 +559,7 @@ async function buildParsedBooketingEvent(
     }),
     ...normalizeBooketingTime(initialResponse.eventdata?.dstarttime),
     sections,
+    source: "booketing",
     flyerImagePath:
       initialResponse.eventdata?.flyers?.eventpage?.full ||
       initialResponse.eventdata?.flyers?.list?.full ||

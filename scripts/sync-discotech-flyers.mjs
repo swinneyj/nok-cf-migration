@@ -412,6 +412,76 @@ function parseCardText(text) {
   };
 }
 
+async function fetchDiscotechDetailImage(detailPage, href) {
+  try {
+    await detailPage.goto(href, { waitUntil: "domcontentloaded", timeout: 120000 });
+    await detailPage.waitForTimeout(1500);
+
+    const imageUrl = await detailPage.evaluate(() => {
+      const normalize = (value) => {
+        if (!value) return "";
+        const trimmed = String(value).trim();
+        if (!trimmed) return "";
+        try {
+          return new URL(trimmed, window.location.href).href;
+        } catch {
+          return trimmed;
+        }
+      };
+
+      const metaSelectors = [
+        'meta[property="og:image"]',
+        'meta[property="twitter:image"]',
+        'meta[name="twitter:image"]',
+        'meta[name="og:image"]',
+      ];
+
+      for (const selector of metaSelectors) {
+        const content = document.querySelector(selector)?.getAttribute("content");
+        const normalized = normalize(content);
+        if (normalized) return normalized;
+      }
+
+      const flyerBg = document.querySelector(".uv-flyerbg")?.getAttribute("style");
+      const flyerBgMatch = flyerBg?.match(/url\(([^)]+)\)/i)?.[1];
+      const flyerBgUrl = normalize(flyerBgMatch?.replace(/^['"]|['"]$/g, ""));
+      if (flyerBgUrl) return flyerBgUrl;
+
+      const candidates = Array.from(document.querySelectorAll("img"))
+        .map((img) => {
+          const rect = img.getBoundingClientRect();
+          const src =
+            img.getAttribute("src") ||
+            img.getAttribute("data-src") ||
+            img.getAttribute("data-lazy-src") ||
+            img.getAttribute("srcset")?.split(" ")[0] ||
+            "";
+          return {
+            src: normalize(src),
+            alt: (img.getAttribute("alt") || "").toLowerCase(),
+            area: Math.max(0, rect.width) * Math.max(0, rect.height),
+            width: img.naturalWidth || rect.width || 0,
+            height: img.naturalHeight || rect.height || 0,
+          };
+        })
+        .filter((item) => item.src)
+        .filter(
+          (item) =>
+            !/logo|icon|avatar|thumbnail|sprite|badge|arrow|heart|mask/i.test(item.alt) &&
+            item.width >= 200 &&
+            item.height >= 200
+        )
+        .sort((a, b) => b.area - a.area);
+
+      return candidates[0]?.src || "";
+    });
+
+    return imageUrl || "";
+  } catch {
+    return "";
+  }
+}
+
 async function scrapeDay(page, date) {
   const url = `https://app.discotech.me/${CITY}/events?start_date=${date}`;
   console.log(`📅 Fetching ${url}`);
@@ -534,6 +604,9 @@ async function main() {
   const page = await browser.newPage({
     viewport: { width: 1440, height: 2200 },
   });
+  const detailPage = await browser.newPage({
+    viewport: { width: 1440, height: 2200 },
+  });
 
   const dates = dateRange(start, end);
 
@@ -582,6 +655,17 @@ async function main() {
             sourceImageUrl = matchedBooketing.imagePath;
             sourceReferer = "https://booketing.com/";
             console.log(`✅ booketing flyer ${booketingConfig.venueSlug}/${date} -> ${path.basename(new URL(sourceImageUrl).pathname)}`);
+          }
+        }
+
+        if (!booketingConfig && parsed.venueSlug === "drais-nightclub") {
+          const detailImageUrl = await fetchDiscotechDetailImage(detailPage, card.href);
+          if (detailImageUrl && detailImageUrl !== sourceImageUrl) {
+            sourceImageUrl = detailImageUrl;
+            sourceReferer = card.href;
+            console.log(
+              `✅ drais flyer detail image ${date} -> ${path.basename(new URL(sourceImageUrl).pathname)}`
+            );
           }
         }
 
