@@ -255,20 +255,23 @@ export async function syncCategoryVenueEvents(
         // Some venues use Booketing instead of Google Calendar
         if (isBooketingVenue(venue.venueSlug)) {
           console.log(`[SYNC-VENUE] ${venue.name} (${venue.venueSlug}): Using Booketing API`);
-
-          const googleEvents = await fetchVenueEvents(venue.venueSlug, startDate, endDate);
+          const useBooketingOnly = BOOKETING_ONLY_VENUES.has(venue.venueSlug);
+          const googleEvents = useBooketingOnly
+            ? []
+            : await fetchVenueEvents(venue.venueSlug, startDate, endDate);
           const booketingEvents = await fetchBooketingVenueEvents(venue.venueSlug, startDate, endDate);
           console.log(
-            `[SYNC] ${venue.name}: Found ${googleEvents.length} Google events and ${booketingEvents.length} Booketing events`
+            useBooketingOnly
+              ? `[SYNC] ${venue.name}: Found ${booketingEvents.length} Booketing events`
+              : `[SYNC] ${venue.name}: Found ${googleEvents.length} Google events and ${booketingEvents.length} Booketing events`
           );
 
           result.debug?.push({
             venueSlug: venue.venueSlug,
             calendarId: 'booketing-api',
-            eventsFound: booketingEvents.length,
+            eventsFound: useBooketingOnly ? booketingEvents.length : googleEvents.length,
           });
 
-          const useBooketingOnly = BOOKETING_ONLY_VENUES.has(venue.venueSlug);
           const syncEvents = useBooketingOnly ? booketingEvents : googleEvents;
 
           if (useBooketingOnly) {
@@ -537,16 +540,18 @@ export async function syncVenuesBySlug(
     try {
       if (isBooketingVenue(venueSlug)) {
         console.log(`[SYNC-VENUE] ${venueName} (${venueSlug}): Using Booketing API`);
-        const googleEvents = await fetchVenueEvents(venueSlug, startDate, endDate);
+        const useBooketingOnly = BOOKETING_ONLY_VENUES.has(venueSlug);
+        const googleEvents = useBooketingOnly
+          ? []
+          : await fetchVenueEvents(venueSlug, startDate, endDate);
         const booketingEvents = await fetchBooketingVenueEvents(venueSlug, startDate, endDate);
 
         result.debug.push({
           venueSlug,
           calendarId: 'booketing-api',
-          eventsFound: googleEvents.length,
+          eventsFound: useBooketingOnly ? booketingEvents.length : googleEvents.length,
         });
 
-        const useBooketingOnly = BOOKETING_ONLY_VENUES.has(venueSlug);
         const syncEvents = useBooketingOnly ? booketingEvents : googleEvents;
 
         if (useBooketingOnly) {
