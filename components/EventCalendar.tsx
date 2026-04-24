@@ -64,6 +64,14 @@ function CalendarSkeleton() {
   );
 }
 
+function formatCellLabel(date: Date) {
+  return date.toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+  });
+}
+
 export default function EventCalendar({
   venueSlug,
   onEventSelected,
@@ -79,6 +87,7 @@ export default function EventCalendar({
   const [hasSearchedForEvent, setHasSearchedForEvent] = useState(false);
   const [maxSearchMonth, setMaxSearchMonth] = useState<Date | null>(null);
   const [monthHasBeenLoaded, setMonthHasBeenLoaded] = useState(false);
+  const [isDesktopCalendarView, setIsDesktopCalendarView] = useState(false);
 
   // Track if we've already applied the initial dateParam
   const dateParamAppliedRef = useRef(false);
@@ -95,6 +104,24 @@ export default function EventCalendar({
 
   const currentMonthKey = formatMonthKey(today);
   const canGoToPrevMonth = monthKey > currentMonthKey;
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 768px)");
+
+    const updateCalendarMode = () => {
+      setIsDesktopCalendarView(mediaQuery.matches);
+    };
+
+    updateCalendarMode();
+
+    if (typeof mediaQuery.addEventListener === "function") {
+      mediaQuery.addEventListener("change", updateCalendarMode);
+      return () => mediaQuery.removeEventListener("change", updateCalendarMode);
+    }
+
+    mediaQuery.addListener(updateCalendarMode);
+    return () => mediaQuery.removeListener(updateCalendarMode);
+  }, []);
 
   // Apply URL dateParam only once on initial load, then let manual navigation work freely
   useEffect(() => {
@@ -289,6 +316,157 @@ export default function EventCalendar({
     setVisibleMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
   };
 
+  const renderMobileCell = (
+    day: number,
+    isPastDate: boolean,
+    dayEvents: ParsedEvent[],
+    isToday: boolean
+  ) => {
+    const hasEvents = dayEvents.length > 0;
+
+    return (
+      <>
+        <div className={`text-sm font-semibold ${isPastDate ? "text-gray-400" : "text-gray-700"}`}>
+          {day}
+        </div>
+
+        {hasEvents && (
+          <div className="mt-2 flex flex-wrap items-center gap-1">
+            {dayEvents.slice(0, 3).map((event) => {
+              const isSelected = selectedEventId === event.id;
+
+              return (
+                <button
+                  key={event.id}
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEventSelected(event);
+                  }}
+                  className={`h-2.5 w-2.5 rounded-full transition ${
+                    isSelected
+                      ? "bg-purple-900 ring-2 ring-purple-300"
+                      : "bg-purple-400 hover:bg-purple-500"
+                  }`}
+                />
+              );
+            })}
+
+            {dayEvents.length > 3 && (
+              <span className="ml-1 text-[10px] font-semibold text-purple-700">
+                +{dayEvents.length - 3}
+              </span>
+            )}
+          </div>
+        )}
+
+        {isToday && !hasEvents && (
+          <div className="mt-2 h-2.5 w-2.5 rounded-full bg-purple-900" />
+        )}
+      </>
+    );
+  };
+
+  const renderDesktopCell = (
+    dateKey: string,
+    day: number,
+    dayEvents: ParsedEvent[],
+    isPastDate: boolean,
+    isToday: boolean,
+    isSelectedDay: boolean
+  ) => {
+    const primaryEvent = dayEvents[0];
+    const hasEvents = dayEvents.length > 0;
+    const cellDate = new Date(`${dateKey}T12:00:00`);
+    const cellLabel = formatCellLabel(cellDate);
+    const flyerSrc =
+      primaryEvent?.flyerImagePath?.trim() ||
+      primaryEvent?.flyerSourceUrl?.trim() ||
+      "";
+
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          if (hasEvents) {
+            onEventSelected(primaryEvent);
+          }
+        }}
+        className={`group relative flex aspect-square w-full overflow-hidden rounded-lg border-2 text-left transition ${
+          isSelectedDay
+            ? "border-purple-300 ring-2 ring-purple-300"
+            : isToday
+            ? "border-purple-800 ring-2 ring-purple-300"
+            : hasEvents
+              ? "cursor-pointer border-purple-700 bg-purple-950 hover:border-purple-500 hover:shadow-lg"
+              : isPastDate
+                ? "border-gray-100 bg-gray-50 opacity-40"
+                : "border-gray-100 bg-gray-50"
+        }`}
+      >
+        {hasEvents && flyerSrc ? (
+          <>
+            <img
+              src={flyerSrc}
+              alt={`${primaryEvent.eventName} flyer`}
+              className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+          </>
+        ) : (
+          <div
+            className={`absolute inset-0 ${
+              hasEvents
+                ? "bg-gradient-to-br from-purple-100 via-white to-purple-50"
+                : isPastDate
+                  ? "bg-gray-50"
+                  : "bg-gray-50"
+            }`}
+          />
+        )}
+
+        <div className="relative z-10 flex h-full w-full flex-col justify-between p-2">
+          <div className="flex items-start justify-between gap-2">
+            <div className={`rounded-full px-2 py-1 text-[10px] font-semibold tracking-[0.14em] ${
+              hasEvents && flyerSrc
+                ? "bg-black/40 text-white backdrop-blur-sm"
+                : "bg-white/80 text-gray-700"
+            }`}>
+              {cellLabel.toUpperCase()}
+            </div>
+
+            {dayEvents.length > 1 && (
+              <div className="rounded-full bg-black/50 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur-sm">
+                +{dayEvents.length - 1}
+              </div>
+            )}
+          </div>
+
+          <div>
+            <div className={`text-sm font-semibold ${hasEvents && flyerSrc ? "text-white/90" : "text-gray-700"}`}>
+              {day}
+            </div>
+            {hasEvents ? (
+              <div className="mt-1">
+                <div className={`text-[11px] font-medium ${hasEvents && flyerSrc ? "text-white/80" : "text-gray-500"}`}>
+                  {primaryEvent.timeLabel || "Event"}
+                </div>
+                <div className={`line-clamp-2 text-sm font-bold leading-tight ${hasEvents && flyerSrc ? "text-white" : "text-gray-800"}`}>
+                  {primaryEvent.eventName}
+                </div>
+              </div>
+            ) : (
+              <div className="mt-1 text-[11px] font-medium text-gray-500">
+                No event
+              </div>
+            )}
+          </div>
+        </div>
+      </button>
+    );
+  };
+
   return (
     <div className="mt-6 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
       <div className="bg-gradient-to-r from-purple-900 to-black px-5 py-4 text-white">
@@ -348,58 +526,33 @@ export default function EventCalendar({
                 const dateKey = formatDateKey(year, monthIndex, day);
                 const isPastDate = dateKey < todayKey;
                 const dayEvents = isPastDate ? [] : (eventsByDate[dateKey] || []);
-                const hasEvents = dayEvents.length > 0;
                 const isToday = dateKey === todayKey;
+                const isSelectedDay = dayEvents.some((event) => event.id === selectedEventId);
 
                 return (
-                  <div
-                    key={dateKey}
-                    onClick={() => {
-                      if (hasEvents) onEventSelected(dayEvents[0]);
-                    }}
-                    className={`aspect-square w-full rounded-lg border-2 p-2 transition ${
-                      isToday
-                        ? "border-purple-800 ring-2 ring-purple-300 bg-purple-50"
-                        : hasEvents
-                          ? "cursor-pointer border-purple-700 bg-purple-50 hover:bg-purple-100"
-                          : isPastDate
-                            ? "border-gray-100 bg-gray-50 opacity-40"
-                            : "border-gray-100 bg-gray-50"
-                    }`}
-                  >
-                    <div className={`text-sm font-semibold ${isPastDate ? "text-gray-400" : "text-gray-700"}`}>
-                      {day}
-                    </div>
-
-                    {hasEvents && (
-                      <div className="mt-2 flex flex-wrap items-center gap-1">
-                        {dayEvents.slice(0, 3).map((event) => {
-                          const isSelected = selectedEventId === event.id;
-
-                          return (
-                            <button
-                              key={event.id}
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onEventSelected(event);
-                              }}
-                              className={`h-2.5 w-2.5 rounded-full transition ${
-                                isSelected
-                                  ? "bg-purple-900 ring-2 ring-purple-300"
-                                  : "bg-purple-400 hover:bg-purple-500"
-                              }`}
-                            />
-                          );
-                        })}
-
-                        {dayEvents.length > 3 && (
-                          <span className="ml-1 text-[10px] font-semibold text-purple-700">
-                            +{dayEvents.length - 3}
-                          </span>
-                        )}
-                      </div>
-                    )}
+                  <div key={dateKey} className="aspect-square w-full">
+                    {isDesktopCalendarView
+                      ? renderDesktopCell(dateKey, day, dayEvents, isPastDate, isToday, isSelectedDay)
+                      : (
+                        <div
+                          onClick={() => {
+                            if (dayEvents.length > 0) onEventSelected(dayEvents[0]);
+                          }}
+                          className={`h-full w-full rounded-lg border-2 p-2 transition ${
+                            isSelectedDay
+                              ? "border-purple-300 ring-2 ring-purple-300 bg-purple-50"
+                              : isToday
+                              ? "border-purple-800 ring-2 ring-purple-300 bg-purple-50"
+                              : dayEvents.length > 0
+                                ? "cursor-pointer border-purple-700 bg-purple-50 hover:bg-purple-100"
+                                : isPastDate
+                                  ? "border-gray-100 bg-gray-50 opacity-40"
+                                  : "border-gray-100 bg-gray-50"
+                          }`}
+                        >
+                          {renderMobileCell(day, isPastDate, dayEvents, isToday)}
+                        </div>
+                      )}
                   </div>
                 );
               })}
