@@ -85,3 +85,33 @@ export function findBestFlyerEntry(
 
   return bestScore > 0 ? bestEntry : null;
 }
+
+export function buildFlyerCandidates(
+  manifest: FlyerManifestEntry[],
+  venueSlug: string,
+  eventName: string,
+  dateKey: string,
+  options: {
+    preferredPath?: string;
+    fallbackPath?: string;
+    sourceUrl?: string;
+  } = {}
+) {
+  const candidates: string[] = [];
+  const pushCandidate = (value?: string) => {
+    const normalized = typeof value === "string" ? value.trim() : "";
+    if (!normalized || candidates.includes(normalized)) {
+      return;
+    }
+    candidates.push(normalized);
+  };
+
+  const manifestEntry = findBestFlyerEntry(manifest, venueSlug, eventName, dateKey);
+
+  pushCandidate(manifestEntry?.imagePath);
+  pushCandidate(options.preferredPath);
+  pushCandidate(options.fallbackPath);
+  pushCandidate(options.sourceUrl);
+
+  return candidates;
+}

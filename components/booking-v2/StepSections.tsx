@@ -17,7 +17,10 @@ import {
   type VenueMapConfig,
 } from "@/lib/venueMaps";
 import { isBooketingVenue } from "@/lib/booketingClient";
-import type { FlyerManifestEntry } from "@/lib/flyerMatching";
+import {
+  buildFlyerCandidates,
+  type FlyerManifestEntry,
+} from "@/lib/flyerMatching";
 
 // Helper to extract venue slug from URL path
 function getUrlPathSlug(): string {
@@ -196,8 +199,7 @@ function scoreFlyerMatch(
 }
 
 type ResolvedFlyer = {
-  imagePath: string;
-  fallbackImagePath?: string;
+  imagePaths: string[];
 };
 
 function findBestFlyer(
@@ -680,29 +682,30 @@ export default function StepSections({
   );
 
   const resolvedFlyer = useMemo<ResolvedFlyer | null>(() => {
-    if (isBooketingVenue(venueSlug) && eventFlyerPath) {
-      return {
-        imagePath: eventFlyerPath,
-        fallbackImagePath: eventFlyerSourceUrl || flyer?.imagePath || undefined,
-      };
+    const imagePaths = buildFlyerCandidates(
+      flyerManifest,
+      venueSlug,
+      eventName,
+      eventDate,
+      isBooketingVenue(venueSlug)
+        ? {
+            preferredPath: flyer?.imagePath,
+            fallbackPath: eventFlyerPath,
+            sourceUrl: eventFlyerSourceUrl,
+          }
+        : {
+            preferredPath: eventFlyerPath,
+            fallbackPath: flyer?.imagePath,
+            sourceUrl: eventFlyerSourceUrl,
+          }
+    );
+
+    if (!imagePaths.length) {
+      return null;
     }
 
-    if (flyer) {
-      return {
-        imagePath: flyer.imagePath,
-        fallbackImagePath: eventFlyerPath || undefined,
-      };
-    }
-
-    if (eventFlyerPath) {
-      return {
-        imagePath: eventFlyerPath,
-        fallbackImagePath: eventFlyerSourceUrl || undefined,
-      };
-    }
-
-    return null;
-  }, [eventFlyerPath, eventFlyerSourceUrl, flyer, venueSlug]);
+    return { imagePaths };
+  }, [eventFlyerPath, eventFlyerSourceUrl, eventName, eventDate, flyer, flyerManifest, venueSlug]);
 
   const [venueMapConfig, setVenueMapConfig] = useState<VenueMapConfig>(
     getFallbackVenueMapConfig()
@@ -762,33 +765,33 @@ export default function StepSections({
   }, [sections, selectedSectionName, selectedTableName, selectedTablePrice]);
 
   const ResilientFlyerImage = ({
-    src,
-    fallbackSrc,
+    sources,
     alt,
     className,
   }: {
-    src: string;
-    fallbackSrc?: string;
+    sources: string[];
     alt: string;
     className: string;
   }) => {
-    const [useFallback, setUseFallback] = useState(false);
-    const activeSrc = useFallback && fallbackSrc ? fallbackSrc : src;
+    const [sourceIndex, setSourceIndex] = useState(0);
+    const activeSrc = sources[sourceIndex];
 
     useEffect(() => {
-      setUseFallback(false);
-    }, [src, fallbackSrc]);
+      setSourceIndex(0);
+    }, [sources]);
+
+    const handleError = () => {
+      setSourceIndex((currentIndex) =>
+        currentIndex < sources.length - 1 ? currentIndex + 1 : currentIndex
+      );
+    };
 
     return (
       <img
         src={activeSrc}
         alt={alt}
         className={className}
-        onError={() => {
-          if (fallbackSrc && !useFallback) {
-            setUseFallback(true);
-          }
-        }}
+        onError={handleError}
       />
     );
   };
@@ -829,8 +832,7 @@ export default function StepSections({
             <div className="h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-white/10 ring-1 ring-white/10">
               {resolvedFlyer ? (
                 <ResilientFlyerImage
-                  src={resolvedFlyer.imagePath}
-                  fallbackSrc={resolvedFlyer.fallbackImagePath}
+                  sources={resolvedFlyer.imagePaths}
                   alt={`${eventName} flyer thumbnail`}
                   className="h-full w-full object-cover"
                 />
@@ -885,8 +887,7 @@ export default function StepSections({
             {resolvedFlyer ? (
               <div className="flex h-[260px] items-center justify-center overflow-hidden bg-black p-2 sm:h-[320px] sm:p-3 xl:block xl:aspect-[4/5] xl:h-auto xl:p-0">
                 <ResilientFlyerImage
-                  src={resolvedFlyer.imagePath}
-                  fallbackSrc={resolvedFlyer.fallbackImagePath}
+                  sources={resolvedFlyer.imagePaths}
                   alt={`${eventName} flyer`}
                   className="h-full w-full rounded-md object-contain xl:rounded-none xl:object-cover xl:object-top"
                 />
