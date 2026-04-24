@@ -5,6 +5,10 @@ import { getSectionsForEvent } from "@/lib/db/client";
 import { parseEventDescription, type ParsedEvent } from "@/lib/calendarParser";
 import { filterDisplayEvents } from "@/lib/eventDeduplication";
 import {
+  fetchBooketingVenueEvents,
+  isBooketingVenue,
+} from "@/lib/booketingClient";
+import {
   normalizeEventName,
   type FlyerManifestEntry,
 } from "@/lib/flyerMatching";
@@ -70,6 +74,17 @@ function shiftDateKey(dateKey: string, days: number) {
   return date.toISOString().slice(0, 10);
 }
 
+function buildMonthRange(month: string) {
+  const [year, monthNum] = month.split("-");
+  const yearNum = parseInt(year, 10);
+  const monthIndex = parseInt(monthNum, 10) - 1;
+
+  return {
+    startDate: new Date(Date.UTC(yearNum, monthIndex, 1, 0, 0, 0)),
+    endDate: new Date(Date.UTC(yearNum, monthIndex + 1, 0, 23, 59, 59)),
+  };
+}
+
 function slugify(value: string) {
   return String(value || "")
     .normalize("NFKD")
@@ -130,6 +145,45 @@ function findCalendarFlyer(
   return bestScore > 0 ? bestEntry : null;
 }
 
+function applyCalendarFlyer(
+  event: ParsedEvent,
+  flyerManifest: FlyerManifestEntry[],
+  venue: string
+) {
+  const flyerMatch = findCalendarFlyer(
+    flyerManifest,
+    venue,
+    event.eventName,
+    event.dateKey
+  );
+
+  if (flyerMatch) {
+    if (!event.flyerImagePath || event.flyerImagePath.startsWith("/")) {
+      event.flyerImagePath = flyerMatch.imagePath;
+      event.flyerSourceUrl = event.flyerSourceUrl || flyerMatch.sourceUrl;
+    } else {
+      event.flyerSourceUrl = flyerMatch.imagePath || event.flyerSourceUrl;
+    }
+  }
+
+  return event;
+}
+
+async function getLiveBooketingEvents(
+  venue: string,
+  month: string,
+  flyerManifest: FlyerManifestEntry[]
+) {
+  const { startDate, endDate } = buildMonthRange(month);
+  const events = await fetchBooketingVenueEvents(venue, startDate, endDate);
+
+  return filterDisplayEvents(
+    events
+      .filter((event) => event.dateKey.startsWith(month))
+      .map((event) => applyCalendarFlyer(event, flyerManifest, venue))
+  );
+}
+
 async function getMonthEventsFromDB(month: string) {
   // Note: In-memory caching doesn't work reliably in serverless/distributed environment
   // Each request might go to a different process instance, making cache invalidation unreliable
@@ -184,11 +238,25 @@ export async function getCachedVenueEvents(
 
   try {
     console.log(`[API] getCachedVenueEvents called: venue=${venue}, month=${month}`);
+    const flyerManifest = await getFlyerManifest();
+
+    if (isBooketingVenue(venue)) {
+      try {
+        const liveEvents = await getLiveBooketingEvents(venue, month, flyerManifest);
+        console.log(`[API] live Booketing events for ${venue}: ${liveEvents.length}`);
+
+        if (liveEvents.length > 0) {
+          return liveEvents;
+        }
+      } catch (error) {
+        console.warn(`[API] Live Booketing fallback failed for ${venue} ${month}:`, error);
+      }
+    }
+
     const eventsByVenue = await getMonthEventsFromDB(month);
     console.log(`[API] eventsByVenue keys:`, Object.keys(eventsByVenue));
     const venueEvents = eventsByVenue[venue] || [];
     console.log(`[API] venueEvents for ${venue}: ${venueEvents.length} events`);
-    const flyerManifest = await getFlyerManifest();
 
     // Transform database events to ParsedEvent format with sections/pricing
     const parsedEvents: ParsedEvent[] = [];
@@ -265,18 +333,7 @@ export async function getCachedVenueEvents(
             ? rawData.minimumSpendNote
             : undefined,
       };
-      const flyerMatch = findCalendarFlyer(
-        flyerManifest,
-        venue,
-        parsedEvent.eventName,
-        parsedEvent.dateKey
-      );
-
-      if (flyerMatch) {
-        parsedEvent.flyerImagePath = flyerMatch.imagePath;
-        parsedEvent.flyerSourceUrl =
-          parsedEvent.flyerSourceUrl || flyerMatch.sourceUrl;
-      }
+      applyCalendarFlyer(parsedEvent, flyerManifest, venue);
 
       if (parsedEvent.dateKey.startsWith(month)) {
         parsedEvents.push(parsedEvent);

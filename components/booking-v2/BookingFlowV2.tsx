@@ -31,7 +31,6 @@ export default function BookingFlowV2({
   const sectionsRef = useRef<HTMLDivElement | null>(null);
   const reviewRef = useRef<HTMLDivElement | null>(null);
   const previousStepRef = useRef(state.step);
-  const previousSectionsEventKeyRef = useRef<string | null>(null);
 
   const progress = useMemo(() => {
     switch (state.step) {
@@ -45,17 +44,6 @@ export default function BookingFlowV2({
         return 1;
     }
   }, [state.step]);
-
-  const selectedEventKey = useMemo(() => {
-    if (!state.selectedEvent) return null;
-
-    return [
-      state.selectedEvent.id ?? "",
-      state.selectedEvent.eventName ?? "",
-      state.selectedEvent.dateString ?? "",
-      state.selectedEvent.dateKey ?? "",
-    ].join("__");
-  }, [state.selectedEvent]);
 
   useEffect(() => {
     const previousStep = previousStepRef.current;
@@ -73,15 +61,6 @@ export default function BookingFlowV2({
       });
     }
 
-    if (state.step === "sections") {
-      requestAnimationFrame(() => {
-        sectionsRef.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      });
-    }
-
     if (state.step === "review") {
       requestAnimationFrame(() => {
         reviewRef.current?.scrollIntoView({
@@ -93,26 +72,6 @@ export default function BookingFlowV2({
 
     previousStepRef.current = state.step;
   }, [state.step]);
-
-  useEffect(() => {
-    if (state.step !== "sections" || !selectedEventKey) {
-      previousSectionsEventKeyRef.current = null;
-      return;
-    }
-
-    const previousEventKey = previousSectionsEventKeyRef.current;
-
-    if (previousEventKey && previousEventKey !== selectedEventKey) {
-      requestAnimationFrame(() => {
-        sectionsRef.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      });
-    }
-
-    previousSectionsEventKeyRef.current = selectedEventKey;
-  }, [state.step, selectedEventKey]);
 
   // Initialize from URL parameters on mount
   useEffect(() => {
