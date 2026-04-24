@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 export const metadata: Metadata = {
-  title: 'Omnia Nightclub Las Vegas Review 2026 | Is It Worth It?',
+  title: 'Omnia Nightclub Las Vegas Review 2026: Is It Worth It?',
   description: 'Honest Omnia Nightclub review — table quality, DJs, kinetic chandelier, pricing, crowd, and whether it\'s worth booking for your group in 2026. From a VIP host.',
   alternates: { canonical: 'https://www.nokturnallifestyle.com/blog/omnia-nightclub-review' },
 }

@@ -2805,7 +2805,7 @@
     "eventName": "R&Bae Wednesdays w/ DJ Franzen",
     "date": "2026-04-27",
     "imagePath": "/event-flyers/hakkasan-nightclub/2026-04-27_rbae-wednesdays-w-dj-franzen.webp",
-    "sourceUrl": "https://app.discotech.me/events/38098064-rbae-wednesdays-with-dj-franzen-at-hakkasan"
+    "sourceUrl": "https://images.discotech.me/events/38098064/6707a46d-6b35-4e7d-93e9-e7a0bdadba2d.webp?auto=format&w=360&q=65&fit=crop"
   },
   {
     "venueSlug": "hakkasan-nightclub",
@@ -4778,10 +4778,18 @@
   {
     "venueSlug": "liquid-pool-lounge",
     "venueName": "Liquid: South Strip",
+    "eventName": "DJ ParaDice - The Wednesday Dip",
+    "date": "2026-04-27",
+    "imagePath": "/event-flyers/liquid-pool-lounge/2026-04-27_dj-paradice-the-wednesday-dip.webp",
+    "sourceUrl": "https://images.discotech.me/events/38133863/4f9f2cc9-859f-435b-93f2-09d30d1abf73.webp?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "liquid-pool-lounge",
+    "venueName": "Liquid: South Strip",
     "eventName": "DJ Shr3d",
     "date": "2026-04-27",
     "imagePath": "/event-flyers/liquid-pool-lounge/2026-04-27_dj-shr3d.webp",
-    "sourceUrl": "https://app.discotech.me/events/38133864-dj-shr3d-at-liquid-pool"
+    "sourceUrl": "https://images.discotech.me/events/38133864/1fd3d941-c7e9-44f3-b52d-da1d249da165.webp?auto=format&w=360&q=65&fit=crop"
   },
   {
     "venueSlug": "liquid-pool-lounge",
@@ -7764,16 +7772,16 @@
     "venueName": "LIV",
     "eventName": "Cyndi Lauper:",
     "date": "2026-04-27",
-    "imagePath": "/event-flyers/liv-nightclub/2026-04-27_cyndi-lauper.jpg",
-    "sourceUrl": "https://app.discotech.me/events/38056701-cyndi-lauper-live-in-las-vegas-at-the-colosseum-at-caesars-palace"
+    "imagePath": "/event-flyers/liv-nightclub/2026-04-27_cyndi-lauper.png",
+    "sourceUrl": "https://venueeventartist.com/imateq/event/446/1121561/40940922538/300SC0/40941017281.png"
   },
   {
     "venueSlug": "liv-nightclub",
     "venueName": "LIV",
     "eventName": "Ikons of RockHard Rock",
     "date": "2026-04-27",
-    "imagePath": "/event-flyers/liv-nightclub/2026-04-27_ikons-of-rockhard-rock.jpg",
-    "sourceUrl": "https://app.discotech.me/events/38141185-ikons-of-rock-at-hard-rock-live"
+    "imagePath": "/event-flyers/liv-nightclub/2026-04-27_ikons-of-rockhard-rock.png",
+    "sourceUrl": "https://venueeventartist.com/imateq/event/446/1121561/40940922538/300SC0/40941017281.png"
   },
   {
     "venueSlug": "liv-nightclub",
@@ -7781,7 +7789,7 @@
     "eventName": "Official BTC 2026 Kickoff Party w DJ Precise",
     "date": "2026-04-27",
     "imagePath": "/event-flyers/liv-nightclub/2026-04-27_official-btc-2026-kickoff-party-w-dj-precise.png",
-    "sourceUrl": "https://app.discotech.me/events/38180272-official-btc-2026-kickoff-party-w-dj-precise-at-liv"
+    "sourceUrl": "https://venueeventartist.com/imateq/event/446/1121561/40940922538/300SC0/40941017281.png"
   },
   {
     "venueSlug": "liv-nightclub",
@@ -10148,16 +10156,16 @@
     "venueName": "Marquee Dayclub: North Strip",
     "eventName": "D-Miles - Mondays On My Mind",
     "date": "2026-04-27",
-    "imagePath": "/event-flyers/marquee-dayclub/2026-04-27_d-miles-mondays-on-my-mind.webp",
-    "sourceUrl": "https://app.discotech.me/events/38130421-d-miles-mondays-on-my-mind-at-marquee-dayclub"
+    "imagePath": "/event-flyers/marquee-dayclub/2026-04-27_d-miles-mondays-on-my-mind.jpeg",
+    "sourceUrl": "https://venueeventartist.com/imateq/event/446/1109/2352177/300SC0/40909901193.jpeg"
   },
   {
     "venueSlug": "marquee-dayclub",
     "venueName": "Marquee Dayclub: North Strip",
     "eventName": "Stephi K",
     "date": "2026-04-27",
-    "imagePath": "/event-flyers/marquee-dayclub/2026-04-27_stephi-k.webp",
-    "sourceUrl": "https://app.discotech.me/events/38130422-stephi-k-at-marquee-dayclub"
+    "imagePath": "/event-flyers/marquee-dayclub/2026-04-27_stephi-k.jpeg",
+    "sourceUrl": "https://venueeventartist.com/imateq/event/446/1109/2352177/300SC0/40909901193.jpeg"
   },
   {
     "venueSlug": "marquee-dayclub",
@@ -11196,16 +11204,16 @@
     "venueName": "Marquee Nightclub: North Strip",
     "eventName": "DJ Five - Marquee Mondays",
     "date": "2026-04-27",
-    "imagePath": "/event-flyers/marquee-nightclub/2026-04-27_dj-five-marquee-mondays.webp",
-    "sourceUrl": "https://app.discotech.me/events/38099651-dj-five-marquee-mondays-at-marquee-nightclub"
+    "imagePath": "/event-flyers/marquee-nightclub/2026-04-27_dj-five-marquee-mondays.jpeg",
+    "sourceUrl": "https://venueeventartist.com/imateq/event/446/1108/2350067/300SC0/40895841662.jpeg"
   },
   {
     "venueSlug": "marquee-nightclub",
     "venueName": "Marquee Nightclub: North Strip",
     "eventName": "Escobar - Lowkey in the Library",
     "date": "2026-04-27",
-    "imagePath": "/event-flyers/marquee-nightclub/2026-04-27_escobar-lowkey-in-the-library.webp",
-    "sourceUrl": "https://app.discotech.me/events/38100350-escobar-lowkey-in-the-library-at-marquee-nightclub"
+    "imagePath": "/event-flyers/marquee-nightclub/2026-04-27_escobar-lowkey-in-the-library.jpeg",
+    "sourceUrl": "https://venueeventartist.com/imateq/event/446/1108/2350067/300SC0/40895841662.jpeg"
   },
   {
     "venueSlug": "marquee-nightclub",
@@ -12677,7 +12685,7 @@
     "eventName": "Steve Aoki",
     "date": "2026-04-27",
     "imagePath": "/event-flyers/omnia-nightclub/2026-04-27_steve-aoki.webp",
-    "sourceUrl": "https://app.discotech.me/events/38098053-steve-aoki-at-omnia"
+    "sourceUrl": "https://images.discotech.me/events/38098053/71403944-0780-4fc2-af84-c45b832521f9.webp?auto=format&w=360&q=65&fit=crop"
   },
   {
     "venueSlug": "omnia-nightclub",
@@ -14253,7 +14261,7 @@
     "eventName": "DJ Mondo",
     "date": "2026-04-27",
     "imagePath": "/event-flyers/palm-tree-beach-club/2026-04-27_dj-mondo.webp",
-    "sourceUrl": "https://app.discotech.me/events/38129217-dj-mondo-at-palm-tree-beach-club"
+    "sourceUrl": "https://images.discotech.me/events/38129217/befafe36-f0fb-4e24-8aed-bb9872a18962.webp?auto=format&w=360&q=65&fit=crop"
   },
   {
     "venueSlug": "palm-tree-beach-club",
@@ -14261,7 +14269,7 @@
     "eventName": "Drift Wednesdays - Amiri Paul",
     "date": "2026-04-27",
     "imagePath": "/event-flyers/palm-tree-beach-club/2026-04-27_drift-wednesdays-amiri-paul.webp",
-    "sourceUrl": "https://app.discotech.me/events/38129216-drift-wednesdays-amiri-paul-at-palm-tree-beach-club"
+    "sourceUrl": "https://images.discotech.me/events/38129216/610920a7-727b-4768-a11c-27a559d6c2f0.webp?auto=format&w=360&q=65&fit=crop"
   },
   {
     "venueSlug": "palm-tree-beach-club",
@@ -15404,8 +15412,8 @@
     "venueName": "Stadium Swim",
     "eventName": "Champions League Semi-Finals at",
     "date": "2026-04-27",
-    "imagePath": "/event-flyers/stadium-swim/2026-04-27_champions-league-semi-finals-at.jpeg",
-    "sourceUrl": "https://app.discotech.me/events/38083185-champions-league-semi-finals-at-stadium-swim-at-stadium-swim"
+    "imagePath": "/event-flyers/stadium-swim/2026-04-27_champions-league-semi-finals-at.png",
+    "sourceUrl": "https://venueeventartist.com/imateq/event/446/535556/2296972/300SC0/2296974.png"
   },
   {
     "venueSlug": "stadium-swim",
@@ -15413,7 +15421,7 @@
     "eventName": "Weekdays at Circa",
     "date": "2026-04-27",
     "imagePath": "/event-flyers/stadium-swim/2026-04-27_weekdays-at-circa.png",
-    "sourceUrl": "https://app.discotech.me/events/38083184-weekdays-at-circa-stadium-swim-at-stadium-swim"
+    "sourceUrl": "https://venueeventartist.com/imateq/event/446/535556/2296972/300SC0/2296974.png"
   },
   {
     "venueSlug": "stadium-swim",
@@ -16605,7 +16613,7 @@
     "eventName": "Justin Credible - Worship Thursdays",
     "date": "2026-04-27",
     "imagePath": "/event-flyers/tao-nightclub/2026-04-27_justin-credible-worship-thursdays.webp",
-    "sourceUrl": "https://app.discotech.me/events/38157769-justin-credible-worship-thursdays-at-tao"
+    "sourceUrl": "https://images.discotech.me/events/38157769/f53a8a98-7501-4438-9f22-e9d25a8dec68.webp?auto=format&w=360&q=65&fit=crop"
   },
   {
     "venueSlug": "tao-nightclub",

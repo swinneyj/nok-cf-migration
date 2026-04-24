@@ -61,6 +61,17 @@ export async function getEventsByVenueAndDateRange(
   return result.rows as Event[];
 }
 
+export async function getEventByEventId(eventId: string): Promise<Event | null> {
+  const result = await sql`
+    SELECT *
+    FROM events
+    WHERE event_id = ${eventId}
+    LIMIT 1
+  `;
+
+  return (result.rows[0] as Event | undefined) ?? null;
+}
+
 /**
  * Get events for multiple venues within a date range
  */
@@ -243,6 +254,42 @@ export async function deleteOldEvents(beforeDate: Date): Promise<number> {
     DELETE FROM events
     WHERE start_time < ${beforeDate.toISOString()}
   `;
+
+  return result.rowCount || 0;
+}
+
+export async function deleteEventsForVenueOutsideIds(
+  venueId: string,
+  startDate: Date,
+  endDate: Date,
+  retainEventIds: string[]
+): Promise<number> {
+  if (retainEventIds.length === 0) {
+    const result = await sql`
+      DELETE FROM events
+      WHERE venue_id = ${venueId}
+        AND start_time >= ${startDate.toISOString()}
+        AND start_time < ${endDate.toISOString()}
+    `;
+
+    return result.rowCount || 0;
+  }
+
+  const result = await sql.query(
+    `
+      DELETE FROM events
+      WHERE venue_id = $1
+        AND start_time >= $2
+        AND start_time < $3
+        AND NOT (event_id = ANY($4::text[]))
+    `,
+    [
+      venueId,
+      startDate.toISOString(),
+      endDate.toISOString(),
+      retainEventIds,
+    ]
+  );
 
   return result.rowCount || 0;
 }

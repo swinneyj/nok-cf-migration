@@ -5,6 +5,9 @@ import { AlertTriangle, Mail, Phone, Users } from "lucide-react";
 import TurnstileField, { type TurnstileStatus } from "@/components/TurnstileField";
 
 interface ReservationFormProps {
+  venueSlug: string;
+  eventId: string;
+  eventDateKey: string;
   venueName: string;
   eventName: string;
   eventDate: string;
@@ -18,6 +21,9 @@ interface ReservationFormProps {
 }
 
 export interface ReservationData {
+  venueSlug: string;
+  eventId: string;
+  eventDateKey: string;
   venueName: string;
   eventName: string;
   eventDate: string;
@@ -38,6 +44,9 @@ export interface ReservationData {
 type GuestField = "numGuys" | "numGirls";
 
 export default function ReservationForm({
+  venueSlug,
+  eventId,
+  eventDateKey,
   venueName,
   eventName,
   eventDate,
@@ -145,6 +154,9 @@ export default function ReservationForm({
 
     try {
       const data: ReservationData = {
+        venueSlug,
+        eventId,
+        eventDateKey,
         venueName,
         eventName,
         eventDate,
@@ -168,11 +180,19 @@ export default function ReservationForm({
           Accept: "application/json",
         },
         body: JSON.stringify({
-          ...data,
+          venueSlug,
+          eventId,
+          eventDateKey,
+          tableName: selectedTable.name,
+          tableSection: selectedTable.section,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          numGuys: guestData.numGuys,
+          numGirls: guestData.numGirls,
           website: "",
           turnstileToken,
-          _subject: `${isOverCapacity ? "⚠️ OVER CAPACITY — " : ""}New Reservation Request - ${eventName} at ${venueName}`,
-          _replyto: formData.email,
         }),
       });
 
@@ -451,6 +471,7 @@ export default function ReservationForm({
           onTokenChange={handleTurnstileTokenChange}
           onStatusChange={handleTurnstileStatusChange}
           resetKey={turnstileResetKey}
+          action="reservation"
           theme="light"
         />
 

@@ -1,6 +1,7 @@
 import { sql } from "@vercel/postgres";
 import { getSectionsForEvent } from "@/lib/db/client";
 import { parseEventDescription, type ParsedEvent } from "@/lib/calendarParser";
+import { filterDisplayEvents } from "@/lib/eventDeduplication";
 
 export function clearEventCache() {
   console.log('[CACHE] Cleared month data cache');
@@ -164,6 +165,10 @@ export async function getCachedVenueEvents(
           typeof rawData?.flyerImagePath === "string"
             ? rawData.flyerImagePath
             : undefined,
+        flyerSourceUrl:
+          typeof rawData?.flyerSourceUrl === "string"
+            ? rawData.flyerSourceUrl
+            : undefined,
         pricingNote:
           typeof rawData?.pricingNote === "string" ? rawData.pricingNote : undefined,
         minimumSpendNote:
@@ -177,7 +182,7 @@ export async function getCachedVenueEvents(
       }
     }
 
-    return parsedEvents;
+    return filterDisplayEvents(parsedEvents);
   } catch (error) {
     console.error(
       `Error in getCachedVenueEvents for ${venue} ${month}:`,

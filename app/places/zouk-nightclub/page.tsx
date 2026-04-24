@@ -42,6 +42,51 @@ export default async function ZoukNightclub() {
         ],
         slug: 'zouk-nightclub',
       }}
+      bookingReasons={[
+        {
+          title: 'We Help You Avoid the Wrong Zouk Spend',
+          desc: 'Zouk attracts groups who care about sound, production, and a more music-forward room. We help you decide whether to pay for a table, work a guest-list strategy, or pivot if the value is not there that night.',
+        },
+        {
+          title: 'Resorts World Logistics Matter More Than People Expect',
+          desc: 'Zouk is easier when someone understands the property flow, arrival timing, and where your group should meet. That keeps the night smooth instead of chaotic at the front end.',
+        },
+        {
+          title: 'We Match Zouk to the Right Crowd',
+          desc: 'Not every Vegas group is a Zouk group. We recommend it when your crew actually wants the music-first, tech-forward vibe and steer you elsewhere when another club fits better.',
+        },
+        {
+          title: 'AYU and Zouk Work Best as a Coordinated Weekend',
+          desc: 'If your group is doing both day and night at Resorts World, we can shape the weekend around that plan so the spend and timing make more sense together.',
+        },
+      ]}
+      reviewsHeading="What Clients Say About Booking With Nokturnal"
+      reviews={[
+        {
+          name: 'prashanth m.',
+          date: 'April 2023',
+          location: 'Chicago, IL',
+          rating: 5,
+          source: 'Yelp review',
+          text: "When I took on the responsibilities of planning a guys weekend in Vegas, I didn't know how deep of a hole I would slip into researching options and things to do. From the very first communication with Justin, I felt a huge weight off my shoulders.",
+        },
+        {
+          name: 'Elliot Y.',
+          date: 'March 2015',
+          location: 'Redlands, CA',
+          rating: 5,
+          source: 'Yelp review',
+          text: "I recently had Justin and Jay help me out with table service at XS for a bachelor party of 12. I really can't say enough good things about these guys. They're honest, on time and reliable. They have a good grasp on all the hot spots with all the right connections.",
+        },
+        {
+          name: 'Arthur C.',
+          date: 'November 2014',
+          location: 'Brea, CA',
+          rating: 5,
+          source: 'Yelp review',
+          text: "I recently went to Vegas on 2 separate occasions, and Justin at NLS really made things come together perfectly. I've gone to many of the clubs in Vegas through many different hosts throughout the years, but how Justin takes care of you makes things just so easy and worry-free.",
+        },
+      ]}
       relatedVenues={[
         { name: 'XS Nightclub', href: '/places/xs-nightclub' },
         { name: 'Hakkasan', href: '/places/hakkasan' },

@@ -1,11 +1,16 @@
 import { getCategoryVenueCards, type CategoryEventsKey } from '@/lib/categoryVenueData';
 import { fetchVenueEvents, CALENDAR_IDS } from '@/lib/googleCalendarClient';
 import { fetchBooketingVenueEvents, isBooketingVenue } from '@/lib/booketingClient';
-import { parseEventDescription } from '@/lib/calendarParser';
+import { parseEventDescription, type ParsedEvent } from '@/lib/calendarParser';
+import {
+  filterDisplayEvents,
+} from '@/lib/eventDeduplication';
+import path from 'node:path';
 import { google } from 'googleapis';
 import { setOAuthCredentialsFromRefreshToken } from '@/lib/googleOAuthClient';
 import {
   ensureDatabaseSchema,
+  deleteEventsForVenueOutsideIds,
   deleteOldEvents,
   insertOrUpdateEvent,
   updateSyncStatus,
@@ -42,6 +47,118 @@ function getVenueNameBySlug(venueSlug: string) {
 
 function shouldSkipVenueSync(venueSlug: string) {
   return EXCLUDED_SYNC_VENUES.has(venueSlug);
+}
+
+function getTimeSortKey(date: Date) {
+  return `${String(date.getHours()).padStart(2, '0')}:${String(
+    date.getMinutes()
+  ).padStart(2, '0')}`;
+}
+
+function slugify(value: string) {
+  return String(value || "")
+    .normalize("NFKD")
+    .replace(/[^\w\s-]/g, "")
+    .toLowerCase()
+    .replace(/_/g, "-")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function buildBooketingLocalFlyerPath(
+  venueSlug: string,
+  eventName: string,
+  dateKey: string,
+  sourceUrl?: string
+) {
+  const ext = sourceUrl ? path.extname(new URL(sourceUrl).pathname) || ".jpg" : ".jpg";
+  const fileName = `${dateKey}_${slugify(eventName)}${ext}`;
+  return `/event-flyers/${venueSlug}/${fileName}`;
+}
+
+function buildParsedSyncEvent(
+  eventId: string,
+  eventTitle: string,
+  eventDescription: string,
+  startTime: Date,
+  dateKey: string
+): ParsedEvent {
+  const parsed = parseEventDescription(
+    eventDescription,
+    eventId,
+    eventTitle,
+    startTime,
+    dateKey,
+    undefined,
+    getTimeSortKey(startTime)
+  );
+
+  if (parsed) {
+    return parsed;
+  }
+
+  return {
+    id: eventId,
+    eventName: eventTitle,
+    date: startTime,
+    dateKey,
+    dateString: startTime.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    }),
+    timeSortKey: getTimeSortKey(startTime),
+    sections: [],
+  };
+}
+
+function dedupeGoogleSyncEvents<T extends {
+  id?: string | null;
+  summary?: string | null;
+  description?: string | null;
+  start?: { dateTime?: string | null; date?: string | null };
+}>(
+  events: T[]
+) {
+  const getSyncWinnerKey = (event: ParsedEvent) => `${event.id}::${event.dateKey}`;
+
+  const syncCandidates = events.map((event) => {
+    const startTime = event.start?.dateTime
+      ? new Date(event.start.dateTime)
+      : event.start?.date
+      ? new Date(event.start.date)
+      : new Date();
+
+    const eventId = event.id || '';
+    const eventTitle = event.summary || 'Untitled Event';
+    const eventDescription = event.description || '';
+    const dateKey = startTime.toISOString().split('T')[0];
+    const parsedEvent = buildParsedSyncEvent(
+      eventId,
+      eventTitle,
+      eventDescription,
+      startTime,
+      dateKey
+    );
+
+    return {
+      raw: event,
+      startTime,
+      parsedEvent,
+    };
+  });
+
+  const winners = new Set(
+    filterDisplayEvents(syncCandidates.map((candidate) => candidate.parsedEvent)).map(
+      getSyncWinnerKey
+    )
+  );
+
+  return syncCandidates
+    .filter((candidate) => winners.has(getSyncWinnerKey(candidate.parsedEvent)))
+    .map((candidate) => candidate.raw);
 }
 
 export async function syncCategoryVenueEvents(
@@ -98,6 +215,17 @@ export async function syncCategoryVenueEvents(
 
           // Insert each Booketing event into database
           for (const event of booketingEvents) {
+            const sourceFlyerUrl = event.flyerImagePath;
+            const localFlyerPath =
+              sourceFlyerUrl
+                ? buildBooketingLocalFlyerPath(
+                    venue.venueSlug,
+                    event.eventName || "Untitled Event",
+                    event.dateKey,
+                    sourceFlyerUrl
+                  )
+                : undefined;
+
             await insertOrUpdateEvent({
               event_id: event.id || '',
               venue_id: venue.venueSlug,
@@ -108,12 +236,28 @@ export async function syncCategoryVenueEvents(
               end_time: undefined,
               calendar_id: 'booketing',
               event_url: undefined,
-              raw_data: event,
+              raw_data: {
+                ...event,
+                flyerImagePath: localFlyerPath || event.flyerImagePath,
+                flyerSourceUrl: sourceFlyerUrl,
+              },
             });
 
             await storeSectionsForEvent(event.id || '', event.sections || []);
 
             result.eventsInserted++;
+          }
+
+          const deletedCount = await deleteEventsForVenueOutsideIds(
+            venue.venueSlug,
+            startDate,
+            endDate,
+            booketingEvents.map((event) => event.id || '').filter(Boolean)
+          );
+          if (deletedCount > 0) {
+            console.log(
+              `[SYNC] ${venue.name}: Deleted ${deletedCount} stale future events after Booketing sync`
+            );
           }
 
           await updateSyncStatus(venue.venueSlug, true, booketingEvents.length);
@@ -151,14 +295,21 @@ export async function syncCategoryVenueEvents(
 
           console.log(`[SYNC] ${venue.name}: Found ${events.length} events across ${pageCount} pages`);
 
+          const dedupedEvents = dedupeGoogleSyncEvents(events);
+          if (dedupedEvents.length !== events.length) {
+            console.log(
+              `[SYNC] ${venue.name}: Deduped Google events from ${events.length} to ${dedupedEvents.length}`
+            );
+          }
+
           result.debug?.push({
             venueSlug: venue.venueSlug,
             calendarId,
-            eventsFound: events.length,
+            eventsFound: dedupedEvents.length,
           });
 
           // Insert each event into database
-          for (const event of events) {
+          for (const event of dedupedEvents) {
             const startTime = event.start?.dateTime
               ? new Date(event.start.dateTime)
               : event.start?.date
@@ -208,6 +359,18 @@ export async function syncCategoryVenueEvents(
             }
 
             result.eventsInserted++;
+          }
+
+          const deletedCount = await deleteEventsForVenueOutsideIds(
+            venue.venueSlug,
+            startDate,
+            endDate,
+            dedupedEvents.map((event) => event.id || '').filter(Boolean)
+          );
+          if (deletedCount > 0) {
+            console.log(
+              `[SYNC] ${venue.name}: Deleted ${deletedCount} stale future events after Google sync`
+            );
           }
 
           await updateSyncStatus(venue.venueSlug, true, events.length);
@@ -293,6 +456,17 @@ export async function syncVenuesBySlug(
         });
 
         for (const event of booketingEvents) {
+          const sourceFlyerUrl = event.flyerImagePath;
+          const localFlyerPath =
+            sourceFlyerUrl
+              ? buildBooketingLocalFlyerPath(
+                  venueSlug,
+                  event.eventName || "Untitled Event",
+                  event.dateKey,
+                  sourceFlyerUrl
+                )
+              : undefined;
+
           await insertOrUpdateEvent({
             event_id: event.id || '',
             venue_id: venueSlug,
@@ -303,11 +477,27 @@ export async function syncVenuesBySlug(
             end_time: undefined,
             calendar_id: 'booketing',
             event_url: undefined,
-            raw_data: event,
+            raw_data: {
+              ...event,
+              flyerImagePath: localFlyerPath || event.flyerImagePath,
+              flyerSourceUrl: sourceFlyerUrl,
+            },
           });
 
           await storeSectionsForEvent(event.id || '', event.sections || []);
           result.eventsInserted++;
+        }
+
+        const deletedCount = await deleteEventsForVenueOutsideIds(
+          venueSlug,
+          startDate,
+          endDate,
+          booketingEvents.map((event) => event.id || '').filter(Boolean)
+        );
+        if (deletedCount > 0) {
+          console.log(
+            `[SYNC] ${venueName}: Deleted ${deletedCount} stale future events after Booketing sync`
+          );
         }
 
         await updateSyncStatus(venueSlug, true, booketingEvents.length);
@@ -343,13 +533,20 @@ export async function syncVenuesBySlug(
         );
       } while (pageToken);
 
+      const dedupedEvents = dedupeGoogleSyncEvents(events);
+      if (dedupedEvents.length !== events.length) {
+        console.log(
+          `[SYNC] ${venueName}: Deduped Google events from ${events.length} to ${dedupedEvents.length}`
+        );
+      }
+
       result.debug.push({
         venueSlug,
         calendarId,
-        eventsFound: events.length,
+        eventsFound: dedupedEvents.length,
       });
 
-      for (const event of events) {
+      for (const event of dedupedEvents) {
         const startTime = event.start?.dateTime
           ? new Date(event.start.dateTime)
           : event.start?.date
@@ -387,6 +584,18 @@ export async function syncVenuesBySlug(
         }
 
         result.eventsInserted++;
+      }
+
+      const deletedCount = await deleteEventsForVenueOutsideIds(
+        venueSlug,
+        startDate,
+        endDate,
+        dedupedEvents.map((event) => event.id || '').filter(Boolean)
+      );
+      if (deletedCount > 0) {
+        console.log(
+          `[SYNC] ${venueName}: Deleted ${deletedCount} stale future events after Google sync`
+        );
       }
 
       await updateSyncStatus(venueSlug, true, events.length);

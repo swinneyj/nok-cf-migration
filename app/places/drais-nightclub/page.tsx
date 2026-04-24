@@ -42,6 +42,51 @@ export default async function DraisNightclub() {
         ],
         slug: 'drais-nightclub',
       }}
+      bookingReasons={[
+        {
+          title: 'Rooftop Tables at Drai’s Are Not All Equal',
+          desc: 'Drai’s is all about views, artist nights, and the right section for your group. We help you avoid paying for a weak table and steer you toward the parts of the rooftop that actually feel worth it.',
+        },
+        {
+          title: 'Hip-Hop Nights Need a Different Booking Strategy',
+          desc: 'Drai’s attracts a different crowd than the EDM mega-clubs, and the value can shift fast on artist-driven nights. We help groups book around the right event instead of guessing.',
+        },
+        {
+          title: 'The Cromwell Timing Can Make or Break the Night',
+          desc: 'Because Drai’s sits on top of The Cromwell, arrival flow matters more than people expect. We help your group hit the venue at the right time and avoid getting bogged down.',
+        },
+        {
+          title: 'Drai’s Works Best for the Right Group',
+          desc: 'If your group wants rooftop energy, hip-hop, and a more open-air Vegas feel, Drai’s can be a great fit. If not, we will usually tell you that before you spend the money.',
+        },
+      ]}
+      reviewsHeading="What Clients Say About Booking With Nokturnal"
+      reviews={[
+        {
+          name: 'Elyyse L.',
+          date: 'June 2018',
+          location: 'Summerlin, Las Vegas, NV',
+          rating: 5,
+          source: 'Yelp review',
+          text: 'Top notch! Justin and Josh hooked it up for my sisters bachelorette party. We did a table at Drais for 2 Chainz with amazing bottle deals. Josh got us upgraded from a patio table to a table on the balcony overlooking the stage, which literally made the night.',
+        },
+        {
+          name: 'Nay J.',
+          date: 'February 2017',
+          location: 'Los Angeles, CA',
+          rating: 5,
+          source: 'Yelp review',
+          text: 'Everything was great! We used Nokturnal Lifestyle to go Drais on Saturday. We got in free too! Thank you guys!',
+        },
+        {
+          name: 'Arthur C.',
+          date: 'November 2014',
+          location: 'Brea, CA',
+          rating: 5,
+          source: 'Yelp review',
+          text: "I recently went to Vegas on 2 separate occasions, and Justin at NLS really made things come together perfectly. I've gone to many of the clubs in Vegas through many different hosts throughout the years, but how Justin takes care of you makes things just so easy and worry-free.",
+        },
+      ]}
       relatedVenues={[
         { name: 'Marquee Nightclub', href: '/places/marquee-nightclub' },
         { name: 'TAO Nightclub', href: '/places/tao-nightclub' },

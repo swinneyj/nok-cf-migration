@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import InquiryForm from '@/components/InquiryForm'
 import ReviewCard from '@/components/ReviewCard'
+import { getExactVenueReviewCount, getVenueReviews } from '@/lib/venueReviews'
 
 interface VenuePageProps {
   venue: {
@@ -25,21 +26,38 @@ interface VenuePageProps {
     highlights: string[]
     slug: string
   }
-  reviews?: Array<{ name: string; date: string; location: string; rating: number; text: string }>
+  bookingReasons?: Array<{ title: string; desc: string }>
+  reviews?: Array<{ name: string; date: string; location: string; rating: number; text: string; source?: string }>
+  reviewsHeading?: string
   relatedVenues?: Array<{ name: string; href: string }>
   useReserveInquiryCta?: boolean
   beforeAboutSection?: React.ReactNode
 }
 
-const defaultReviews = [
-  { name: 'Marcus T.', date: 'February 2026', location: 'Chicago, IL', rating: 5, text: "Justin got us the best table in the house. We've been to this venue three times now always through Nokturnal — the difference in table placement vs booking direct is night and day." },
-  { name: 'Sarah K.', date: 'January 2026', location: 'New York, NY', rating: 5, text: 'Bachelorette party and our host was waiting for us at the door. VIP entry, amazing table, champagne already chilled. Absolutely flawless experience.' },
-  { name: 'David R.', date: 'December 2025', location: 'Los Angeles, CA', rating: 5, text: "Thought I could book this venue directly for a better price. Justin beat the direct rate AND got us a better table. Will always go through Nokturnal for Vegas." },
+const defaultBookingReasons = [
+  {
+    title: 'Better Table Location',
+    desc: "We know exactly which tables have the best sightlines and position. Booking direct gets you whatever's available.",
+  },
+  {
+    title: 'Price Match + Better',
+    desc: "We regularly beat direct booking prices, and when we can't, we add value through better placement or service.",
+  },
+  {
+    title: 'Personal Host',
+    desc: 'Justin or one of our team meets you at the door, handles check-in, and stays with your group throughout the night.',
+  },
+  {
+    title: 'Skip the Line',
+    desc: 'Zero waiting. VIP entry direct to your table, no standing in the general admission queue.',
+  },
 ]
 
 export default function VenuePage({
   venue,
-  reviews = defaultReviews,
+  bookingReasons = defaultBookingReasons,
+  reviews,
+  reviewsHeading,
   relatedVenues = [],
   useReserveInquiryCta = false,
   beforeAboutSection,
@@ -52,6 +70,12 @@ export default function VenuePage({
   const primaryHash = `#${primaryTargetId}`
   const primaryCtaLabel = useReserveInquiryCta ? 'Reserve Now' : 'View Events'
   const primaryCtaAriaLabel = useReserveInquiryCta ? 'Jump to reservation form' : 'View upcoming events'
+  const resolvedReviews = reviews ?? getVenueReviews(venue.slug)
+  const exactVenueReviewCount = getExactVenueReviewCount(venue.slug)
+  const resolvedReviewsHeading = reviewsHeading
+    ?? (exactVenueReviewCount > 0
+      ? `Real Reviews That Mention ${venue.name.replace(/ Nightclub| Dayclub| Beach Club| at Night/g, '')}`
+      : 'What Clients Say About Booking With Nokturnal')
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -238,12 +262,7 @@ export default function VenuePage({
                 Why Book {venue.name} Through Nokturnal?
               </h2>
               <div className="grid sm:grid-cols-2 gap-4">
-                {[
-                  { title: 'Better Table Location', desc: "We know exactly which tables have the best sightlines and position. Booking direct gets you whatever's available." },
-                  { title: 'Price Match + Better', desc: "We regularly beat direct booking prices, and when we can't, we add value through better placement or service." },
-                  { title: 'Personal Host', desc: 'Justin or one of our team meets you at the door, handles check-in, and stays with your group throughout the night.' },
-                  { title: 'Skip the Line', desc: 'Zero waiting. VIP entry direct to your table, no standing in the general admission queue.' },
-                ].map(({ title, desc }) => (
+                {bookingReasons.map(({ title, desc }) => (
                   <div key={title} className="card-dark p-4">
                     <div className="text-gold-400 font-semibold text-sm mb-1">{title}</div>
                     <div className="text-white/55 text-xs leading-relaxed">{desc}</div>
@@ -253,10 +272,10 @@ export default function VenuePage({
             </div>
 
             <div>
-              <h2 className="font-display text-white font-bold text-2xl mb-4">What Our Clients Say</h2>
+              <h2 className="font-display text-white font-bold text-2xl mb-4">{resolvedReviewsHeading}</h2>
               <div className="space-y-4">
-                {reviews.map((r) => (
-                  <ReviewCard key={r.name} {...r} />
+                {resolvedReviews.map((r) => (
+                  <ReviewCard key={`${r.name}-${r.date}`} {...r} />
                 ))}
               </div>
             </div>

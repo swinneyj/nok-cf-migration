@@ -2,11 +2,11 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Las Vegas Gentleman\'s Club Guide 2026 | What to Know Before You Go',
+  title: "Las Vegas Gentleman's Club Guide 2026: What to Know Before You Go",
   description: 'Complete guide to Las Vegas gentleman\'s clubs — the best venues, what to expect, how pricing works, how to get VIP access, and mistakes to avoid. Updated for 2026.',
   alternates: { canonical: 'https://www.nokturnallifestyle.com/blog/las-vegas-gentlemens-club-guide' },
   openGraph: {
-    title: 'Las Vegas Gentleman\'s Club Guide 2026 | Complete Insider Guide',
+    title: "Las Vegas Gentleman's Club Guide 2026 | Complete Insider Guide",
     description: 'What to know before visiting a Las Vegas gentleman\'s club — best venues, pricing, VIP access, and how to avoid getting ripped off.',
     images: [{ url: '/blog/las-vegas-gentlemens-club-guide/cover.jpg' }],
   },

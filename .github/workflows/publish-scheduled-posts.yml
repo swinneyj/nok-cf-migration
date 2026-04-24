@@ -4,6 +4,22 @@ on:
   schedule:
     - cron: '0 14 * * 2,4' # 9AM EST (14 UTC), Tues & Thurs
   workflow_dispatch:
+    inputs:
+      slug:
+        description: 'Publish a specific scheduled post slug now (optional)'
+        required: false
+      random:
+        description: 'Publish one random scheduled post now (true/false)'
+        required: false
+        default: 'false'
+      force:
+        description: 'Overwrite app/blog/<slug> if it already exists (true/false)'
+        required: false
+        default: 'false'
+      dry_run:
+        description: 'Preview what would publish without changing the repo (true/false)'
+        required: false
+        default: 'false'
 
 jobs:
   publish-posts:
@@ -30,6 +46,20 @@ jobs:
           
           POSTS=""
           if [ -d "_scheduled-posts" ]; then
+            SLUG_INPUT="${{ github.event.inputs.slug }}"
+            RANDOM_INPUT="${{ github.event.inputs.random }}"
+
+            if [ -n "$SLUG_INPUT" ]; then
+              match=$(ls -d "_scheduled-posts/"*"_${SLUG_INPUT}/" 2>/dev/null | head -n 1 || true)
+              if [ -n "$match" ]; then
+                POSTS="$match"
+              fi
+            elif [ "$RANDOM_INPUT" = "true" ]; then
+              match=$(ls -d _scheduled-posts/*/ 2>/dev/null | shuf -n 1 || true)
+              if [ -n "$match" ]; then
+                POSTS="$match"
+              fi
+            else
             for dir in _scheduled-posts/*/; do
               [ -d "$dir" ] || continue
               folder=$(basename "$dir")
@@ -39,6 +69,7 @@ jobs:
                 POSTS="$POSTS $dir"
               fi
             done
+            fi
           fi
           
           if [ -z "$POSTS" ]; then
@@ -49,11 +80,11 @@ jobs:
           fi
 
       - name: Install dependencies
-        if: steps.check_posts.outputs.found_posts == 'true'
+        if: steps.check_posts.outputs.found_posts == 'true' && github.event.inputs.dry_run != 'true'
         run: npm install node-fetch
 
       - name: Generate images for posts
-        if: steps.check_posts.outputs.found_posts == 'true'
+        if: steps.check_posts.outputs.found_posts == 'true' && github.event.inputs.dry_run != 'true'
         env:
           FAL_API_KEY: ${{ secrets.FAL_API_KEY }}
         shell: bash
@@ -61,36 +92,42 @@ jobs:
           node scripts/generate-blog-images.js "${{ steps.check_posts.outputs.posts }}" "${{ steps.check_posts.outputs.today }}"
 
       - name: Publish due posts
+        if: steps.check_posts.outputs.found_posts == 'true' && github.event.inputs.dry_run != 'true'
         shell: bash
         run: |
           set -e
 
-          TODAY=$(date -u +"%Y-%m-%d")
           COUNT=0
+          POSTS="${{ steps.check_posts.outputs.posts }}"
+          FORCE_INPUT="${{ github.event.inputs.force }}"
 
-          for dir in _scheduled-posts/*/; do
+          for dir in $POSTS; do
             [ -d "$dir" ] || continue
 
             folder=$(basename "$dir")
-            pub_date="${folder:0:10}"
             slug="${folder:11}"
 
-            if [[ "$pub_date" < "$TODAY" || "$pub_date" == "$TODAY" ]]; then
-              echo "Publishing $folder -> app/blog/$slug"
-              rm -rf "app/blog/$slug"
-              mkdir -p "app/blog/$slug"
-              cp -r "${dir}"* "app/blog/$slug/"
-              rm -rf "$dir"
-              COUNT=$((COUNT + 1))
+            if [ -d "app/blog/$slug" ] && [ "$FORCE_INPUT" != "true" ]; then
+              echo "Skipping (already exists): $folder -> app/blog/$slug"
+              continue
             fi
+
+            echo "Publishing $folder -> app/blog/$slug"
+            rm -rf "app/blog/$slug"
+            mkdir -p "app/blog/$slug"
+            cp -r "${dir}"* "app/blog/$slug/"
+            rm -rf "$dir"
+            COUNT=$((COUNT + 1))
           done
 
           echo "Published: $COUNT"
 
       - name: Rebuild blog index
+        if: steps.check_posts.outputs.found_posts == 'true' && github.event.inputs.dry_run != 'true'
         run: node scripts/rebuild-blog-index.mjs
 
       - name: Commit and push changes
+        if: steps.check_posts.outputs.found_posts == 'true' && github.event.inputs.dry_run != 'true'
         shell: bash
         run: |
           set -e

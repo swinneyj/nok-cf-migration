@@ -31,6 +31,7 @@ export interface ParsedEvent {
   timeSortKey?: string;
   sections: EventSection[];
   flyerImagePath?: string;
+  flyerSourceUrl?: string;
   minimumSpendNote?: string;
   pricingNote?: string;
 }

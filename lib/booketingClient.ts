@@ -29,6 +29,118 @@ const BOOKETING_VENUES: Record<string, BooketingVenueConfig> = {
     sourceCode: "microsite",
     sourceLoc: "24614",
   },
+  "hakkasan-nightclub": {
+    manageentId: "61",
+    venueId: "1085",
+    venueCode: "VEN1085",
+    venueSlug: "hakkasan-nightclub",
+    sourceCode: "microsite",
+    sourceLoc: "bluvalue",
+  },
+  "omnia-nightclub": {
+    manageentId: "61",
+    venueId: "1089",
+    venueCode: "VEN1089",
+    venueSlug: "omnia-nightclub",
+    sourceCode: "microsite",
+    sourceLoc: "bluvalue",
+  },
+  "marquee-nightclub": {
+    manageentId: "61",
+    venueId: "1108",
+    venueCode: "VEN1108",
+    venueSlug: "marquee-nightclub",
+    sourceCode: "microsite",
+    sourceLoc: "bluvalue",
+  },
+  "marquee-dayclub": {
+    manageentId: "61",
+    venueId: "1109",
+    venueCode: "VEN1109",
+    venueSlug: "marquee-dayclub",
+    sourceCode: "microsite",
+    sourceLoc: "bluvalue",
+  },
+  "tao-nightclub": {
+    manageentId: "61",
+    venueId: "1112",
+    venueCode: "VEN1112",
+    venueSlug: "tao-nightclub",
+    sourceCode: "microsite",
+    sourceLoc: "bluvalue",
+  },
+  "tao-beach": {
+    manageentId: "61",
+    venueId: "1113",
+    venueCode: "VEN1113",
+    venueSlug: "tao-beach",
+    sourceCode: "microsite",
+    sourceLoc: "bluvalue",
+  },
+  "palm-tree-beach-club": {
+    manageentId: "61",
+    venueId: "1117",
+    venueCode: "VEN1117",
+    venueSlug: "palm-tree-beach-club",
+    sourceCode: "microsite",
+    sourceLoc: "bluvalue",
+  },
+  "liquid-pool-lounge": {
+    manageentId: "61",
+    venueId: "1119",
+    venueCode: "VEN1119",
+    venueSlug: "liquid-pool-lounge",
+    sourceCode: "microsite",
+    sourceLoc: "bluvalue",
+  },
+  "jewel-nightclub": {
+    manageentId: "61",
+    venueId: "100542",
+    venueCode: "VEN100542",
+    venueSlug: "jewel-nightclub",
+    sourceCode: "microsite",
+    sourceLoc: "bluvalue",
+  },
+  "zouk-nightclub": {
+    manageentId: "1124",
+    venueId: "505115",
+    venueCode: "VEN505115",
+    venueSlug: "zouk-nightclub",
+    sourceCode: "microsite",
+    sourceLoc: "bluvalue",
+  },
+  "ayu-dayclub": {
+    manageentId: "1124",
+    venueId: "603745",
+    venueCode: "VEN603745",
+    venueSlug: "ayu-dayclub",
+    sourceCode: "microsite",
+    sourceLoc: "bluvalue",
+  },
+  "liv-nightclub": {
+    manageentId: "2268",
+    venueId: "1121561",
+    venueCode: "VEN1121561",
+    venueSlug: "liv-nightclub",
+    sourceCode: "microsite",
+    sourceLoc: "bluvalue",
+  },
+  "liv-beach-club": {
+    manageentId: "2268",
+    venueId: "1214881",
+    venueCode: "VEN1214881",
+    venueSlug: "liv-beach-club",
+    sourceCode: "microsite",
+    sourceLoc: "bluvalue",
+  },
+  "omnia-dayclub": {
+    manageentId: "61",
+    venueId: "40911541686",
+    venueCode: "VEN40911541686",
+    venueSlug: "omnia-dayclub",
+    sourceCode: "microsite",
+    sourceLoc: "bluvalue",
+  },
 };
 
 export const BOOKETING_VENUE_SLUGS = Object.keys(BOOKETING_VENUES);
@@ -448,9 +560,12 @@ async function buildParsedBooketingEvent(
     ...normalizeBooketingTime(initialResponse.eventdata?.dstarttime),
     sections,
     flyerImagePath:
-      initialResponse.eventdata?.flyers?.share?.url ||
+      initialResponse.eventdata?.flyers?.eventpage?.full ||
+      initialResponse.eventdata?.flyers?.list?.full ||
+      initialResponse.eventdata?.flyers?.share?.full ||
       initialResponse.eventdata?.flyers?.eventpage?.url ||
       initialResponse.eventdata?.flyers?.list?.url ||
+      initialResponse.eventdata?.flyers?.share?.url ||
       undefined,
     pricingNote: "Pricing and availability are sourced live from Booketing.",
   };
