@@ -34,6 +34,10 @@ const EXCLUDED_SYNC_VENUES = new Set([
   'kassi-beach-club',
 ]);
 
+const BOOKETING_ONLY_VENUES = new Set([
+  'stadium-swim',
+]);
+
 function addMonths(date: Date, months: number) {
   const next = new Date(date);
   next.setMonth(next.getMonth() + months);
@@ -264,10 +268,23 @@ export async function syncCategoryVenueEvents(
             eventsFound: booketingEvents.length,
           });
 
-          // Use Google Calendar as the source of truth for sections/pricing.
-          // Overlay Booketing titles/flyers where we can match them by date/name.
-          for (const event of googleEvents) {
-            const booketingMatch = matchBooketingEventToGoogleEvent(booketingEvents, event);
+          const useBooketingOnly = BOOKETING_ONLY_VENUES.has(venue.venueSlug);
+          const syncEvents = useBooketingOnly ? booketingEvents : googleEvents;
+
+          if (useBooketingOnly) {
+            console.log(
+              `[SYNC] ${venue.name}: Using Booketing as the source of truth for titles, flyers, and pricing`
+            );
+          } else {
+            console.log(
+              `[SYNC] ${venue.name}: Using Google Calendar as the source of truth for sections/pricing`
+            );
+          }
+
+          for (const event of syncEvents) {
+            const booketingMatch = useBooketingOnly
+              ? event
+              : matchBooketingEventToGoogleEvent(booketingEvents, event);
             const sourceFlyerUrl = booketingMatch?.flyerImagePath;
             const localFlyerPath =
               sourceFlyerUrl
@@ -283,7 +300,7 @@ export async function syncCategoryVenueEvents(
               event_id: event.id || '',
               venue_id: venue.venueSlug,
               venue_name: venue.name,
-              event_title: booketingMatch?.eventName || event.eventName || 'Untitled Event',
+              event_title: event.eventName || 'Untitled Event',
               event_description: event.rawDescription || '',
               start_time: event.date,
               end_time: undefined,
@@ -291,7 +308,7 @@ export async function syncCategoryVenueEvents(
               event_url: undefined,
               raw_data: {
                 ...event,
-                syncSource: "google",
+                syncSource: useBooketingOnly ? "booketing" : "google",
                 flyerImagePath: localFlyerPath || event.flyerImagePath,
                 flyerSourceUrl: sourceFlyerUrl,
                 booketingEventId: booketingMatch?.id,
@@ -299,7 +316,15 @@ export async function syncCategoryVenueEvents(
               },
             });
 
-            if (event.sections && event.sections.length > 0) {
+            if (useBooketingOnly) {
+              if (event.sections && event.sections.length > 0) {
+                await storeSectionsForEvent(event.id || "", event.sections);
+              } else {
+                console.log(
+                  `[SYNC] ${venue.name} - ${event.eventName}: No Booketing sections found; leaving existing sections untouched`
+                );
+              }
+            } else if (event.sections && event.sections.length > 0) {
               await storeSectionsForEvent(event.id || "", event.sections);
             } else {
               console.log(
@@ -314,7 +339,7 @@ export async function syncCategoryVenueEvents(
             venue.venueSlug,
             startDate,
             endDate,
-            googleEvents.map((event) => event.id || '').filter(Boolean)
+            syncEvents.map((event) => event.id || '').filter(Boolean)
           );
           if (deletedCount > 0) {
             console.log(
@@ -322,7 +347,7 @@ export async function syncCategoryVenueEvents(
             );
           }
 
-          await updateSyncStatus(venue.venueSlug, true, booketingEvents.length);
+          await updateSyncStatus(venue.venueSlug, true, syncEvents.length);
         } else {
           // Google Calendar venues
           const calendarId = CALENDAR_IDS[venue.venueSlug];
@@ -521,8 +546,19 @@ export async function syncVenuesBySlug(
           eventsFound: googleEvents.length,
         });
 
-        for (const event of googleEvents) {
-          const booketingMatch = matchBooketingEventToGoogleEvent(booketingEvents, event);
+        const useBooketingOnly = BOOKETING_ONLY_VENUES.has(venueSlug);
+        const syncEvents = useBooketingOnly ? booketingEvents : googleEvents;
+
+        if (useBooketingOnly) {
+          console.log(
+            `[SYNC] ${venueName}: Using Booketing as the source of truth for titles, flyers, and pricing`
+          );
+        }
+
+        for (const event of syncEvents) {
+          const booketingMatch = useBooketingOnly
+            ? event
+            : matchBooketingEventToGoogleEvent(booketingEvents, event);
           const sourceFlyerUrl = booketingMatch?.flyerImagePath;
           const localFlyerPath =
             sourceFlyerUrl
@@ -538,7 +574,7 @@ export async function syncVenuesBySlug(
             event_id: event.id || '',
             venue_id: venueSlug,
             venue_name: venueName,
-            event_title: booketingMatch?.eventName || event.eventName || 'Untitled Event',
+            event_title: event.eventName || 'Untitled Event',
             event_description: event.rawDescription || '',
             start_time: event.date,
             end_time: undefined,
@@ -546,7 +582,7 @@ export async function syncVenuesBySlug(
             event_url: undefined,
             raw_data: {
               ...event,
-              syncSource: "google",
+              syncSource: useBooketingOnly ? "booketing" : "google",
               flyerImagePath: localFlyerPath || event.flyerImagePath,
               flyerSourceUrl: sourceFlyerUrl,
               booketingEventId: booketingMatch?.id,
@@ -554,12 +590,12 @@ export async function syncVenuesBySlug(
             },
           });
 
-          if (event.sections && event.sections.length > 0) {
+          if (useBooketingOnly) {
+            if (event.sections && event.sections.length > 0) {
+              await storeSectionsForEvent(event.id || "", event.sections);
+            }
+          } else if (event.sections && event.sections.length > 0) {
             await storeSectionsForEvent(event.id || "", event.sections);
-          } else {
-            console.log(
-              `[SYNC] ${venueName} - ${event.eventName}: No Google sections found; leaving existing sections untouched`
-            );
           }
           result.eventsInserted++;
         }
@@ -568,7 +604,7 @@ export async function syncVenuesBySlug(
           venueSlug,
           startDate,
           endDate,
-          googleEvents.map((event) => event.id || '').filter(Boolean)
+          syncEvents.map((event) => event.id || '').filter(Boolean)
         );
         if (deletedCount > 0) {
           console.log(
@@ -576,7 +612,7 @@ export async function syncVenuesBySlug(
           );
         }
 
-        await updateSyncStatus(venueSlug, true, booketingEvents.length);
+        await updateSyncStatus(venueSlug, true, syncEvents.length);
         continue;
       }
 
