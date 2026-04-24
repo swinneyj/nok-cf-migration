@@ -1,7 +1,15 @@
 import { sql } from "@vercel/postgres";
+import fs from "node:fs/promises";
+import path from "node:path";
 import { getSectionsForEvent } from "@/lib/db/client";
 import { parseEventDescription, type ParsedEvent } from "@/lib/calendarParser";
 import { filterDisplayEvents } from "@/lib/eventDeduplication";
+import {
+  normalizeEventName,
+  type FlyerManifestEntry,
+} from "@/lib/flyerMatching";
+
+let flyerManifestPromise: Promise<FlyerManifestEntry[]> | null = null;
 
 export function clearEventCache() {
   console.log('[CACHE] Cleared month data cache');
@@ -40,6 +48,86 @@ function shouldReparseSectionsFromDescription(
   }
 
   return false;
+}
+
+async function getFlyerManifest() {
+  if (!flyerManifestPromise) {
+    flyerManifestPromise = fs
+      .readFile(
+        path.join(process.cwd(), "public", "event-flyers", "manifest.json"),
+        "utf8"
+      )
+      .then((content) => JSON.parse(content) as FlyerManifestEntry[])
+      .catch(() => []);
+  }
+
+  return flyerManifestPromise;
+}
+
+function shiftDateKey(dateKey: string, days: number) {
+  const date = new Date(`${dateKey}T12:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
+function slugify(value: string) {
+  return String(value || "")
+    .normalize("NFKD")
+    .replace(/[^\w\s-]/g, "")
+    .toLowerCase()
+    .replace(/_/g, "-")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function scoreFlyerEntry(entry: FlyerManifestEntry, targetSlug: string) {
+  const entrySlug = slugify(normalizeEventName(entry.eventName));
+  if (!entrySlug || !targetSlug) return 0;
+
+  let score = 0;
+  if (entrySlug === targetSlug) {
+    score += 30;
+  } else if (entrySlug.includes(targetSlug) || targetSlug.includes(entrySlug)) {
+    score += 18;
+  }
+
+  const entryWords = new Set(entrySlug.split("-").filter(Boolean));
+  const targetWords = targetSlug.split("-").filter(Boolean);
+  score += targetWords.filter((word) => entryWords.has(word)).length * 3;
+  score += Math.min(6, Math.max(0, entryWords.size - 2));
+
+  return score;
+}
+
+function findCalendarFlyer(
+  manifest: FlyerManifestEntry[],
+  venueSlug: string,
+  eventName: string,
+  dateKey: string
+) {
+  const targetSlug = slugify(normalizeEventName(eventName));
+  const candidateDates = new Set([
+    dateKey,
+    shiftDateKey(dateKey, -1),
+    shiftDateKey(dateKey, 1),
+  ]);
+  let bestEntry: FlyerManifestEntry | null = null;
+  let bestScore = 0;
+
+  for (const entry of manifest) {
+    if (entry.venueSlug !== venueSlug || !candidateDates.has(entry.date)) {
+      continue;
+    }
+
+    const score = scoreFlyerEntry(entry, targetSlug);
+    if (score > bestScore) {
+      bestEntry = entry;
+      bestScore = score;
+    }
+  }
+
+  return bestScore > 0 ? bestEntry : null;
 }
 
 async function getMonthEventsFromDB(month: string) {
@@ -100,6 +188,7 @@ export async function getCachedVenueEvents(
     console.log(`[API] eventsByVenue keys:`, Object.keys(eventsByVenue));
     const venueEvents = eventsByVenue[venue] || [];
     console.log(`[API] venueEvents for ${venue}: ${venueEvents.length} events`);
+    const flyerManifest = await getFlyerManifest();
 
     // Transform database events to ParsedEvent format with sections/pricing
     const parsedEvents: ParsedEvent[] = [];
@@ -176,6 +265,18 @@ export async function getCachedVenueEvents(
             ? rawData.minimumSpendNote
             : undefined,
       };
+      const flyerMatch = findCalendarFlyer(
+        flyerManifest,
+        venue,
+        parsedEvent.eventName,
+        parsedEvent.dateKey
+      );
+
+      if (flyerMatch) {
+        parsedEvent.flyerImagePath = flyerMatch.imagePath;
+        parsedEvent.flyerSourceUrl =
+          parsedEvent.flyerSourceUrl || flyerMatch.sourceUrl;
+      }
 
       if (parsedEvent.dateKey.startsWith(month)) {
         parsedEvents.push(parsedEvent);

@@ -88,6 +88,21 @@ function getFlyerSources(imagePath?: string, sourceUrl?: string) {
   return Array.from(new Set([localWebpSource, ...sources].filter(Boolean)));
 }
 
+function formatDesktopEventName(eventName: string, venueLabel: string) {
+  const splitName = eventName.split(/\s[-–—]\s/);
+  if (splitName.length < 2) return eventName;
+
+  const normalizedVenue = normalizeLabel(venueLabel);
+  const suffix = splitName[splitName.length - 1];
+  const normalizedSuffix = normalizeLabel(suffix);
+
+  if (!normalizedSuffix.includes(normalizedVenue)) {
+    return eventName;
+  }
+
+  return splitName.slice(0, -1).join(" - ");
+}
+
 function CalendarFlyerImage({
   sources,
   alt,
@@ -367,45 +382,17 @@ export default function EventCalendar({
 
     return (
       <div className="relative h-full">
-        <div className={`relative z-10 text-sm font-semibold ${isPastDate ? "text-gray-400" : "text-gray-700"}`}>
+        <div
+          className={`relative z-10 text-sm font-semibold ${
+            hasEvents
+              ? "text-gray-800"
+              : isPastDate
+                ? "text-gray-300"
+                : "text-gray-400"
+          }`}
+        >
           {day}
         </div>
-
-        {hasEvents && (
-          <div className="absolute inset-0 flex flex-wrap content-center items-center justify-center gap-1 px-1">
-            {dayEvents.slice(0, 3).map((event) => {
-              const isSelected = selectedEventId === event.id;
-
-              return (
-                <button
-                  key={event.id}
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEventSelected(event);
-                  }}
-                  className={`h-2.5 w-2.5 rounded-full transition ${
-                    isSelected
-                      ? "bg-purple-900 ring-2 ring-purple-300"
-                      : "bg-purple-400 hover:bg-purple-500"
-                  }`}
-                />
-              );
-            })}
-
-            {dayEvents.length > 3 && (
-              <span className="ml-1 text-[10px] font-semibold text-purple-700">
-                +{dayEvents.length - 3}
-              </span>
-            )}
-          </div>
-        )}
-
-        {isToday && !hasEvents && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-2.5 w-2.5 rounded-full bg-purple-900" />
-          </div>
-        )}
       </div>
     );
   };
@@ -427,18 +414,9 @@ export default function EventCalendar({
       primaryEvent?.flyerSourceUrl
     );
     const hasFlyer = flyerSources.length > 0;
-    const normalizedVenue = normalizeLabel(venueLabel);
-    const desktopEventName = (() => {
-      if (!primaryEvent?.eventName) return "";
-      const splitName = primaryEvent.eventName.split(/\s[-–—]\s/);
-      if (splitName.length < 2) return primaryEvent.eventName;
-      const suffix = splitName[splitName.length - 1];
-      const normalizedSuffix = normalizeLabel(suffix);
-      if (!normalizedSuffix.includes(normalizedVenue)) {
-        return primaryEvent.eventName;
-      }
-      return splitName.slice(0, -1).join(" - ");
-    })();
+    const desktopEventName = primaryEvent?.eventName
+      ? formatDesktopEventName(primaryEvent.eventName, venueLabel)
+      : "";
 
     return (
       <button
@@ -455,9 +433,7 @@ export default function EventCalendar({
             ? "border-purple-800 ring-2 ring-purple-300"
             : hasEvents
               ? "cursor-pointer border-purple-700 bg-purple-950 hover:border-purple-500 hover:shadow-lg"
-              : isPastDate
-                ? "border-gray-100 bg-gray-50 opacity-40"
-                : "border-gray-100 bg-gray-50"
+              : "border-gray-100 bg-gray-100/80 text-gray-400 opacity-70"
         }`}
       >
         {hasEvents && hasFlyer ? (
@@ -511,9 +487,7 @@ export default function EventCalendar({
                 </div>
               </div>
             ) : (
-              <div className="mt-1 text-[11px] font-medium text-gray-500">
-                No event
-              </div>
+              null
             )}
           </div>
         </div>
@@ -595,13 +569,11 @@ export default function EventCalendar({
                           className={`h-full w-full rounded-lg border-2 p-2 transition ${
                             isSelectedDay
                               ? "border-purple-300 ring-2 ring-purple-300 bg-purple-50"
-                              : isToday
-                              ? "border-purple-800 ring-2 ring-purple-300 bg-purple-50"
+                            : isToday
+                              ? "border-purple-800 ring-2 ring-purple-300 bg-white"
                               : dayEvents.length > 0
                                 ? "cursor-pointer border-purple-700 bg-purple-50 hover:bg-purple-100"
-                                : isPastDate
-                                  ? "border-gray-100 bg-gray-50 opacity-40"
-                                  : "border-gray-100 bg-gray-50"
+                                : "border-gray-100 bg-gray-100/80 opacity-60"
                           }`}
                         >
                           {renderMobileCell(day, isPastDate, dayEvents, isToday)}
