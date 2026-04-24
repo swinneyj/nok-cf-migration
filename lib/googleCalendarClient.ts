@@ -322,7 +322,10 @@ export async function fetchVenueEvents(
       );
 
       if (parsed && parsed.sections.length > 0) {
-        parsedEvents.push(parsed);
+        parsedEvents.push({
+          ...parsed,
+          rawDescription: description,
+        });
         continue;
       }
 
@@ -340,6 +343,7 @@ export async function fetchVenueEvents(
         timeLabel,
         timeSortKey,
         sections: [],
+        rawDescription: description,
       });
     }
 
