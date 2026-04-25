@@ -455,16 +455,6 @@ export default function EventCalendar({
         >
           {day}
         </div>
-
-        {hasEvents && (
-          <div className="absolute inset-x-0 bottom-2 flex justify-center">
-            <div
-              className={`h-2.5 w-2.5 rounded-full ${
-                isToday ? "bg-purple-900" : "bg-purple-400"
-              }`}
-            />
-          </div>
-        )}
       </div>
     );
   };
