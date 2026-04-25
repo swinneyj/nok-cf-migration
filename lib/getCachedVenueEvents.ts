@@ -2,10 +2,8 @@ import { sql } from "@vercel/postgres";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { getSectionsForEvent } from "@/lib/db/client";
-import { fetchVenueEvents } from "@/lib/googleCalendarClient";
 import { parseEventDescription, type ParsedEvent } from "@/lib/calendarParser";
 import { filterDisplayEvents } from "@/lib/eventDeduplication";
-import { fetchBooketingVenueEvents, isBooketingVenue } from "@/lib/booketingClient";
 import {
   normalizeEventName,
   findBestFlyerEntry,
@@ -14,13 +12,11 @@ import {
 
 let flyerManifestPromise: Promise<FlyerManifestEntry[]> | null = null;
 const monthEventCache = new Map<string, { cachedAt: number; events: ParsedEvent[] }>();
-const booketingMonthCache = new Map<string, { cachedAt: number; events: ParsedEvent[] }>();
 const MONTH_CACHE_TTL_MS = 10 * 60 * 1000;
 
 export function clearEventCache() {
   console.log('[CACHE] Cleared month data cache');
   monthEventCache.clear();
-  booketingMonthCache.clear();
 }
 
 function isWeekdaySectionTitle(value: string) {
@@ -72,35 +68,6 @@ async function getFlyerManifest() {
   return flyerManifestPromise;
 }
 
-function buildMonthRange(month: string) {
-  const [year, monthNum] = month.split("-");
-  const yearNum = parseInt(year, 10);
-  const monthIndex = parseInt(monthNum, 10) - 1;
-
-  return {
-    startDate: new Date(Date.UTC(yearNum, monthIndex, 1, 0, 0, 0)),
-    endDate: new Date(Date.UTC(yearNum, monthIndex + 1, 0, 23, 59, 59)),
-  };
-}
-
-async function getCachedBooketingMonthEvents(
-  venue: string,
-  startDate: Date,
-  endDate: Date,
-  month: string
-) {
-  const cacheKey = `${venue}:${month}`;
-  const cached = booketingMonthCache.get(cacheKey);
-  if (cached && Date.now() - cached.cachedAt < MONTH_CACHE_TTL_MS) {
-    console.log(`[CACHE] Booketing hit for ${cacheKey} -> ${cached.events.length} events`);
-    return cached.events;
-  }
-
-  const events = await fetchBooketingVenueEvents(venue, startDate, endDate);
-  booketingMonthCache.set(cacheKey, { cachedAt: Date.now(), events });
-  return events;
-}
-
 function applyCalendarFlyer(
   event: ParsedEvent,
   flyerManifest: FlyerManifestEntry[],
@@ -125,103 +92,6 @@ function applyCalendarFlyer(
     } else {
       event.flyerSourceUrl = flyerMatch.imagePath || event.flyerSourceUrl;
     }
-  }
-
-  return event;
-}
-
-function isGenericEventName(value: string | undefined) {
-  const normalized = normalizeEventName(String(value || ""))
-    .toLowerCase()
-    .trim();
-
-  return (
-    normalized === "" ||
-    normalized === "special guest" ||
-    normalized === "guest" ||
-    normalized === "tba" ||
-    normalized === "to be announced"
-  );
-}
-
-function scoreBooketingOverlayCandidate(
-  candidate: ParsedEvent,
-  targetEventName: string
-) {
-  const candidateName = normalizeEventName(candidate.eventName).toLowerCase();
-  const targetName = normalizeEventName(targetEventName).toLowerCase();
-  let score = 0;
-
-  if (!isGenericEventName(candidate.eventName)) {
-    score += 30;
-  }
-
-  if (candidate.flyerImagePath) {
-    score += 40;
-  }
-
-  if (candidate.flyerSourceUrl) {
-    score += 10;
-  }
-
-  if (candidateName && targetName && candidateName === targetName) {
-    score += 50;
-  } else if (
-    candidateName &&
-    targetName &&
-    (candidateName.includes(targetName) || targetName.includes(candidateName))
-  ) {
-    score += 20;
-  }
-
-  return score;
-}
-
-function resolveBooketingOverlay(
-  targetEvent: ParsedEvent,
-  booketingEvents: ParsedEvent[]
-) {
-  const sameDateCandidates = booketingEvents.filter(
-    (event) => event.dateKey === targetEvent.dateKey
-  );
-
-  if (sameDateCandidates.length === 0) {
-    return null;
-  }
-
-  let bestCandidate = sameDateCandidates[0];
-  let bestScore = Number.NEGATIVE_INFINITY;
-
-  for (const candidate of sameDateCandidates) {
-    const score = scoreBooketingOverlayCandidate(candidate, targetEvent.eventName);
-    if (score > bestScore) {
-      bestScore = score;
-      bestCandidate = candidate;
-    }
-  }
-
-  return bestCandidate;
-}
-
-function applyBooketingOverlay(
-  event: ParsedEvent,
-  booketingOverlay?: ParsedEvent | null
-) {
-  if (!booketingOverlay) {
-    return event;
-  }
-
-  const overlayTitle = normalizeEventName(booketingOverlay.eventName);
-  if (overlayTitle) {
-    event.eventName = overlayTitle;
-  }
-
-  if (booketingOverlay.flyerImagePath) {
-    event.flyerImagePath = booketingOverlay.flyerImagePath;
-  }
-
-  if (booketingOverlay.flyerSourceUrl) {
-    event.flyerSourceUrl = booketingOverlay.flyerSourceUrl;
   }
 
   return event;
@@ -289,33 +159,6 @@ export async function getCachedVenueEvents(
     }
 
     const flyerManifest = await getFlyerManifest();
-
-    if (isBooketingVenue(venue)) {
-      try {
-        const { startDate, endDate } = buildMonthRange(month);
-        const [googleEvents, booketingEvents] = await Promise.all([
-          fetchVenueEvents(venue, startDate, endDate),
-          getCachedBooketingMonthEvents(venue, startDate, endDate, month),
-        ]);
-        const mergedEvents = googleEvents
-          .filter((event) => event.dateKey.startsWith(month))
-          .map((event) => {
-            const booketingOverlay = resolveBooketingOverlay(event, booketingEvents);
-            return applyBooketingOverlay(event, booketingOverlay);
-          });
-
-        if (mergedEvents.length > 0) {
-          console.log(
-            `[API] merged Google + Booketing overlay events for ${venue}: ${mergedEvents.length}`
-          );
-          const filtered = filterDisplayEvents(mergedEvents);
-          monthEventCache.set(cacheKey, { cachedAt: Date.now(), events: filtered });
-          return filtered;
-        }
-      } catch (error) {
-        console.warn(`[API] Google + Booketing overlay failed for ${venue} ${month}:`, error);
-      }
-    }
 
     const eventsByVenue = await getMonthEventsFromDB(month);
     console.log(`[API] eventsByVenue keys:`, Object.keys(eventsByVenue));
