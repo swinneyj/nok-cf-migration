@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useRef } from "react";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { ParsedEvent } from "@/lib/calendarParser";
 
@@ -72,6 +73,13 @@ function formatCellLabel(date: Date) {
   });
 }
 
+function addMonthsToMonthKey(monthKey: string, delta: number) {
+  const [year, month] = monthKey.split("-").map(Number);
+  const next = new Date(year, month - 1, 1);
+  next.setMonth(next.getMonth() + delta);
+  return formatMonthKey(next);
+}
+
 function normalizeLabel(label: string) {
   return label.toLowerCase().replace(/[^\w\s]/g, "").replace(/\s+/g, " ").trim();
 }
@@ -120,11 +128,12 @@ function CalendarFlyerImage({
   if (!src) return null;
 
   return (
-    <img
+    <Image
       src={src}
       alt={alt}
-      className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
-      loading="lazy"
+      fill
+      sizes="(min-width: 1024px) 148px, (min-width: 768px) 112px, 0px"
+      className="object-cover transition duration-300 group-hover:scale-[1.03]"
       onError={() => {
         setSourceIndex((index) => Math.min(index + 1, sources.length));
       }}
@@ -151,6 +160,9 @@ export default function EventCalendar({
 
   // Track if we've already applied the initial dateParam
   const dateParamAppliedRef = useRef(false);
+  const monthCacheRef = useRef(new Map<string, ParsedEvent[]>());
+  const inflightRequestsRef = useRef(new Map<string, Promise<ParsedEvent[]>>());
+  const activeRequestIdRef = useRef(0);
 
   const monthKey = useMemo(() => formatMonthKey(visibleMonth), [visibleMonth]);
   const venueLabel = useMemo(() => formatVenueLabel(venueSlug), [venueSlug]);
@@ -164,6 +176,35 @@ export default function EventCalendar({
 
   const currentMonthKey = formatMonthKey(today);
   const canGoToPrevMonth = monthKey > currentMonthKey;
+
+  const fetchMonthEvents = async (targetMonthKey: string) => {
+    const cacheKey = `${venueSlug}:${targetMonthKey}`;
+    const cached = monthCacheRef.current.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    const inflight = inflightRequestsRef.current.get(cacheKey);
+    if (inflight) {
+      return inflight;
+    }
+
+    const request = fetch(
+      `/api/calendar/events?venue=${venueSlug}&month=${targetMonthKey}`
+    )
+      .then(async (res) => {
+        const data = await res.json();
+        const nextEvents = Array.isArray(data) ? data : data.events || [];
+        monthCacheRef.current.set(cacheKey, nextEvents);
+        return nextEvents;
+      })
+      .finally(() => {
+        inflightRequestsRef.current.delete(cacheKey);
+      });
+
+    inflightRequestsRef.current.set(cacheKey, request);
+    return request;
+  };
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(min-width: 768px)");
@@ -256,18 +297,27 @@ export default function EventCalendar({
 
   useEffect(() => {
     let cancelled = false;
+    const requestId = ++activeRequestIdRef.current;
 
     async function fetchEvents() {
       try {
+        const cacheKey = `${venueSlug}:${monthKey}`;
+        const cachedEvents = monthCacheRef.current.get(cacheKey);
+
+        if (cachedEvents) {
+          if (!cancelled && requestId === activeRequestIdRef.current) {
+            setEvents(cachedEvents);
+            setMonthHasBeenLoaded(true);
+            setLoading(false);
+          }
+          return;
+        }
+
         setLoading(true);
 
-        const res = await fetch(
-          `/api/calendar/events?venue=${venueSlug}&month=${monthKey}`
-        );
-        const data = await res.json();
-        const nextEvents = Array.isArray(data) ? data : data.events || [];
+        const nextEvents = await fetchMonthEvents(monthKey);
 
-        if (!cancelled) {
+        if (!cancelled && requestId === activeRequestIdRef.current) {
           setEvents(nextEvents);
           setMonthHasBeenLoaded(true);
 
@@ -297,7 +347,19 @@ export default function EventCalendar({
     return () => {
       cancelled = true;
     };
-  }, [venueSlug, monthKey, hasSearchedForEvent, eventParam]);
+  }, [venueSlug, monthKey, hasSearchedForEvent, eventParam, monthHasBeenLoaded]);
+
+  useEffect(() => {
+    const nextMonthKey = addMonthsToMonthKey(monthKey, 1);
+    const cacheKey = `${venueSlug}:${nextMonthKey}`;
+    if (monthCacheRef.current.has(cacheKey) || inflightRequestsRef.current.has(cacheKey)) {
+      return;
+    }
+
+    void fetchMonthEvents(nextMonthKey).catch((error) => {
+      console.warn("Error prefetching next calendar month:", error);
+    });
+  }, [monthKey, venueSlug]);
 
   // Auto-select event from URL parameters
   useEffect(() => {
@@ -388,15 +450,21 @@ export default function EventCalendar({
       <div className="relative h-full">
         <div
           className={`relative z-10 text-sm font-semibold ${
-            hasEvents
-              ? "text-gray-800"
-              : isPastDate
-                ? "text-gray-300"
-                : "text-gray-400"
+            isPastDate ? "text-gray-300" : "text-gray-700"
           }`}
         >
           {day}
         </div>
+
+        {hasEvents && (
+          <div className="absolute inset-x-0 bottom-2 flex justify-center">
+            <div
+              className={`h-2.5 w-2.5 rounded-full ${
+                isToday ? "bg-purple-900" : "bg-purple-400"
+              }`}
+            />
+          </div>
+        )}
       </div>
     );
   };

@@ -27,6 +27,14 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'images.unsplash.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'booketing.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.discotech.me',
+      },
     ],
   },
   async headers() {

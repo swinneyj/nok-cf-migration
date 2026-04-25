@@ -13,9 +13,12 @@ import {
 } from "@/lib/flyerMatching";
 
 let flyerManifestPromise: Promise<FlyerManifestEntry[]> | null = null;
+const monthEventCache = new Map<string, { cachedAt: number; events: ParsedEvent[] }>();
+const MONTH_CACHE_TTL_MS = 10 * 60 * 1000;
 
 export function clearEventCache() {
   console.log('[CACHE] Cleared month data cache');
+  monthEventCache.clear();
 }
 
 function isWeekdaySectionTitle(value: string) {
@@ -161,6 +164,13 @@ export async function getCachedVenueEvents(
 
   try {
     console.log(`[API] getCachedVenueEvents called: venue=${venue}, month=${month}`);
+    const cacheKey = `${venue}:${month}`;
+    const cached = monthEventCache.get(cacheKey);
+    if (cached && Date.now() - cached.cachedAt < MONTH_CACHE_TTL_MS) {
+      console.log(`[CACHE] Hit for ${cacheKey} -> ${cached.events.length} events`);
+      return cached.events;
+    }
+
     const flyerManifest = await getFlyerManifest();
 
     if (isBooketingVenue(venue)) {
@@ -173,7 +183,9 @@ export async function getCachedVenueEvents(
 
         if (mergedEvents.length > 0) {
           console.log(`[API] merged Google + Booketing overlay events for ${venue}: ${mergedEvents.length}`);
-          return filterDisplayEvents(mergedEvents);
+          const filtered = filterDisplayEvents(mergedEvents);
+          monthEventCache.set(cacheKey, { cachedAt: Date.now(), events: filtered });
+          return filtered;
         }
       } catch (error) {
         console.warn(`[API] Google + Booketing overlay failed for ${venue} ${month}:`, error);
@@ -267,7 +279,9 @@ export async function getCachedVenueEvents(
       }
     }
 
-    return filterDisplayEvents(parsedEvents);
+    const filtered = filterDisplayEvents(parsedEvents);
+    monthEventCache.set(cacheKey, { cachedAt: Date.now(), events: filtered });
+    return filtered;
   } catch (error) {
     console.error(
       `Error in getCachedVenueEvents for ${venue} ${month}:`,
