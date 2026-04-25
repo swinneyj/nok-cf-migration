@@ -14,11 +14,13 @@ import {
 
 let flyerManifestPromise: Promise<FlyerManifestEntry[]> | null = null;
 const monthEventCache = new Map<string, { cachedAt: number; events: ParsedEvent[] }>();
+const booketingMonthCache = new Map<string, { cachedAt: number; events: ParsedEvent[] }>();
 const MONTH_CACHE_TTL_MS = 10 * 60 * 1000;
 
 export function clearEventCache() {
   console.log('[CACHE] Cleared month data cache');
   monthEventCache.clear();
+  booketingMonthCache.clear();
 }
 
 function isWeekdaySectionTitle(value: string) {
@@ -79,6 +81,24 @@ function buildMonthRange(month: string) {
     startDate: new Date(Date.UTC(yearNum, monthIndex, 1, 0, 0, 0)),
     endDate: new Date(Date.UTC(yearNum, monthIndex + 1, 0, 23, 59, 59)),
   };
+}
+
+async function getCachedBooketingMonthEvents(
+  venue: string,
+  startDate: Date,
+  endDate: Date,
+  month: string
+) {
+  const cacheKey = `${venue}:${month}`;
+  const cached = booketingMonthCache.get(cacheKey);
+  if (cached && Date.now() - cached.cachedAt < MONTH_CACHE_TTL_MS) {
+    console.log(`[CACHE] Booketing hit for ${cacheKey} -> ${cached.events.length} events`);
+    return cached.events;
+  }
+
+  const events = await fetchBooketingVenueEvents(venue, startDate, endDate);
+  booketingMonthCache.set(cacheKey, { cachedAt: Date.now(), events });
+  return events;
 }
 
 function applyCalendarFlyer(
@@ -273,8 +293,10 @@ export async function getCachedVenueEvents(
     if (isBooketingVenue(venue)) {
       try {
         const { startDate, endDate } = buildMonthRange(month);
-        const googleEvents = await fetchVenueEvents(venue, startDate, endDate);
-        const booketingEvents = await fetchBooketingVenueEvents(venue, startDate, endDate);
+        const [googleEvents, booketingEvents] = await Promise.all([
+          fetchVenueEvents(venue, startDate, endDate),
+          getCachedBooketingMonthEvents(venue, startDate, endDate, month),
+        ]);
         const mergedEvents = googleEvents
           .filter((event) => event.dateKey.startsWith(month))
           .map((event) => {
