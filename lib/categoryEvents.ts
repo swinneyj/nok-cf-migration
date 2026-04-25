@@ -157,6 +157,25 @@ function findBestFlyer(
   return bestScore > 0 ? bestEntry?.imagePath : undefined;
 }
 
+function resolveCategoryFlyerImagePath(
+  manifest: FlyerManifestEntry[],
+  venueSlug: string,
+  eventName: string,
+  dateKey: string,
+  rawData: Record<string, any> | undefined,
+  fallbackImagePath: string
+) {
+  const manifestFlyerPath = findBestFlyer(manifest, venueSlug, eventName, dateKey);
+  const booketingFlyerPath =
+    isBooketingVenue(venueSlug) &&
+    typeof rawData?.flyerImagePath === "string" &&
+    rawData.flyerImagePath.trim()
+      ? rawData.flyerImagePath.trim()
+      : undefined;
+
+  return manifestFlyerPath || booketingFlyerPath || fallbackImagePath;
+}
+
 function buildEventHref(venue: CategoryVenueCard, eventName: string, dateKey: string) {
   const params = new URLSearchParams({
     event: slugify(normalizeEventName(eventName)),
@@ -246,17 +265,14 @@ async function loadCategoryMonthEvents(category: CategoryEventsKey, monthKey: st
       ? "pool-parties"
       : "nightclubs";
     const displayTime = CATEGORY_DISPLAY_TIMES[eventCategory];
-    const booketingFlyerPath =
-      isBooketingVenue(venue.venueSlug) &&
-      typeof rawData?.flyerImagePath === "string" &&
-      rawData.flyerImagePath.trim()
-        ? rawData.flyerImagePath
-        : undefined;
-
-    const imagePath =
-      booketingFlyerPath ||
-      findBestFlyer(manifest, venue.venueSlug, eventName, dateKey) ||
-      venue.img;
+    const imagePath = resolveCategoryFlyerImagePath(
+      manifest,
+      venue.venueSlug,
+      eventName,
+      dateKey,
+      rawData,
+      venue.img
+    );
 
     items.push({
       id: `${venue.venueSlug}:${(row as any).event_id}:${dateKey}`,
@@ -339,17 +355,14 @@ export async function searchCategoryEvents(
       ? "pool-parties"
       : "nightclubs";
     const displayTime = CATEGORY_DISPLAY_TIMES[eventCategory];
-    const booketingFlyerPath =
-      isBooketingVenue(venue.venueSlug) &&
-      typeof rawData?.flyerImagePath === "string" &&
-      rawData.flyerImagePath.trim()
-        ? rawData.flyerImagePath
-        : undefined;
-
-    const imagePath =
-      booketingFlyerPath ||
-      findBestFlyer(manifest, venue.venueSlug, eventName, dateKey) ||
-      venue.img;
+    const imagePath = resolveCategoryFlyerImagePath(
+      manifest,
+      venue.venueSlug,
+      eventName,
+      dateKey,
+      rawData,
+      venue.img
+    );
 
     items.push({
       id: `${venue.venueSlug}:${(row as any).event_id}:${dateKey}`,
