@@ -160,6 +160,7 @@ function CalendarFlyerImage({
 }) {
   const [sourceIndex, setSourceIndex] = useState(0);
   const src = sources[sourceIndex] || "";
+  const isRemoteSource = /^https?:\/\//i.test(src);
 
   useEffect(() => {
     setSourceIndex(0);
@@ -173,6 +174,7 @@ function CalendarFlyerImage({
       alt={alt}
       fill
       sizes="(min-width: 1024px) 148px, (min-width: 768px) 112px, 0px"
+      unoptimized={isRemoteSource}
       className="object-cover transition duration-300 group-hover:scale-[1.03]"
       onError={() => {
         setSourceIndex((index) => Math.min(index + 1, sources.length));
