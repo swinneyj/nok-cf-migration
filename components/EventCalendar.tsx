@@ -113,6 +113,10 @@ function CalendarFlyerImage({
   const [sourceIndex, setSourceIndex] = useState(0);
   const src = sources[sourceIndex] || "";
 
+  useEffect(() => {
+    setSourceIndex(0);
+  }, [sources.join("|")]);
+
   if (!src) return null;
 
   return (
@@ -540,9 +544,12 @@ export default function EventCalendar({
 
         <div
           key={monthKey}
-          className="animate-fade-in transition-all duration-200 ease-out"
+          className={`animate-fade-in transition-all duration-200 ease-out ${
+            loading && monthHasBeenLoaded ? "opacity-90" : ""
+          }`}
+          aria-busy={loading}
         >
-          {loading ? (
+          {loading && !monthHasBeenLoaded ? (
             <CalendarSkeleton />
           ) : (
             <div className="grid grid-cols-7 gap-2">
