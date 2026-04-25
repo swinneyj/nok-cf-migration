@@ -5,7 +5,7 @@ import { getSectionsForEvent } from "@/lib/db/client";
 import { fetchVenueEvents } from "@/lib/googleCalendarClient";
 import { parseEventDescription, type ParsedEvent } from "@/lib/calendarParser";
 import { filterDisplayEvents } from "@/lib/eventDeduplication";
-import { isBooketingVenue } from "@/lib/booketingClient";
+import { fetchBooketingVenueEvents, isBooketingVenue } from "@/lib/booketingClient";
 import {
   normalizeEventName,
   findBestFlyerEntry,
@@ -110,6 +110,103 @@ function applyCalendarFlyer(
   return event;
 }
 
+function isGenericEventName(value: string | undefined) {
+  const normalized = normalizeEventName(String(value || ""))
+    .toLowerCase()
+    .trim();
+
+  return (
+    normalized === "" ||
+    normalized === "special guest" ||
+    normalized === "guest" ||
+    normalized === "tba" ||
+    normalized === "to be announced"
+  );
+}
+
+function scoreBooketingOverlayCandidate(
+  candidate: ParsedEvent,
+  targetEventName: string
+) {
+  const candidateName = normalizeEventName(candidate.eventName).toLowerCase();
+  const targetName = normalizeEventName(targetEventName).toLowerCase();
+  let score = 0;
+
+  if (!isGenericEventName(candidate.eventName)) {
+    score += 30;
+  }
+
+  if (candidate.flyerImagePath) {
+    score += 40;
+  }
+
+  if (candidate.flyerSourceUrl) {
+    score += 10;
+  }
+
+  if (candidateName && targetName && candidateName === targetName) {
+    score += 50;
+  } else if (
+    candidateName &&
+    targetName &&
+    (candidateName.includes(targetName) || targetName.includes(candidateName))
+  ) {
+    score += 20;
+  }
+
+  return score;
+}
+
+function resolveBooketingOverlay(
+  targetEvent: ParsedEvent,
+  booketingEvents: ParsedEvent[]
+) {
+  const sameDateCandidates = booketingEvents.filter(
+    (event) => event.dateKey === targetEvent.dateKey
+  );
+
+  if (sameDateCandidates.length === 0) {
+    return null;
+  }
+
+  let bestCandidate = sameDateCandidates[0];
+  let bestScore = Number.NEGATIVE_INFINITY;
+
+  for (const candidate of sameDateCandidates) {
+    const score = scoreBooketingOverlayCandidate(candidate, targetEvent.eventName);
+    if (score > bestScore) {
+      bestScore = score;
+      bestCandidate = candidate;
+    }
+  }
+
+  return bestCandidate;
+}
+
+function applyBooketingOverlay(
+  event: ParsedEvent,
+  booketingOverlay?: ParsedEvent | null
+) {
+  if (!booketingOverlay) {
+    return event;
+  }
+
+  const overlayTitle = normalizeEventName(booketingOverlay.eventName);
+  if (overlayTitle) {
+    event.eventName = overlayTitle;
+  }
+
+  if (booketingOverlay.flyerImagePath) {
+    event.flyerImagePath = booketingOverlay.flyerImagePath;
+  }
+
+  if (booketingOverlay.flyerSourceUrl) {
+    event.flyerSourceUrl = booketingOverlay.flyerSourceUrl;
+  }
+
+  return event;
+}
+
 async function getMonthEventsFromDB(month: string) {
   // Note: In-memory caching doesn't work reliably in serverless/distributed environment
   // Each request might go to a different process instance, making cache invalidation unreliable
@@ -177,12 +274,18 @@ export async function getCachedVenueEvents(
       try {
         const { startDate, endDate } = buildMonthRange(month);
         const googleEvents = await fetchVenueEvents(venue, startDate, endDate);
+        const booketingEvents = await fetchBooketingVenueEvents(venue, startDate, endDate);
         const mergedEvents = googleEvents
           .filter((event) => event.dateKey.startsWith(month))
-          .map((event) => applyCalendarFlyer(event, flyerManifest, venue));
+          .map((event) => {
+            const booketingOverlay = resolveBooketingOverlay(event, booketingEvents);
+            return applyBooketingOverlay(event, booketingOverlay);
+          });
 
         if (mergedEvents.length > 0) {
-          console.log(`[API] merged Google + Booketing overlay events for ${venue}: ${mergedEvents.length}`);
+          console.log(
+            `[API] merged Google + Booketing overlay events for ${venue}: ${mergedEvents.length}`
+          );
           const filtered = filterDisplayEvents(mergedEvents);
           monthEventCache.set(cacheKey, { cachedAt: Date.now(), events: filtered });
           return filtered;
