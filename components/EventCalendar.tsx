@@ -96,6 +96,46 @@ function getFlyerSources(imagePath?: string, sourceUrl?: string) {
   return Array.from(new Set([localWebpSource, ...sources].filter(Boolean)));
 }
 
+function isGenericEventName(eventName?: string) {
+  const normalized = normalizeLabel(String(eventName || ""));
+  return (
+    !normalized ||
+    normalized === "special guest" ||
+    normalized === "guest" ||
+    normalized === "tba" ||
+    normalized === "to be announced"
+  );
+}
+
+function selectBestDayEvent(dayEvents: ParsedEvent[], venueLabel: string) {
+  if (dayEvents.length === 0) return undefined;
+  if (dayEvents.length === 1) return dayEvents[0];
+
+  let bestEvent = dayEvents[0];
+  let bestScore = -1;
+
+  for (const event of dayEvents) {
+    const flyerSources = getFlyerSources(event.flyerImagePath, event.flyerSourceUrl);
+    const hasFlyer = flyerSources.length > 0;
+    const cleanedName = formatDesktopEventName(event.eventName, venueLabel);
+    const genericNamePenalty = isGenericEventName(cleanedName) ? -25 : 0;
+
+    const score =
+      (hasFlyer ? 100 : 0) +
+      (event.flyerImagePath?.trim() ? 15 : 0) +
+      (event.flyerSourceUrl?.trim() ? 10 : 0) +
+      (cleanedName.length > 0 ? 5 : 0) +
+      genericNamePenalty;
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestEvent = event;
+    }
+  }
+
+  return bestEvent;
+}
+
 function formatDesktopEventName(eventName: string, venueLabel: string) {
   const splitName = eventName.split(/\s[-–—]\s/);
   if (splitName.length < 2) return eventName;
@@ -467,8 +507,8 @@ export default function EventCalendar({
     isToday: boolean,
     isSelectedDay: boolean
   ) => {
-    const primaryEvent = dayEvents[0];
     const hasEvents = dayEvents.length > 0;
+    const primaryEvent = selectBestDayEvent(dayEvents, venueLabel) ?? dayEvents[0];
     const cellDate = new Date(`${dateKey}T12:00:00`);
     const cellLabel = formatCellLabel(cellDate);
     const flyerSources = getFlyerSources(
@@ -479,6 +519,23 @@ export default function EventCalendar({
     const desktopEventName = primaryEvent?.eventName
       ? formatDesktopEventName(primaryEvent.eventName, venueLabel)
       : "";
+
+    if (!primaryEvent) {
+      return (
+        <button
+          type="button"
+          className="group relative flex aspect-square w-full overflow-hidden rounded-lg border-2 border-gray-100 bg-gray-100/80 text-left text-gray-400 opacity-70 transition"
+        >
+          <div className="absolute inset-0 bg-gray-50" />
+          <div className="relative z-10 flex h-full w-full flex-col justify-between p-2">
+            <div className="rounded-full bg-white/80 px-2 py-1 text-[10px] font-semibold tracking-[0.14em] text-gray-700">
+              {cellLabel}
+            </div>
+            <div className="text-sm font-semibold">{day}</div>
+          </div>
+        </button>
+      );
+    }
 
     return (
       <button
