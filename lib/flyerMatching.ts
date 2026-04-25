@@ -51,6 +51,17 @@ function scoreFlyerMatch(entry: FlyerManifestEntry, targetSlug: string) {
   return score;
 }
 
+function isGenericEventName(value: string) {
+  const normalized = normalizeEventName(value).toLowerCase();
+  return (
+    normalized === "" ||
+    normalized === "special guest" ||
+    normalized === "guest" ||
+    normalized === "tba" ||
+    normalized === "to be announced"
+  );
+}
+
 export function findBestFlyerEntry(
   manifest: FlyerManifestEntry[],
   venueSlug: string,
@@ -83,5 +94,13 @@ export function findBestFlyerEntry(
     }
   }
 
-  return bestScore > 0 ? bestEntry : null;
+  if (bestScore > 0 && bestEntry) {
+    return bestEntry;
+  }
+
+  const preferredSameDateEntry = sameDateEntries.find(
+    (entry) => !isGenericEventName(entry.eventName)
+  );
+
+  return preferredSameDateEntry ?? sameDateEntries[0] ?? null;
 }
