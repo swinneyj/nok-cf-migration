@@ -1,7 +1,9 @@
 import { load } from "cheerio";
+import { poolPartyVenues } from "@/lib/categoryVenueData";
 import type { EventSection, ParsedEvent, PricingTier } from "./calendarParser";
 
 const VEGAS_TIME_ZONE = "America/Los_Angeles";
+const BOOKETING_POOL_PARTY_VENUES = new Set(poolPartyVenues.map((venue) => venue.venueSlug));
 
 interface BooketingVenueConfig {
   manageentId: string;
@@ -327,6 +329,20 @@ function normalizeBooketingTime(value: string | undefined) {
   };
 }
 
+export function getBooketingVenueDefaultTime(venueSlug: string) {
+  if (BOOKETING_POOL_PARTY_VENUES.has(venueSlug)) {
+    return {
+      timeLabel: "11 AM",
+      timeSortKey: "11:00",
+    };
+  }
+
+  return {
+    timeLabel: "10:30 PM",
+    timeSortKey: "22:30",
+  };
+}
+
 async function fetchBooketingText(url: string) {
   const response = await fetch(url, {
     headers: {
@@ -499,7 +515,7 @@ async function buildParsedBooketingEvent(
   summary: BooketingEventSummary
 ): Promise<ParsedEvent | null> {
   const initialResponse = await fetchInventoryForEventCode(config, summary.eventCode);
-  const baseDateKey = initialResponse.eventdata?.date || summary.dateKey;
+  const baseDateKey = summary.dateKey || initialResponse.eventdata?.date;
   if (!baseDateKey) return null;
 
   const sections: EventSection[] = [];
@@ -557,7 +573,7 @@ async function buildParsedBooketingEvent(
       day: "numeric",
       year: "numeric",
     }),
-    ...normalizeBooketingTime(initialResponse.eventdata?.dstarttime),
+    ...getBooketingVenueDefaultTime(config.venueSlug),
     sections,
     flyerImagePath:
       initialResponse.eventdata?.flyers?.eventpage?.full ||

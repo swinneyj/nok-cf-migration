@@ -5,6 +5,10 @@ import { getSectionsForEvent } from "@/lib/db/client";
 import { parseEventDescription, type ParsedEvent } from "@/lib/calendarParser";
 import { filterDisplayEvents } from "@/lib/eventDeduplication";
 import {
+  getBooketingVenueDefaultTime,
+  isBooketingVenue,
+} from "@/lib/booketingClient";
+import {
   normalizeEventName,
   findBestFlyerEntry,
   type FlyerManifestEntry,
@@ -173,16 +177,18 @@ export async function getCachedVenueEvents(
       const rawData =
         event.raw_data && typeof event.raw_data === "object" ? event.raw_data : undefined;
 
-      // Format dates in Las Vegas timezone (America/Los_Angeles)
-      const laFormatter = new Intl.DateTimeFormat("en-US", {
-        timeZone: "America/Los_Angeles",
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      });
-      const formattedDate = laFormatter.format(startDate);
-      const [monthStr, dayStr, yearStr] = formattedDate.split("/");
-      const dateKey = `${yearStr}-${monthStr}-${dayStr}`; // Convert MM/DD/YYYY to YYYY-MM-DD
+      // Booketing syncs already store the intended local date key in raw_data.
+      // Prefer that over the database timestamp so overnight inventory times do
+      // not shift the event onto the wrong calendar day.
+      const dateKey =
+        isBooketingVenue(venue) && typeof rawData?.dateKey === "string"
+          ? rawData.dateKey
+          : new Intl.DateTimeFormat("en-CA", {
+              timeZone: "America/Los_Angeles",
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+            }).format(startDate);
 
       // Fetch sections and pricing tiers for this event
       let sections = await getSectionsForEvent(event.event_id);
@@ -221,10 +227,16 @@ export async function getCachedVenueEvents(
           day: "numeric",
         }),
         sections,
-        timeLabel:
-          typeof rawData?.timeLabel === "string" ? rawData.timeLabel : undefined,
-        timeSortKey:
-          typeof rawData?.timeSortKey === "string" ? rawData.timeSortKey : undefined,
+        timeLabel: isBooketingVenue(venue)
+          ? getBooketingVenueDefaultTime(venue).timeLabel
+          : typeof rawData?.timeLabel === "string"
+            ? rawData.timeLabel
+            : undefined,
+        timeSortKey: isBooketingVenue(venue)
+          ? getBooketingVenueDefaultTime(venue).timeSortKey
+          : typeof rawData?.timeSortKey === "string"
+            ? rawData.timeSortKey
+            : undefined,
         flyerImagePath:
           typeof rawData?.flyerImagePath === "string"
             ? rawData.flyerImagePath
