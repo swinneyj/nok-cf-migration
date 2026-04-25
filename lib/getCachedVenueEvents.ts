@@ -2,14 +2,13 @@ import { sql } from "@vercel/postgres";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { getSectionsForEvent } from "@/lib/db/client";
+import { fetchVenueEvents } from "@/lib/googleCalendarClient";
 import { parseEventDescription, type ParsedEvent } from "@/lib/calendarParser";
 import { filterDisplayEvents } from "@/lib/eventDeduplication";
-import {
-  fetchBooketingVenueEvents,
-  isBooketingVenue,
-} from "@/lib/booketingClient";
+import { isBooketingVenue } from "@/lib/booketingClient";
 import {
   normalizeEventName,
+  findBestFlyerEntry,
   type FlyerManifestEntry,
 } from "@/lib/flyerMatching";
 
@@ -68,12 +67,6 @@ async function getFlyerManifest() {
   return flyerManifestPromise;
 }
 
-function shiftDateKey(dateKey: string, days: number) {
-  const date = new Date(`${dateKey}T12:00:00Z`);
-  date.setUTCDate(date.getUTCDate() + days);
-  return date.toISOString().slice(0, 10);
-}
-
 function buildMonthRange(month: string) {
   const [year, monthNum] = month.split("-");
   const yearNum = parseInt(year, 10);
@@ -85,72 +78,12 @@ function buildMonthRange(month: string) {
   };
 }
 
-function slugify(value: string) {
-  return String(value || "")
-    .normalize("NFKD")
-    .replace(/[^\w\s-]/g, "")
-    .toLowerCase()
-    .replace(/_/g, "-")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
-}
-
-function scoreFlyerEntry(entry: FlyerManifestEntry, targetSlug: string) {
-  const entrySlug = slugify(normalizeEventName(entry.eventName));
-  if (!entrySlug || !targetSlug) return 0;
-
-  let score = 0;
-  if (entrySlug === targetSlug) {
-    score += 30;
-  } else if (entrySlug.includes(targetSlug) || targetSlug.includes(entrySlug)) {
-    score += 18;
-  }
-
-  const entryWords = new Set(entrySlug.split("-").filter(Boolean));
-  const targetWords = targetSlug.split("-").filter(Boolean);
-  score += targetWords.filter((word) => entryWords.has(word)).length * 3;
-  score += Math.min(6, Math.max(0, entryWords.size - 2));
-
-  return score;
-}
-
-function findCalendarFlyer(
-  manifest: FlyerManifestEntry[],
-  venueSlug: string,
-  eventName: string,
-  dateKey: string
-) {
-  const targetSlug = slugify(normalizeEventName(eventName));
-  const candidateDates = new Set([
-    dateKey,
-    shiftDateKey(dateKey, -1),
-    shiftDateKey(dateKey, 1),
-  ]);
-  let bestEntry: FlyerManifestEntry | null = null;
-  let bestScore = 0;
-
-  for (const entry of manifest) {
-    if (entry.venueSlug !== venueSlug || !candidateDates.has(entry.date)) {
-      continue;
-    }
-
-    const score = scoreFlyerEntry(entry, targetSlug);
-    if (score > bestScore) {
-      bestEntry = entry;
-      bestScore = score;
-    }
-  }
-
-  return bestScore > 0 ? bestEntry : null;
-}
-
 function applyCalendarFlyer(
   event: ParsedEvent,
   flyerManifest: FlyerManifestEntry[],
   venue: string
 ) {
-  const flyerMatch = findCalendarFlyer(
+  const flyerMatch = findBestFlyerEntry(
     flyerManifest,
     venue,
     event.eventName,
@@ -158,6 +91,11 @@ function applyCalendarFlyer(
   );
 
   if (flyerMatch) {
+    const cleanTitle = normalizeEventName(flyerMatch.eventName);
+    if (cleanTitle) {
+      event.eventName = cleanTitle;
+    }
+
     if (!event.flyerImagePath || event.flyerImagePath.startsWith("/")) {
       event.flyerImagePath = flyerMatch.imagePath;
       event.flyerSourceUrl = event.flyerSourceUrl || flyerMatch.sourceUrl;
@@ -167,21 +105,6 @@ function applyCalendarFlyer(
   }
 
   return event;
-}
-
-async function getLiveBooketingEvents(
-  venue: string,
-  month: string,
-  flyerManifest: FlyerManifestEntry[]
-) {
-  const { startDate, endDate } = buildMonthRange(month);
-  const events = await fetchBooketingVenueEvents(venue, startDate, endDate);
-
-  return filterDisplayEvents(
-    events
-      .filter((event) => event.dateKey.startsWith(month))
-      .map((event) => applyCalendarFlyer(event, flyerManifest, venue))
-  );
 }
 
 async function getMonthEventsFromDB(month: string) {
@@ -242,14 +165,18 @@ export async function getCachedVenueEvents(
 
     if (isBooketingVenue(venue)) {
       try {
-        const liveEvents = await getLiveBooketingEvents(venue, month, flyerManifest);
-        console.log(`[API] live Booketing events for ${venue}: ${liveEvents.length}`);
+        const { startDate, endDate } = buildMonthRange(month);
+        const googleEvents = await fetchVenueEvents(venue, startDate, endDate);
+        const mergedEvents = googleEvents
+          .filter((event) => event.dateKey.startsWith(month))
+          .map((event) => applyCalendarFlyer(event, flyerManifest, venue));
 
-        if (liveEvents.length > 0) {
-          return liveEvents;
+        if (mergedEvents.length > 0) {
+          console.log(`[API] merged Google + Booketing overlay events for ${venue}: ${mergedEvents.length}`);
+          return filterDisplayEvents(mergedEvents);
         }
       } catch (error) {
-        console.warn(`[API] Live Booketing fallback failed for ${venue} ${month}:`, error);
+        console.warn(`[API] Google + Booketing overlay failed for ${venue} ${month}:`, error);
       }
     }
 
