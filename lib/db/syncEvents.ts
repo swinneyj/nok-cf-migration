@@ -5,6 +5,7 @@ import { parseEventDescription, type ParsedEvent } from '@/lib/calendarParser';
 import {
   filterDisplayEvents,
 } from '@/lib/eventDeduplication';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 import { google } from 'googleapis';
 import { setOAuthCredentialsFromRefreshToken } from '@/lib/googleOAuthClient';
@@ -75,6 +76,79 @@ function buildBooketingLocalFlyerPath(
   const ext = sourceUrl ? path.extname(new URL(sourceUrl).pathname) || ".jpg" : ".jpg";
   const fileName = `${dateKey}_${slugify(eventName)}${ext}`;
   return `/event-flyers/${venueSlug}/${fileName}`;
+}
+
+async function fileExists(filePath: string) {
+  try {
+    await fs.access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function cacheBooketingFlyer(
+  venueSlug: string,
+  eventName: string,
+  dateKey: string,
+  sourceUrl?: string
+) {
+  if (!sourceUrl) return undefined;
+
+  const localPath = buildBooketingLocalFlyerPath(
+    venueSlug,
+    eventName || "Untitled Event",
+    dateKey,
+    sourceUrl
+  );
+  const filePath = path.join(process.cwd(), "public", localPath.replace(/^\//, ""));
+
+  if (await fileExists(filePath)) {
+    return localPath;
+  }
+
+  try {
+    const response = await fetch(sourceUrl, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+        Accept: "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    await fs.mkdir(path.dirname(filePath), { recursive: true });
+    await fs.writeFile(filePath, Buffer.from(await response.arrayBuffer()));
+    return localPath;
+  } catch (error) {
+    console.warn(
+      `[SYNC] Failed to cache Booketing flyer for ${venueSlug} ${dateKey} ${eventName}:`,
+      error instanceof Error ? error.message : String(error)
+    );
+    return undefined;
+  }
+}
+
+async function buildBooketingRawData(
+  venueSlug: string,
+  event: ParsedEvent
+) {
+  const sourceFlyerUrl = event.flyerImagePath;
+  const localFlyerPath = await cacheBooketingFlyer(
+    venueSlug,
+    event.eventName || "Untitled Event",
+    event.dateKey,
+    sourceFlyerUrl
+  );
+
+  return {
+    ...event,
+    flyerImagePath: localFlyerPath,
+    flyerSourceUrl: sourceFlyerUrl,
+  };
 }
 
 function buildParsedSyncEvent(
@@ -215,16 +289,7 @@ export async function syncCategoryVenueEvents(
 
           // Insert each Booketing event into database
           for (const event of booketingEvents) {
-            const sourceFlyerUrl = event.flyerImagePath;
-            const localFlyerPath =
-              sourceFlyerUrl
-                ? buildBooketingLocalFlyerPath(
-                    venue.venueSlug,
-                    event.eventName || "Untitled Event",
-                    event.dateKey,
-                    sourceFlyerUrl
-                  )
-                : undefined;
+            const rawData = await buildBooketingRawData(venue.venueSlug, event);
 
             await insertOrUpdateEvent({
               event_id: event.id || '',
@@ -236,11 +301,7 @@ export async function syncCategoryVenueEvents(
               end_time: undefined,
               calendar_id: 'booketing',
               event_url: undefined,
-              raw_data: {
-                ...event,
-                flyerImagePath: localFlyerPath || event.flyerImagePath,
-                flyerSourceUrl: sourceFlyerUrl,
-              },
+              raw_data: rawData,
             });
 
             await storeSectionsForEvent(event.id || '', event.sections || []);
@@ -456,16 +517,7 @@ export async function syncVenuesBySlug(
         });
 
         for (const event of booketingEvents) {
-          const sourceFlyerUrl = event.flyerImagePath;
-          const localFlyerPath =
-            sourceFlyerUrl
-              ? buildBooketingLocalFlyerPath(
-                  venueSlug,
-                  event.eventName || "Untitled Event",
-                  event.dateKey,
-                  sourceFlyerUrl
-                )
-              : undefined;
+          const rawData = await buildBooketingRawData(venueSlug, event);
 
           await insertOrUpdateEvent({
             event_id: event.id || '',
@@ -477,11 +529,7 @@ export async function syncVenuesBySlug(
             end_time: undefined,
             calendar_id: 'booketing',
             event_url: undefined,
-            raw_data: {
-              ...event,
-              flyerImagePath: localFlyerPath || event.flyerImagePath,
-              flyerSourceUrl: sourceFlyerUrl,
-            },
+            raw_data: rawData,
           });
 
           await storeSectionsForEvent(event.id || '', event.sections || []);

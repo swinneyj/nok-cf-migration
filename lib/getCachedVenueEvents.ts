@@ -119,7 +119,7 @@ async function getMonthEventsFromDB(month: string) {
     console.log(`[DB-QUERY] Fetching events for ${month}: ${queryStart.toISOString()} to ${queryEnd.toISOString()}`);
 
     const result = await sql`
-      SELECT event_id, venue_id, event_title, event_description, start_time, raw_data
+      SELECT event_id, venue_id, event_title, event_description, start_time, calendar_id, raw_data
       FROM events
       WHERE start_time >= ${queryStart.toISOString()}
         AND start_time < ${queryEnd.toISOString()}
@@ -171,8 +171,13 @@ export async function getCachedVenueEvents(
 
     // Transform database events to ParsedEvent format with sections/pricing
     const parsedEvents: ParsedEvent[] = [];
+    const booketingVenue = isBooketingVenue(venue);
 
     for (const event of venueEvents) {
+      if (booketingVenue && event.calendar_id !== "booketing") {
+        continue;
+      }
+
       const startDate = new Date(event.start_time);
       const rawData =
         event.raw_data && typeof event.raw_data === "object" ? event.raw_data : undefined;
@@ -181,7 +186,7 @@ export async function getCachedVenueEvents(
       // Prefer that over the database timestamp so overnight inventory times do
       // not shift the event onto the wrong calendar day.
       const dateKey =
-        isBooketingVenue(venue) && typeof rawData?.dateKey === "string"
+        booketingVenue && typeof rawData?.dateKey === "string"
           ? rawData.dateKey
           : new Intl.DateTimeFormat("en-CA", {
               timeZone: "America/Los_Angeles",
@@ -227,12 +232,12 @@ export async function getCachedVenueEvents(
           day: "numeric",
         }),
         sections,
-        timeLabel: isBooketingVenue(venue)
+        timeLabel: booketingVenue
           ? getBooketingVenueDefaultTime(venue).timeLabel
           : typeof rawData?.timeLabel === "string"
             ? rawData.timeLabel
             : undefined,
-        timeSortKey: isBooketingVenue(venue)
+        timeSortKey: booketingVenue
           ? getBooketingVenueDefaultTime(venue).timeSortKey
           : typeof rawData?.timeSortKey === "string"
             ? rawData.timeSortKey
@@ -252,7 +257,7 @@ export async function getCachedVenueEvents(
             ? rawData.minimumSpendNote
             : undefined,
       };
-      if (!isBooketingVenue(venue)) {
+      if (!booketingVenue) {
         applyCalendarFlyer(parsedEvent, flyerManifest, venue);
       }
 

@@ -4,10 +4,10 @@ import { sql } from "@vercel/postgres";
 import {
   getCategoryVenueCards,
   poolPartyVenues,
-  type CategoryEventsKey,
   type CategoryVenueCard,
+  type CategoryEventsKey,
 } from "@/lib/categoryVenueData";
-import { isBooketingVenue } from "@/lib/booketingClient";
+import { BOOKETING_VENUE_SLUGS, isBooketingVenue } from "@/lib/booketingClient";
 import type { FlyerManifestEntry } from "@/lib/flyerMatching";
 
 export interface CategoryEventItem {
@@ -232,9 +232,10 @@ async function loadCategoryMonthEvents(category: CategoryEventsKey, monthKey: st
       WHERE venue_id = ANY($1::text[])
         AND start_time >= $2
         AND start_time < $3
+        AND NOT (venue_id = ANY($4::text[]) AND calendar_id IS DISTINCT FROM 'booketing')
       ORDER BY start_time ASC, venue_id ASC
     `,
-    [venueIds, startIso, endIso]
+    [venueIds, startIso, endIso, BOOKETING_VENUE_SLUGS]
   );
 
   const items: CategoryEventItem[] = [];
@@ -326,9 +327,10 @@ export async function searchCategoryEvents(
       WHERE venue_id = ANY($1::text[])
         AND start_time >= $2
         AND event_title ILIKE $3
+        AND NOT (venue_id = ANY($4::text[]) AND calendar_id IS DISTINCT FROM 'booketing')
       ORDER BY start_time ASC, venue_id ASC
     `,
-    [venueIds, startDate.toISOString(), `%${trimmedQuery}%`]
+    [venueIds, startDate.toISOString(), `%${trimmedQuery}%`, BOOKETING_VENUE_SLUGS]
   );
 
   const items: CategoryEventItem[] = [];
