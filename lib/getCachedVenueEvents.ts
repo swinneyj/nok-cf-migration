@@ -252,7 +252,9 @@ export async function getCachedVenueEvents(
             ? rawData.minimumSpendNote
             : undefined,
       };
-      applyCalendarFlyer(parsedEvent, flyerManifest, venue);
+      if (!isBooketingVenue(venue)) {
+        applyCalendarFlyer(parsedEvent, flyerManifest, venue);
+      }
 
       if (parsedEvent.dateKey.startsWith(month)) {
         parsedEvents.push(parsedEvent);

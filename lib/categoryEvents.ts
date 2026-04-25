@@ -165,15 +165,15 @@ function resolveCategoryFlyerImagePath(
   rawData: Record<string, any> | undefined,
   fallbackImagePath: string
 ) {
-  const manifestFlyerPath = findBestFlyer(manifest, venueSlug, eventName, dateKey);
   const booketingFlyerPath =
     isBooketingVenue(venueSlug) &&
     typeof rawData?.flyerImagePath === "string" &&
     rawData.flyerImagePath.trim()
       ? rawData.flyerImagePath.trim()
       : undefined;
+  const manifestFlyerPath = findBestFlyer(manifest, venueSlug, eventName, dateKey);
 
-  return manifestFlyerPath || booketingFlyerPath || fallbackImagePath;
+  return booketingFlyerPath || manifestFlyerPath || fallbackImagePath;
 }
 
 function buildEventHref(venue: CategoryVenueCard, eventName: string, dateKey: string) {

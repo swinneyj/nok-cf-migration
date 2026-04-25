@@ -130,6 +130,39 @@ function getMonthKey(dateKey) {
   return String(dateKey || "").slice(0, 7);
 }
 
+function parseDateKeyFromCardText(text, fallbackDateKey) {
+  const monthMap = {
+    january: 1,
+    february: 2,
+    march: 3,
+    april: 4,
+    may: 5,
+    june: 6,
+    july: 7,
+    august: 8,
+    september: 9,
+    october: 10,
+    november: 11,
+    december: 12,
+  };
+  const match = String(text || "").match(
+    /\b(?:Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday),\s+([A-Za-z]+)\s+(\d{1,2})\b/i
+  );
+  if (!match) return fallbackDateKey;
+
+  const fallback = new Date(`${fallbackDateKey}T12:00:00`);
+  let year = fallback.getFullYear();
+  const month = monthMap[match[1].toLowerCase()];
+  const day = Number(match[2]);
+  if (!month || !day) return fallbackDateKey;
+
+  const fallbackMonth = fallback.getMonth() + 1;
+  if (fallbackMonth === 12 && month === 1) year += 1;
+  if (fallbackMonth === 1 && month === 12) year -= 1;
+
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
 function formatBooketingShortDate(date) {
   const year = String(date.getFullYear()).slice(-2);
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -373,7 +406,7 @@ function cleanEventName(name) {
     .trim();
 }
 
-function parseCardText(text) {
+function parseCardText(text, fallbackDateKey) {
   const normalized = String(text || "").replace(/\s+/g, " ").trim();
   if (!normalized) return null;
 
@@ -407,6 +440,7 @@ function parseCardText(text) {
 
   return {
     eventName: cleanEventName(eventName),
+    dateKey: parseDateKeyFromCardText(normalized, fallbackDateKey),
     venueName: best.alias,
     venueSlug: best.slug,
   };
@@ -543,7 +577,7 @@ async function main() {
 
     for (const card of cards) {
       try {
-        const parsed = parseCardText(card.text);
+        const parsed = parseCardText(card.text, date);
 
         if (!parsed) {
           console.log("skip parse:", card.text.slice(0, 220));
@@ -553,7 +587,8 @@ async function main() {
         const eventSlug = slugify(parsed.eventName);
         if (!eventSlug) continue;
 
-        const monthKey = getMonthKey(date);
+        const eventDate = parsed.dateKey || date;
+        const monthKey = getMonthKey(eventDate);
         let sourceImageUrl = card.imageUrl;
         let sourceReferer = "https://app.discotech.me/";
 
@@ -575,13 +610,13 @@ async function main() {
             booketingEntries,
             booketingConfig.venueSlug,
             parsed.eventName,
-            date
+            eventDate
           );
 
           if (matchedBooketing?.imagePath) {
             sourceImageUrl = matchedBooketing.imagePath;
             sourceReferer = "https://booketing.com/";
-            console.log(`✅ booketing flyer ${booketingConfig.venueSlug}/${date} -> ${path.basename(new URL(sourceImageUrl).pathname)}`);
+            console.log(`✅ booketing flyer ${booketingConfig.venueSlug}/${eventDate} -> ${path.basename(new URL(sourceImageUrl).pathname)}`);
           }
         }
 
@@ -592,9 +627,9 @@ async function main() {
 
         const venueDir = path.join(OUT_DIR, parsed.venueSlug);
         const ext = path.extname(new URL(sourceImageUrl).pathname) || ".jpg";
-        const fileName = `${date}_${eventSlug}${ext}`;
+        const fileName = `${eventDate}_${eventSlug}${ext}`;
         const filePath = path.join(venueDir, fileName);
-        const manifestKey = `${parsed.venueSlug}__${date}__${eventSlug}`;
+        const manifestKey = `${parsed.venueSlug}__${eventDate}__${eventSlug}`;
 
         if (seenKeys.has(manifestKey)) continue;
         seenKeys.add(manifestKey);
@@ -608,7 +643,7 @@ async function main() {
           venueSlug: parsed.venueSlug,
           venueName: parsed.venueName,
           eventName: parsed.eventName,
-          date,
+          date: eventDate,
           imagePath: `/event-flyers/${parsed.venueSlug}/${fileName}`,
           sourceUrl: booketingConfig ? sourceImageUrl : card.href,
         });
