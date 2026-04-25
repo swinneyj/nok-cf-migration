@@ -463,7 +463,8 @@ export default function EventCalendar({
   const year = visibleMonth.getFullYear();
   const monthIndex = visibleMonth.getMonth();
   const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
-  const firstDayOfWeek = new Date(year, monthIndex, 1).getDay();
+  // Shift the grid to Monday-first: Monday = 0, Sunday = 6.
+  const firstDayOfWeek = (new Date(year, monthIndex, 1).getDay() + 6) % 7;
 
   const calendarCells = [
     ...Array.from({ length: firstDayOfWeek }, () => null),
@@ -654,7 +655,7 @@ export default function EventCalendar({
 
       <div className="p-4 md:p-6">
         <div className="mb-3 grid grid-cols-7 gap-2 text-center text-sm font-semibold text-gray-600">
-          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((label) => (
+          {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((label) => (
             <div key={label}>{label}</div>
           ))}
         </div>
