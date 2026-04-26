@@ -12,18 +12,21 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://www.nokturnallifestyle.com/events' },
 }
 
-function getInitialDate(searchParams?: Record<string, string | string[] | undefined>) {
+type EventsSearchParams = Record<string, string | string[] | undefined>
+
+function getInitialDate(searchParams?: EventsSearchParams) {
   const value = searchParams?.date
   const date = Array.isArray(value) ? value[0] : value
   return date && /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/.test(date) ? date : undefined
 }
 
-export default function EventsPage({
+export default async function EventsPage({
   searchParams,
 }: {
-  searchParams?: Record<string, string | string[] | undefined>
+  searchParams?: Promise<EventsSearchParams>
 }) {
-  const initialDate = getInitialDate(searchParams)
+  const resolvedSearchParams = searchParams ? await searchParams : undefined
+  const initialDate = getInitialDate(resolvedSearchParams)
 
   return (
     <>
