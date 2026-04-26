@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "main": ".open-next/worker.js",
-  "name": "nokturnal-lifestyle",
+  "name": "nok-cf-migration",
   "compatibility_date": "2026-04-26",
   "compatibility_flags": [
     "nodejs_compat"
@@ -13,7 +13,7 @@
   "services": [
     {
       "binding": "WORKER_SELF_REFERENCE",
-      "service": "nokturnal-lifestyle"
+      "service": "nok-cf-migration"
     }
   ],
   "r2_buckets": [
