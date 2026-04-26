@@ -105,12 +105,16 @@ function dedupeViews(views: VenueMapView[]) {
   });
 }
 
+type VenueMapRouteContext = {
+  params: Promise<{ venueSlug: string }>;
+};
+
 export async function GET(
   _request: Request,
-  { params }: { params: { venueSlug: string } }
+  context: VenueMapRouteContext
 ) {
   try {
-    const requestedSlug = params.venueSlug;
+    const { venueSlug: requestedSlug } = await context.params;
     const resolvedSlug = resolveVenueMapSlug(requestedSlug);
     const baseConfig = getVenueMapConfig(requestedSlug);
     const venueDir = path.join(process.cwd(), "public", "venue-maps", resolvedSlug);
