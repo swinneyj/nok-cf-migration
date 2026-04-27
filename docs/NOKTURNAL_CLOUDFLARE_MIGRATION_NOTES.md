@@ -1,29 +1,31 @@
-# Nokturnal Lifestyle — Cloudflare Migration Notes
+# Nokturnal Cloudflare Migration — Final Notes
 
-Last updated: 2026-04-27
+## Repo / Branches
 
-This file exists so future chats/dev sessions can quickly understand the current Cloudflare migration state for the Nokturnal Lifestyle project.
-
-## Repository
-
-- GitHub repo: `swinneyj/nok-cf-migration`
+- Repo: `swinneyj/nok-cf-migration`
 - Main branch: `main`
-- Current Cloudflare Worker URL: `https://nok-cf-migration.sales-c25.workers.dev/`
-- Original production site remains separate from this migration project.
+- Working branch used: `feature/remove-vercel-deps`
+- PR opened: `#1 Remove Vercel dependencies and stabilize Cloudflare deployment`
+- PR was squash-merged into `main`.
+- Final squash commit on `main`: `86b3f66034b91e0abf69d42a0fde4b6d106e7d3b`
+- Current Cloudflare Worker preview URL: `https://nok-cf-migration.sales-c25.workers.dev/`
 
-## High-level architecture
+## Main Objective
 
-The project is a Next.js app deployed to Cloudflare Workers using OpenNext for Cloudflare.
+Cleanly remove remaining Vercel runtime dependencies and stabilize the Next.js/OpenNext Cloudflare Worker deployment without breaking booking forms, Turnstile, Formspree, Google/Neon event data, or the reservation flow.
 
-Current stack:
+## Current Stack
 
 - Next.js `15.5.15`
 - React `19.2.5`
 - pnpm
 - OpenNext Cloudflare: `@opennextjs/cloudflare`
-- Wrangler
+- Wrangler `4.83.0`
 - Cloudflare Workers + Assets + R2 incremental cache
-- Neon Postgres for event/cache data
+- Neon Postgres via `@neondatabase/serverless`
+- Google Calendar data/import tooling still exists through `googleapis`
+- Turnstile for form spam protection
+- Formspree for inquiry/reservation submissions
 
 Important scripts in `package.json`:
 
@@ -33,175 +35,166 @@ pnpm run preview
 pnpm run deploy
 ```
 
-Cloudflare build command is currently using:
-
-```bash
-pnpm run deploy
-```
-
-which runs:
+`pnpm run deploy` runs:
 
 ```bash
 opennextjs-cloudflare build && opennextjs-cloudflare deploy
 ```
 
-## Cloudflare deployment notes
+## What Was Completed
 
-Cloudflare Workers Free hit the Worker size limit. The deployment was only slightly over the free 3 MiB compressed script limit, so the project was upgraded to Workers Paid. After upgrading, the main site and venue routes began loading successfully.
+### 1. Removed Vercel runtime dependencies
 
-Important Cloudflare issue encountered:
+Removed Vercel-specific packages from `package.json` / `pnpm-lock.yaml`:
 
-```txt
-Your Worker exceeded the size limit of 3 MiB.
-Please upgrade to a paid plan to deploy Workers up to 10 MiB.
+- `@vercel/postgres`
+- `@vercel/analytics`
+- `@vercel/speed-insights`
+
+Also removed Vercel Analytics and Speed Insights imports/components from `app/layout.tsx`.
+
+### 2. Converted database access from Vercel Postgres to Neon
+
+Updated `lib/db/client.ts` from:
+
+- `@vercel/postgres`
+
+To:
+
+- `@neondatabase/serverless`
+
+Important behavior changes:
+
+- Neon query calls return rows directly instead of `result.rows`.
+- Delete count logic now uses `RETURNING id` and `rows.length` where needed.
+- The app expects `POSTGRES_URL` to be available as a Cloudflare secret.
+
+Also confirmed `lib/categoryEvents.ts` no longer imports `@vercel/postgres` after branch changes were pulled locally.
+
+### 3. Fixed Cloudflare deploy failure caused by `node:sqlite`
+
+Deploy failed with:
+
+```text
+Could not resolve "node:sqlite"
 ```
 
-The OpenNext generated handler was around 28 MB uncompressed, around 3.1 MB gzipped. Paid Workers was the practical fix.
+Root cause:
 
-## Environment variables / secrets
+- Newer Wrangler/workerd + future compatibility date triggered unsupported Node built-in bundling.
 
-The app needs `POSTGRES_URL` available in Cloudflare for Neon database access.
+Fixes applied:
 
-Earlier build failures happened when Postgres env vars were missing:
+- Pinned Wrangler to `4.83.0` in `package.json`.
+- Lockfile moved `workerd` from `1.20260424.1` to `1.20260415.1`.
+- Changed `wrangler.jsonc` compatibility date from `2026-04-26` to `2025-11-01`.
+- Kept `nodejs_compat` enabled.
 
-```txt
-VercelPostgresError - missing_connection_string
-You did not supply a connectionString and no POSTGRES_URL env var was found.
+### 4. Fixed Turnstile configuration and verification
+
+Initial issues:
+
+- Turnstile UI said “Spam protection is not configured yet.”
+- Backend returned `Spam protection verification failed`.
+- Cloudflare logs showed `invalid-input-secret` at one point.
+
+Fixes/lessons:
+
+- `NEXT_PUBLIC_TURNSTILE_SITE_KEY` must be available at build/client level.
+- `TURNSTILE_SECRET_KEY` must be the secret from the same Turnstile widget as the public site key.
+- Added Workers preview hostname to allowed Turnstile hostnames:
+  - `nok-cf-migration.sales-c25.workers.dev`
+- Added `TURNSTILE_ALLOWED_HOSTNAMES`.
+- Relaxed Turnstile action validation in `lib/formSecurity.ts` so valid tokens are not rejected when Cloudflare returns a blank or mismatched action.
+
+Current verification still checks:
+
+- Cloudflare token success
+- allowed hostname
+- fresh challenge timestamp
+- honeypot/rate-limit flow
+
+Action mismatch is logged, not blocked.
+
+### 5. Persisted public runtime variables in `wrangler.jsonc`
+
+Cloudflare auto-deploys were causing dashboard-only public vars to appear missing after deploys.
+
+Fix:
+
+Added non-secret public config to `wrangler.jsonc` under `vars`:
+
+```json
+"vars": {
+  "NEXT_PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAAC_MxMyNojR3Pukd",
+  "TURNSTILE_ALLOWED_HOSTNAMES": "nok-cf-migration.sales-c25.workers.dev,nokturnallifestyle.com,www.nokturnallifestyle.com,staging.nokturnallifestyle.com",
+  "FORMSPREE_INQUIRY_FORM_ID": "mdayabrp",
+  "FORMSPREE_RESERVATION_FORM_ID": "mdayabrp"
+}
 ```
 
-Current production runtime depends on:
+These are intentionally committed because they are non-secret/public configuration.
 
+Secrets that must remain in Cloudflare only:
+
+- `TURNSTILE_SECRET_KEY`
 - `POSTGRES_URL`
-- any existing booking/contact/Turnstile secrets already configured in Cloudflare
+- `FAL_API_KEY`
+- `GOOGLE_CLIENT_SECRET`
+- `GOOGLE_REFRESH_TOKEN`
+- `CRON_SECRET`
+- any other private keys/tokens
 
-Important: Cloudflare Workers dashboard variables apply differently than Vercel. Do not assume per-variable production/preview dropdowns exist in the same way.
+### 6. Fixed Formspree routing
 
-## Database direction
+Contact form returned `{"ok": true}` but did not show in expected Formspree inbox.
 
-The project is keeping Neon for now.
+Root cause:
 
-Reasoning:
+- App was using fallback or wrong Formspree form ID.
 
-- Neon already stores event data, section pricing, flyer metadata, and cached Google Calendar/imported event data.
-- D1 is not currently necessary and would require schema/client migration.
-- The better cost/performance path was optimizing DB usage and adding Cloudflare caching first.
+Fix:
 
-## Critical DB/runtime lesson
+- Added correct Formspree form ID: `mdayabrp`
+- Added both inquiry and reservation Formspree IDs to `wrangler.jsonc`.
 
-`@vercel/postgres` caused Cloudflare Worker runtime issues:
+Confirmed:
 
-```txt
-Cannot perform I/O on behalf of a different request.
-Worker code had hung and would never generate a response.
-```
+- Contact form submits.
+- Reservation form submits.
+- Formspree receives submissions.
+- Formspree may mark messages as spam; that is a separate Formspree deliverability/settings issue.
 
-Fix pattern:
+### 7. Verified successful behavior
 
-Use Neon serverless client instead:
+Confirmed during testing:
 
-```ts
-import { neon } from "@neondatabase/serverless";
+- `/api/calendar/events?venue=xs-nightclub&month=2026-06` returns JSON event data normally.
+- Contact form `/api/inquiry` returns `200 {"ok":true}`.
+- Reservation form `/api/reservation` works after Turnstile action validation was relaxed and vars persisted.
+- Turnstile loads and verifies on Workers preview.
+- `pnpm exec tsc --noEmit` passed locally.
+- `pnpm run build` passed locally.
 
-const getSql = () => {
-  const connectionString = process.env.POSTGRES_URL;
-  if (!connectionString) {
-    throw new Error("Missing POSTGRES_URL environment variable");
-  }
-  return neon(connectionString);
-};
-```
+## Vercel Disconnection Status
 
-Avoid global `@vercel/postgres` clients in Worker request paths.
+Code-level Vercel runtime dependency removal is complete.
 
-## Routes already migrated/fixed
+The current `main` branch no longer uses these packages:
 
-### `/api/calendar/events`
+- `@vercel/postgres`
+- `@vercel/analytics`
+- `@vercel/speed-insights`
 
-File:
+`app/layout.tsx` no longer imports/renders Vercel Analytics or Speed Insights.
 
-```txt
-lib/getCachedVenueEvents.ts
-```
+Operationally, to be fully disconnected from Vercel, also verify outside the repo:
 
-Fixes completed:
+- Production DNS points to Cloudflare, not Vercel.
+- Vercel project is not still connected to this GitHub repo for auto-deploys.
+- Vercel environment variables/deployments are no longer part of the production path.
 
-- Replaced `@vercel/postgres` with `@neondatabase/serverless`.
-- Replaced N+1/event-by-event DB reads with optimized bulk reads.
-- Fetches venue/month event rows from `events`.
-- Fetches sections from `event_sections`.
-- Fetches pricing from `pricing_tiers`.
-- Normalizes nullable DB fields:
-  - `price ?? 0`
-  - `capacity ?? 0`
-  - `section_description ?? undefined`
-- Keeps Google/Booketing source metadata from `raw_data`.
-- Preserves LA timezone dateKey logic.
-
-The API route now returns JSON reliably for URLs like:
-
-```txt
-/api/calendar/events?venue=xs-nightclub&month=2026-06
-```
-
-Caching was added so the route no longer returns `no-store` headers. Expected header:
-
-```txt
-Cache-Control: public, s-maxage=300, stale-while-revalidate=3600
-```
-
-### `/api/category-events`
-
-File:
-
-```txt
-lib/categoryEvents.ts
-```
-
-This route was still crashing when changing months on `/events` because it used `@vercel/postgres`. It has now been migrated to Neon serverless too.
-
-Fixes completed:
-
-- Replaced `import { sql } from "@vercel/postgres"` with Neon serverless.
-- Replaced `sql.query(...)` with tagged template Neon queries.
-- Added `CategoryEventRow` type.
-- Added helper `buildCategoryEventItems(...)` to avoid duplicate row mapping logic.
-- Supports month fetch and search fetch.
-
-This fixed the `/events` month switching crash that hit:
-
-```txt
-/api/category-events?category=all&start_date=2026-06-27&days=3
-```
-
-## Important remaining cleanup
-
-Some files still import `@vercel/postgres` and/or `googleapis` for routes such as reservations, sync, OAuth, and older DB helpers.
-
-Known import traces from prior build logs:
-
-```txt
-lib/db/client.ts -> @vercel/postgres
-lib/db/syncEvents.ts -> googleapis
-lib/googleCalendarClient.ts -> googleapis
-lib/googleOAuthClient.ts -> googleapis
-```
-
-Do not remove dependencies from `package.json` unless the imports are removed or isolated first.
-
-Future recommended cleanup:
-
-1. Convert `lib/db/client.ts` to Neon serverless if used by live routes.
-2. Confirm `/api/reservation` works under Cloudflare.
-3. Move Google sync/OAuth code out of production runtime if it is only admin tooling.
-4. Consider disabling/removing `/api/google/oauth/*` and `/api/sync-events` from the deployed Worker if not needed publicly.
-5. Add caching to `/api/category-events` similar to `/api/calendar/events`.
-6. Remove Vercel-specific packages only after no runtime imports remain:
-   - `@vercel/postgres`
-   - possibly `@vercel/analytics`
-   - possibly `@vercel/speed-insights`
-7. After dependency changes, always update `pnpm-lock.yaml`.
-
-## pnpm lockfile rule
+## pnpm Lockfile Rule
 
 Cloudflare runs:
 
@@ -209,7 +202,7 @@ Cloudflare runs:
 pnpm install --frozen-lockfile
 ```
 
-This means any `package.json` change must be committed with the updated lockfile.
+Any `package.json` change must be committed with the updated lockfile.
 
 Safe workflow for dependency changes:
 
@@ -221,14 +214,43 @@ git commit -m "Update dependencies"
 git push origin main
 ```
 
-Do not push only `package.json`, or Cloudflare will fail with:
+Do not push only `package.json`, or Cloudflare may fail with:
 
 ```txt
 ERR_PNPM_OUTDATED_LOCKFILE
 Cannot install with frozen-lockfile because pnpm-lock.yaml is not up to date with package.json
 ```
 
-## Testing checklist after deploys
+## Git / Local State Notes
+
+After squash merging PR #1, local `main` had the 11 individual commits while `origin/main` had the single squash commit, causing divergent branch warnings.
+
+Recommended final local cleanup:
+
+```bash
+git fetch origin
+git reset --hard origin/main
+git status
+```
+
+Expected clean result:
+
+```text
+On branch main
+Your branch is up to date with 'origin/main'.
+nothing to commit, working tree clean
+```
+
+Optional branch cleanup:
+
+```bash
+git branch -D feature/remove-vercel-deps
+git push origin --delete feature/remove-vercel-deps
+```
+
+Only delete the remote branch if no longer needed for reference.
+
+## Testing Checklist After Deploys
 
 Core pages:
 
@@ -250,15 +272,15 @@ API checks:
 /api/category-events?category=all&start_date=2026-06-27&days=3
 ```
 
-Booking flow checks:
+Booking/form checks:
 
-1. Pick venue event from calendar.
-2. Open/close venue map.
-3. Change event after opening map.
-4. Select section/table.
-5. Adjust guests.
-6. Submit test reservation.
-7. Confirm reservation storage/email/logging works.
+1. Contact form should return `/api/inquiry -> 200 {"ok":true}`.
+2. Pick venue event from calendar.
+3. Select section/table.
+4. Adjust guests.
+5. Submit test reservation.
+6. Reservation should return `/api/reservation -> 200 {"ok":true}`.
+7. Confirm Formspree receives the submission.
 
 Cloudflare logs should not show:
 
@@ -267,9 +289,10 @@ Worker exceeded CPU time limit
 Cannot perform I/O on behalf of a different request
 500 Internal Server Error
 Missing POSTGRES_URL
+invalid-input-secret
 ```
 
-## Branch/deployment workflow
+## Branch / Deployment Workflow
 
 Recommended workflow:
 
@@ -305,7 +328,7 @@ For risky areas, always use a branch:
 - booking flow logic
 - calendar/date parsing
 
-## Key lessons from migration
+## Key Lessons From Migration
 
 1. Cloudflare Workers can feel faster than the old setup because static assets and Worker execution are close to users at the edge.
 2. Neon can remain the database; the big win is fewer/heavier DB calls and better caching.
@@ -314,14 +337,37 @@ For risky areas, always use a branch:
 5. Cache API responses that do not need real-time freshness.
 6. Lockfile sync is mandatory with pnpm on Cloudflare CI.
 7. Full Next/OpenNext apps may exceed free Worker limits; paid Workers may be required.
+8. Public config can live in `wrangler.jsonc`; secrets should stay in Cloudflare dashboard.
 
-## Current known-good status
+## Current Known-Good Status
 
 As of this note:
 
-- The Cloudflare Worker deploys after upgrading Workers plan.
-- `/places/xs-nightclub` loads.
-- `/places/xs-nightclub?event=...&date=...` loads.
-- `/api/calendar/events` works with Neon + cache headers.
-- `/events` month switching had a category-events issue, and `lib/categoryEvents.ts` has been patched to Neon.
-- Further testing should confirm `/events` month switching after the latest deploy.
+- The Cloudflare migration cleanup is complete and merged into `main`.
+- Vercel runtime packages are removed.
+- Neon is used instead of Vercel Postgres.
+- Wrangler/workerd deploy issue is resolved by pinning/stable compatibility date.
+- Turnstile works on Cloudflare Worker preview.
+- Public config persists through GitHub auto-deploys via `wrangler.jsonc`.
+- Forms submit successfully and reach Formspree.
+- Secrets remain in Cloudflare only.
+
+## Future Follow-Up Ideas
+
+- Production domain test on `nokturnallifestyle.com`.
+- Confirm Turnstile widget includes production hostnames.
+- Improve Formspree deliverability/spam handling.
+- Consider later tightening Turnstile action validation only if frontend actions are guaranteed consistent.
+- Keep public config in `wrangler.jsonc`; keep secrets in Cloudflare dashboard.
+
+## Continuation Prompt for Future Chat
+
+```text
+Continue from the Cloudflare migration cleanup summary.
+
+We removed Vercel runtime dependencies, converted DB access to Neon, fixed Wrangler/workerd node:sqlite deploy failures, stabilized Turnstile/Formspree, persisted public Worker vars in wrangler.jsonc, and squash-merged PR #1 into main.
+
+Current next step:
+- Make sure local main is reset to origin/main after squash merge.
+- Then continue production-domain testing and any final Cloudflare/Formspree hardening.
+```
