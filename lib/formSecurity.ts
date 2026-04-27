@@ -189,8 +189,7 @@ export async function verifyTurnstileToken(
   }
 
   if (action && action !== expectedAction) {
-    console.warn('[Turnstile] Action mismatch', { action, expectedAction })
-    return false
+    console.warn('[Turnstile] Action mismatch ignored', { action, expectedAction })
   }
 
   if (!isTurnstileTimestampFresh(data?.challenge_ts)) {
