@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { sql } from "@vercel/postgres";
+import { neon } from "@neondatabase/serverless";
 import {
   getCategoryVenueCards,
   poolPartyVenues,
@@ -28,6 +28,24 @@ export interface CategoryEventItem {
   eventHref: string;
   imagePath: string;
 }
+
+type CategoryEventRow = {
+  event_id: string;
+  venue_id: string;
+  event_title: string | null;
+  start_time: string | Date;
+  raw_data: Record<string, any> | null;
+};
+
+const getSql = () => {
+  const connectionString = process.env.POSTGRES_URL;
+
+  if (!connectionString) {
+    throw new Error("Missing POSTGRES_URL environment variable");
+  }
+
+  return neon(connectionString);
+};
 
 const CATEGORY_PRIORITY: Record<Exclude<CategoryEventsKey, "all">, number> = {
   "pool-parties": 0,
@@ -158,35 +176,20 @@ export function filterCategoryEventsForWindow(
   });
 }
 
-async function loadCategoryMonthEvents(category: CategoryEventsKey, monthKey: string) {
-  const venues = getCategoryVenueCards(category);
+function buildCategoryEventItems(
+  rows: CategoryEventRow[],
+  venues: CategoryVenueCard[],
+  manifest: FlyerManifestEntry[],
+  monthKey?: string
+) {
   const venueBySlug = new Map(venues.map((venue) => [venue.venueSlug, venue]));
-  const venueIds = venues.map((venue) => venue.venueSlug);
-  const manifest = await getFlyerManifest();
-  const { startIso, endIso } = buildMonthQueryRange(monthKey);
-
-  if (venueIds.length === 0) {
-    return [];
-  }
-
-  const result = await sql.query(
-    `
-      SELECT event_id, venue_id, event_title, start_time, raw_data
-      FROM events
-      WHERE venue_id = ANY($1::text[])
-        AND start_time >= $2
-        AND start_time < $3
-      ORDER BY start_time ASC, venue_id ASC
-    `,
-    [venueIds, startIso, endIso]
-  );
-
   const items: CategoryEventItem[] = [];
-  for (const row of result.rows) {
-    const venue = venueBySlug.get(String((row as any).venue_id));
+
+  for (const row of rows) {
+    const venue = venueBySlug.get(String(row.venue_id));
     if (!venue) continue;
 
-    const startTime = new Date((row as any).start_time);
+    const startTime = new Date(row.start_time);
     const formattedDate = new Intl.DateTimeFormat("en-US", {
       timeZone: "America/Los_Angeles",
       year: "numeric",
@@ -196,14 +199,14 @@ async function loadCategoryMonthEvents(category: CategoryEventsKey, monthKey: st
     const [monthStr, dayStr, yearStr] = formattedDate.split("/");
     const dateKey = `${yearStr}-${monthStr}-${dayStr}`;
 
-    if (!dateKey.startsWith(monthKey)) {
+    if (monthKey && !dateKey.startsWith(monthKey)) {
       continue;
     }
 
-    const eventName = String((row as any).event_title || "");
+    const eventName = String(row.event_title || "");
     const rawData =
-      (row as any).raw_data && typeof (row as any).raw_data === "object"
-        ? ((row as any).raw_data as Record<string, any>)
+      row.raw_data && typeof row.raw_data === "object"
+        ? row.raw_data
         : undefined;
     const eventCategory = poolPartyVenues.some((card) => card.venueSlug === venue.venueSlug)
       ? "pool-parties"
@@ -239,7 +242,7 @@ async function loadCategoryMonthEvents(category: CategoryEventsKey, monthKey: st
     const imagePath = flyerCandidates[0] || venue.img;
 
     items.push({
-      id: `${venue.venueSlug}:${(row as any).event_id}:${dateKey}`,
+      id: `${venue.venueSlug}:${row.event_id}:${dateKey}`,
       eventName,
       dateKey,
       dateString: startTime.toLocaleDateString("en-US", {
@@ -261,6 +264,29 @@ async function loadCategoryMonthEvents(category: CategoryEventsKey, monthKey: st
   }
 
   return sortCategoryEventItems(items);
+}
+
+async function loadCategoryMonthEvents(category: CategoryEventsKey, monthKey: string) {
+  const venues = getCategoryVenueCards(category);
+  const venueIds = venues.map((venue) => venue.venueSlug);
+  const manifest = await getFlyerManifest();
+  const { startIso, endIso } = buildMonthQueryRange(monthKey);
+
+  if (venueIds.length === 0) {
+    return [];
+  }
+
+  const sql = getSql();
+  const rows = await sql`
+    SELECT event_id, venue_id, event_title, start_time, raw_data
+    FROM events
+    WHERE venue_id = ANY(${venueIds})
+      AND start_time >= ${startIso}
+      AND start_time < ${endIso}
+    ORDER BY start_time ASC, venue_id ASC
+  ` as CategoryEventRow[];
+
+  return buildCategoryEventItems(rows, venues, manifest, monthKey);
 }
 
 export async function getCategoryMonthEvents(category: CategoryEventsKey, monthKey: string) {
@@ -278,99 +304,25 @@ export async function searchCategoryEvents(
   }
 
   const venues = getCategoryVenueCards(category);
-  const venueBySlug = new Map(venues.map((venue) => [venue.venueSlug, venue]));
   const venueIds = venues.map((venue) => venue.venueSlug);
   const manifest = await getFlyerManifest();
   const startDate = parseCategoryEventsDateKey(buildTodayDateKey());
 
-  const result = await sql.query(
-    `
-      SELECT event_id, venue_id, event_title, start_time, raw_data
-      FROM events
-      WHERE venue_id = ANY($1::text[])
-        AND start_time >= $2
-        AND event_title ILIKE $3
-      ORDER BY start_time ASC, venue_id ASC
-    `,
-    [venueIds, startDate.toISOString(), `%${trimmedQuery}%`]
-  );
-
-  const items: CategoryEventItem[] = [];
-
-  for (const row of result.rows) {
-    const venue = venueBySlug.get(String((row as any).venue_id));
-    if (!venue) continue;
-
-    const startTime = new Date((row as any).start_time);
-    const formattedDate = new Intl.DateTimeFormat("en-US", {
-      timeZone: "America/Los_Angeles",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }).format(startTime);
-    const [monthStr, dayStr, yearStr] = formattedDate.split("/");
-    const dateKey = `${yearStr}-${monthStr}-${dayStr}`;
-    const eventName = String((row as any).event_title || "");
-    const rawData =
-      (row as any).raw_data && typeof (row as any).raw_data === "object"
-        ? ((row as any).raw_data as Record<string, any>)
-        : undefined;
-    const eventCategory = poolPartyVenues.some((card) => card.venueSlug === venue.venueSlug)
-      ? "pool-parties"
-      : "nightclubs";
-    const displayTime = CATEGORY_DISPLAY_TIMES[eventCategory];
-    const flyerCandidates = buildFlyerCandidates(
-      manifest,
-      venue.venueSlug,
-      eventName,
-      dateKey,
-      isBooketingVenue(venue.venueSlug)
-        ? {
-            preferredPath:
-              typeof rawData?.flyerSourceUrl === "string" &&
-              rawData.flyerSourceUrl.trim()
-                ? rawData.flyerSourceUrl
-                : undefined,
-            fallbackPath:
-              typeof rawData?.flyerImagePath === "string" &&
-              rawData.flyerImagePath.trim()
-                ? rawData.flyerImagePath
-                : undefined,
-          }
-        : {
-            preferredPath:
-              typeof rawData?.flyerImagePath === "string" &&
-              rawData.flyerImagePath.trim()
-                ? rawData.flyerImagePath
-                : undefined,
-          }
-    );
-
-    const imagePath = flyerCandidates[0] || venue.img;
-
-    items.push({
-      id: `${venue.venueSlug}:${(row as any).event_id}:${dateKey}`,
-      eventName,
-      dateKey,
-      dateString: startTime.toLocaleDateString("en-US", {
-        timeZone: "America/Los_Angeles",
-        weekday: "long",
-        month: "long",
-        day: "numeric",
-      }),
-      timeLabel: displayTime.timeLabel,
-      timeSortKey: displayTime.timeSortKey,
-      category: eventCategory,
-      venueSlug: venue.venueSlug,
-      venueName: venue.name,
-      venueLocation: venue.venue,
-      venueHref: venue.href,
-      eventHref: buildEventHref(venue, eventName, dateKey),
-      imagePath,
-    });
+  if (venueIds.length === 0) {
+    return [];
   }
 
-  return sortCategoryEventItems(items);
+  const sql = getSql();
+  const rows = await sql`
+    SELECT event_id, venue_id, event_title, start_time, raw_data
+    FROM events
+    WHERE venue_id = ANY(${venueIds})
+      AND start_time >= ${startDate.toISOString()}
+      AND event_title ILIKE ${`%${trimmedQuery}%`}
+    ORDER BY start_time ASC, venue_id ASC
+  ` as CategoryEventRow[];
+
+  return buildCategoryEventItems(rows, venues, manifest);
 }
 
 export async function getCategoryEvents(
