@@ -9,6 +9,9 @@ import {
 } from "@/lib/categoryEvents";
 import type { CategoryEventsKey } from "@/lib/categoryVenueData";
 
+const CATEGORY_EVENTS_CACHE_CONTROL =
+  "public, s-maxage=300, stale-while-revalidate=3600";
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -37,15 +40,24 @@ export async function GET(request: NextRequest) {
         startDate: startDateParam,
         month: monthKey,
         query,
+        days: Number.isFinite(daysParam) ? daysParam : 3,
       },
       {
         headers: {
-          "Cache-Control": "no-store, max-age=0",
+          "Cache-Control": CATEGORY_EVENTS_CACHE_CONTROL,
         },
       }
     );
   } catch (error) {
     console.error("Category events API error:", error);
-    return NextResponse.json({ events: [] }, { status: 200 });
+    return NextResponse.json(
+      { events: [] },
+      {
+        status: 200,
+        headers: {
+          "Cache-Control": "no-store, max-age=0",
+        },
+      }
+    );
   }
 }
