@@ -7,6 +7,7 @@ import { BOOKETING_VENUE_SLUGS } from "@/lib/booketingClient";
 
 const ALLOWED_VENUES = new Set([...Object.keys(CALENDAR_IDS), ...BOOKETING_VENUE_SLUGS]);
 const MONTH_PATTERN = /^\d{4}-(0[1-9]|1[0-2])$/;
+const CALENDAR_CACHE_CONTROL = "public, s-maxage=300, stale-while-revalidate=3600";
 
 export async function GET(request: NextRequest) {
   try {
@@ -41,12 +42,17 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(events, {
       headers: {
-        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Cache-Control": CALENDAR_CACHE_CONTROL,
       },
     });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     console.error("[CALENDAR-API] Error:", errorMessage, error);
-    return NextResponse.json([], { status: 200 });
+    return NextResponse.json([], {
+      status: 200,
+      headers: {
+        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
+      },
+    });
   }
 }
