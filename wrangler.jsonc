@@ -2,7 +2,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "main": ".open-next/worker.js",
   "name": "nok-cf-migration",
-  "compatibility_date": "2026-04-26",
+  "compatibility_date": "2025-11-01",
   "compatibility_flags": [
     "nodejs_compat"
   ],
