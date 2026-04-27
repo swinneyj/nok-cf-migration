@@ -152,8 +152,8 @@ async function getVenueEventsWithSectionsFromDB(
 
       list.push({
         name: tier.tier_name,
-        price: tier.price,
-        capacity: tier.capacity,
+        price: tier.price ?? 0,
+        capacity: tier.capacity ?? 0,
         soldOut: Boolean(tier.sold_out),
       });
 
