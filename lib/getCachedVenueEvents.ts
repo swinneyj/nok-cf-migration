@@ -1,7 +1,6 @@
 import { sql } from "@vercel/postgres";
-import { getSectionsForEvent } from "@/lib/db/client";
 import { isBooketingVenue } from "@/lib/booketingClient";
-import { parseEventDescription, type ParsedEvent } from "@/lib/calendarParser";
+import { parseEventDescription, type EventSection, type ParsedEvent } from "@/lib/calendarParser";
 import { filterDisplayEvents } from "@/lib/eventDeduplication";
 
 export function clearEventCache() {
@@ -15,7 +14,7 @@ function isWeekdaySectionTitle(value: string) {
 }
 
 function shouldReparseSectionsFromDescription(
-  sections: Awaited<ReturnType<typeof getSectionsForEvent>>,
+  sections: EventSection[],
   rawDescription?: string
 ) {
   if (!sections.length) return false;
@@ -56,47 +55,97 @@ function hasUsableSections(value: unknown): value is ParsedEvent["sections"] {
   );
 }
 
-async function getMonthEventsFromDB(month: string) {
-  // Note: In-memory caching doesn't work reliably in serverless/distributed environment
-  // Each request might go to a different process instance, making cache invalidation unreliable
-  // Fetch fresh from database every time
-
+async function getVenueEventsWithSectionsFromDB(venue: string, month: string) {
   try {
     const [year, monthNum] = month.split("-");
     const yearNum = parseInt(year, 10);
     const monthIndex = parseInt(monthNum, 10) - 1;
 
-    // Query a wider range (previous month through next month) to handle timezone conversions
-    // This ensures we get all events that might display in this month when converted to LA time
     const queryStart = new Date(Date.UTC(yearNum, monthIndex - 1, 1, 0, 0, 0));
     const queryEnd = new Date(Date.UTC(yearNum, monthIndex + 2, 1, 0, 0, 0));
 
-    console.log(`[DB-QUERY] Fetching events for ${month}: ${queryStart.toISOString()} to ${queryEnd.toISOString()}`);
+    console.log(`[DB-QUERY] Fetching events for venue=${venue}, month=${month}: ${queryStart.toISOString()} to ${queryEnd.toISOString()}`);
 
-    const result = await sql`
+    const eventsResult = await sql`
       SELECT event_id, venue_id, event_title, event_description, start_time, calendar_id, raw_data
       FROM events
-      WHERE start_time >= ${queryStart.toISOString()}
+      WHERE venue_id = ${venue}
+        AND start_time >= ${queryStart.toISOString()}
         AND start_time < ${queryEnd.toISOString()}
-      ORDER BY venue_id, start_time
+      ORDER BY start_time
     `;
 
-    console.log(`[DB-QUERY] Found ${result.rows.length} total events for month ${month}`);
+    const events = eventsResult.rows;
+    console.log(`[DB-QUERY] Found ${events.length} events for venue=${venue}, month=${month}`);
 
-    // Group by venue
-    const eventsByVenue: Record<string, any[]> = {};
-    for (const row of result.rows) {
-      if (!eventsByVenue[row.venue_id]) {
-        eventsByVenue[row.venue_id] = [];
-      }
-      eventsByVenue[row.venue_id].push(row);
+    if (!events.length) {
+      return [];
     }
 
-    console.log(`[DB-QUERY] Grouped into ${Object.keys(eventsByVenue).length} venues:`, Object.keys(eventsByVenue));
-    return eventsByVenue;
+    const eventIds = events.map((event) => String(event.event_id));
+
+    const sectionsResult = await sql.query(
+      `
+        SELECT id, event_id, section_title, section_description, section_order
+        FROM event_sections
+        WHERE event_id = ANY($1::text[])
+        ORDER BY event_id, section_order ASC
+      `,
+      [eventIds]
+    );
+
+    const sectionIds = sectionsResult.rows.map((section) => Number((section as any).id));
+    const tiersBySectionId = new Map<number, EventSection["tiers"]>();
+
+    if (sectionIds.length) {
+      const tiersResult = await sql.query(
+        `
+          SELECT section_id, tier_name, price, capacity, sold_out, tier_order
+          FROM pricing_tiers
+          WHERE section_id = ANY($1::int[])
+          ORDER BY section_id, tier_order ASC
+        `,
+        [sectionIds]
+      );
+
+      for (const tier of tiersResult.rows) {
+        const sectionId = Number((tier as any).section_id);
+        const tiers = tiersBySectionId.get(sectionId) ?? [];
+
+        tiers.push({
+          name: (tier as any).tier_name,
+          price: (tier as any).price,
+          capacity: (tier as any).capacity,
+          soldOut: (tier as any).sold_out,
+        });
+
+        tiersBySectionId.set(sectionId, tiers);
+      }
+    }
+
+    const sectionsByEventId = new Map<string, EventSection[]>();
+
+    for (const section of sectionsResult.rows) {
+      const eventId = String((section as any).event_id);
+      const sectionId = Number((section as any).id);
+      const sections = sectionsByEventId.get(eventId) ?? [];
+
+      sections.push({
+        title: (section as any).section_title,
+        description: (section as any).section_description,
+        tiers: tiersBySectionId.get(sectionId) ?? [],
+      });
+
+      sectionsByEventId.set(eventId, sections);
+    }
+
+    return events.map((event) => ({
+      ...event,
+      sections: sectionsByEventId.get(String(event.event_id)) ?? [],
+    }));
   } catch (error) {
-    console.error(`Error fetching month events for ${month}:`, error);
-    return {};
+    console.error(`Error fetching venue events for ${venue} ${month}:`, error);
+    return [];
   }
 }
 
@@ -110,16 +159,13 @@ export async function getCachedVenueEvents(
 
   try {
     console.log(`[API] getCachedVenueEvents called: venue=${venue}, month=${month}`);
-    const eventsByVenue = await getMonthEventsFromDB(month);
-    console.log(`[API] eventsByVenue keys:`, Object.keys(eventsByVenue));
-    const venueEvents = eventsByVenue[venue] || [];
+    const venueEvents = await getVenueEventsWithSectionsFromDB(venue, month);
     console.log(`[API] venueEvents for ${venue}: ${venueEvents.length} events`);
 
-    // Transform database events to ParsedEvent format with sections/pricing
     const parsedEvents: ParsedEvent[] = [];
 
     for (const event of venueEvents) {
-      const startDate = new Date(event.start_time);
+      const startDate = new Date(event.start_time as string | Date);
       const rawData =
         event.raw_data && typeof event.raw_data === "object" ? event.raw_data : undefined;
       const source: ParsedEvent["source"] =
@@ -131,7 +177,6 @@ export async function getCachedVenueEvents(
               ? "booketing"
               : "google";
 
-      // Format dates in Las Vegas timezone (America/Los_Angeles)
       const laFormatter = new Intl.DateTimeFormat("en-US", {
         timeZone: "America/Los_Angeles",
         year: "numeric",
@@ -140,27 +185,21 @@ export async function getCachedVenueEvents(
       });
       const formattedDate = laFormatter.format(startDate);
       const [monthStr, dayStr, yearStr] = formattedDate.split("/");
-      const dateKey = `${yearStr}-${monthStr}-${dayStr}`; // Convert MM/DD/YYYY to YYYY-MM-DD
+      const dateKey = `${yearStr}-${monthStr}-${dayStr}`;
 
-      // Fetch sections and pricing tiers for this event
-      let sections = await getSectionsForEvent(event.event_id);
+      let sections = event.sections as EventSection[];
       const rawDescription =
         typeof event.event_description === "string" ? event.event_description : undefined;
 
-      // Booketing sync already stores parsed sections in raw_data. Prefer that payload
-      // whenever the normalized relational tables are empty so the page still renders
-      // even if a deployment is pointed at rows without matching event_sections.
       if (!sections.length && hasUsableSections(rawData?.sections)) {
         sections = rawData.sections;
       }
 
-      // Booketing-backed venues should always trust the Google description first at read time,
-      // so an empty or stale stored section set doesn't wipe out pricing on the page.
       if (rawDescription && rawDescription.trim() && isBooketingVenue(venue)) {
         const reparsed = parseEventDescription(
           rawDescription,
-          event.event_id,
-          event.event_title,
+          String(event.event_id),
+          String(event.event_title),
           startDate,
           dateKey
         );
@@ -174,8 +213,8 @@ export async function getCachedVenueEvents(
       ) {
         const reparsed = parseEventDescription(
           rawDescription,
-          event.event_id,
-          event.event_title,
+          String(event.event_id),
+          String(event.event_title),
           startDate,
           dateKey
         );
@@ -185,8 +224,8 @@ export async function getCachedVenueEvents(
       }
 
       const parsedEvent: ParsedEvent = {
-        id: event.event_id,
-        eventName: event.event_title,
+        id: String(event.event_id),
+        eventName: String(event.event_title),
         date: startDate,
         dateKey,
         dateString: startDate.toLocaleDateString("en-US", {
