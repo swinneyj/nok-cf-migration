@@ -1,7 +1,5 @@
 import type { Metadata } from 'next'
 import { Playfair_Display, DM_Sans } from 'next/font/google'
-import { Analytics } from '@vercel/analytics/next'
-import { SpeedInsights } from '@vercel/speed-insights/next'
 import { headers } from 'next/headers'
 import './globals.css'
 import Navbar from '@/components/Navbar'
@@ -166,8 +164,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <main>{children}</main>
         <Footer />
         <FloatingCTA />
-        <Analytics />
-        <SpeedInsights />
       </body>
     </html>
   )

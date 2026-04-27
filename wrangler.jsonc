@@ -2,10 +2,16 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "main": ".open-next/worker.js",
   "name": "nok-cf-migration",
-  "compatibility_date": "2026-04-26",
+  "compatibility_date": "2025-11-01",
   "compatibility_flags": [
     "nodejs_compat"
   ],
+  "vars": {
+    "NEXT_PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAAC_MxMyNojR3Pukd",
+    "TURNSTILE_ALLOWED_HOSTNAMES": "nok-cf-migration.sales-c25.workers.dev,nokturnallifestyle.com,www.nokturnallifestyle.com,staging.nokturnallifestyle.com",
+    "FORMSPREE_INQUIRY_FORM_ID": "mdayabrp",
+    "FORMSPREE_RESERVATION_FORM_ID": "mdayabrp"
+  },
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
