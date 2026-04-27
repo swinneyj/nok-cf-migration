@@ -169,7 +169,7 @@ async function getVenueEventsWithSectionsFromDB(
 
       list.push({
         title: section.section_title,
-        description: section.section_description,
+        description: section.section_description ?? undefined,
         tiers: tiersBySectionId.get(sectionId) ?? [],
       });
 
