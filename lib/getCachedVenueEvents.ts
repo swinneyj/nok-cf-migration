@@ -1,4 +1,4 @@
-import { sql } from "@vercel/postgres";
+import { neon } from "@neondatabase/serverless";
 import { isBooketingVenue } from "@/lib/booketingClient";
 import { parseEventDescription, type EventSection, type ParsedEvent } from "@/lib/calendarParser";
 import { filterDisplayEvents } from "@/lib/eventDeduplication";
@@ -15,6 +15,16 @@ type CachedDbEvent = {
 
 type CachedDbEventWithSections = CachedDbEvent & {
   sections: EventSection[];
+};
+
+const getSql = () => {
+  const connectionString = process.env.POSTGRES_URL;
+
+  if (!connectionString) {
+    throw new Error("Missing POSTGRES_URL environment variable");
+  }
+
+  return neon(connectionString);
 };
 
 export function clearEventCache() {
@@ -74,6 +84,7 @@ async function getVenueEventsWithSectionsFromDB(
   month: string
 ): Promise<CachedDbEventWithSections[]> {
   try {
+    const sql = getSql();
     const [year, monthNum] = month.split("-");
     const yearNum = parseInt(year, 10);
     const monthIndex = parseInt(monthNum, 10) - 1;
@@ -83,16 +94,15 @@ async function getVenueEventsWithSectionsFromDB(
 
     console.log(`[DB-QUERY] Fetching events for venue=${venue}, month=${month}: ${queryStart.toISOString()} to ${queryEnd.toISOString()}`);
 
-    const eventsResult = await sql`
+    const events = await sql`
       SELECT event_id, venue_id, event_title, event_description, start_time, calendar_id, raw_data
       FROM events
       WHERE venue_id = ${venue}
         AND start_time >= ${queryStart.toISOString()}
         AND start_time < ${queryEnd.toISOString()}
       ORDER BY start_time
-    `;
+    ` as CachedDbEvent[];
 
-    const events = eventsResult.rows as CachedDbEvent[];
     console.log(`[DB-QUERY] Found ${events.length} events for venue=${venue}, month=${month}`);
 
     if (!events.length) {
@@ -101,59 +111,69 @@ async function getVenueEventsWithSectionsFromDB(
 
     const eventIds = events.map((event) => String(event.event_id));
 
-    const sectionsResult = await sql.query(
-      `
-        SELECT id, event_id, section_title, section_description, section_order
-        FROM event_sections
-        WHERE event_id = ANY($1::text[])
-        ORDER BY event_id, section_order ASC
-      `,
-      [eventIds]
-    );
+    const sections = await sql`
+      SELECT id, event_id, section_title, section_description, section_order
+      FROM event_sections
+      WHERE event_id = ANY(${eventIds})
+      ORDER BY event_id, section_order ASC
+    ` as Array<{
+      id: number;
+      event_id: string;
+      section_title: string;
+      section_description: string | null;
+      section_order: number;
+    }>;
 
-    const sectionIds = sectionsResult.rows.map((section) => Number((section as any).id));
-    const tiersBySectionId = new Map<number, EventSection["tiers"]>();
+    const sectionIds = sections.map((section) => Number(section.id));
+
+    let tiers: Array<{
+      section_id: number;
+      tier_name: string;
+      price: number | null;
+      capacity: number | null;
+      sold_out: boolean | null;
+      tier_order: number;
+    }> = [];
 
     if (sectionIds.length) {
-      const tiersResult = await sql.query(
-        `
-          SELECT section_id, tier_name, price, capacity, sold_out, tier_order
-          FROM pricing_tiers
-          WHERE section_id = ANY($1::int[])
-          ORDER BY section_id, tier_order ASC
-        `,
-        [sectionIds]
-      );
+      tiers = await sql`
+        SELECT section_id, tier_name, price, capacity, sold_out, tier_order
+        FROM pricing_tiers
+        WHERE section_id = ANY(${sectionIds})
+        ORDER BY section_id, tier_order ASC
+      ` as typeof tiers;
+    }
 
-      for (const tier of tiersResult.rows) {
-        const sectionId = Number((tier as any).section_id);
-        const tiers = tiersBySectionId.get(sectionId) ?? [];
+    const tiersBySectionId = new Map<number, EventSection["tiers"]>();
 
-        tiers.push({
-          name: (tier as any).tier_name,
-          price: (tier as any).price,
-          capacity: (tier as any).capacity,
-          soldOut: (tier as any).sold_out,
-        });
+    for (const tier of tiers) {
+      const sectionId = Number(tier.section_id);
+      const list = tiersBySectionId.get(sectionId) ?? [];
 
-        tiersBySectionId.set(sectionId, tiers);
-      }
+      list.push({
+        name: tier.tier_name,
+        price: tier.price,
+        capacity: tier.capacity,
+        soldOut: Boolean(tier.sold_out),
+      });
+
+      tiersBySectionId.set(sectionId, list);
     }
 
     const sectionsByEventId = new Map<string, EventSection[]>();
 
-    for (const section of sectionsResult.rows) {
-      const eventId = String((section as any).event_id);
-      const sectionId = Number((section as any).id);
-      const sections = sectionsByEventId.get(eventId) ?? [];
+    for (const section of sections) {
+      const eventId = String(section.event_id);
+      const sectionId = Number(section.id);
+      const list = sectionsByEventId.get(eventId) ?? [];
 
-      sections.push({
-        title: (section as any).section_title,
-        description: (section as any).section_description,
+      list.push({
+        title: section.section_title,
+        description: section.section_description,
         tiers: tiersBySectionId.get(sectionId) ?? [],
       });
 
-      sectionsByEventId.set(eventId, sections);
+      sectionsByEventId.set(eventId, list);
     }
 
     return events.map((event) => ({
