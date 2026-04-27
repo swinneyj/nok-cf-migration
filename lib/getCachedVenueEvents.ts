@@ -3,6 +3,20 @@ import { isBooketingVenue } from "@/lib/booketingClient";
 import { parseEventDescription, type EventSection, type ParsedEvent } from "@/lib/calendarParser";
 import { filterDisplayEvents } from "@/lib/eventDeduplication";
 
+type CachedDbEvent = {
+  event_id: string;
+  venue_id: string;
+  event_title: string;
+  event_description: string | null;
+  start_time: string | Date;
+  calendar_id: string | null;
+  raw_data: Record<string, any> | null;
+};
+
+type CachedDbEventWithSections = CachedDbEvent & {
+  sections: EventSection[];
+};
+
 export function clearEventCache() {
   console.log('[CACHE] Cleared month data cache');
 }
@@ -55,7 +69,10 @@ function hasUsableSections(value: unknown): value is ParsedEvent["sections"] {
   );
 }
 
-async function getVenueEventsWithSectionsFromDB(venue: string, month: string) {
+async function getVenueEventsWithSectionsFromDB(
+  venue: string,
+  month: string
+): Promise<CachedDbEventWithSections[]> {
   try {
     const [year, monthNum] = month.split("-");
     const yearNum = parseInt(year, 10);
@@ -75,7 +92,7 @@ async function getVenueEventsWithSectionsFromDB(venue: string, month: string) {
       ORDER BY start_time
     `;
 
-    const events = eventsResult.rows;
+    const events = eventsResult.rows as CachedDbEvent[];
     console.log(`[DB-QUERY] Found ${events.length} events for venue=${venue}, month=${month}`);
 
     if (!events.length) {
@@ -165,7 +182,7 @@ export async function getCachedVenueEvents(
     const parsedEvents: ParsedEvent[] = [];
 
     for (const event of venueEvents) {
-      const startDate = new Date(event.start_time as string | Date);
+      const startDate = new Date(event.start_time);
       const rawData =
         event.raw_data && typeof event.raw_data === "object" ? event.raw_data : undefined;
       const source: ParsedEvent["source"] =
@@ -187,7 +204,7 @@ export async function getCachedVenueEvents(
       const [monthStr, dayStr, yearStr] = formattedDate.split("/");
       const dateKey = `${yearStr}-${monthStr}-${dayStr}`;
 
-      let sections = event.sections as EventSection[];
+      let sections = event.sections;
       const rawDescription =
         typeof event.event_description === "string" ? event.event_description : undefined;
 
