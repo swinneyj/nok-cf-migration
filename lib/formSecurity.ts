@@ -171,6 +171,11 @@ export async function verifyTurnstileToken(
   const data = await response.json()
 
   if (!data?.success) {
+    console.warn('[Turnstile] Verification failed', {
+      errorCodes: data?.['error-codes'],
+      hostname: data?.hostname,
+      action: data?.action,
+    })
     return false
   }
 
@@ -183,7 +188,7 @@ export async function verifyTurnstileToken(
     return false
   }
 
-  if (action !== expectedAction) {
+  if (action && action !== expectedAction) {
     console.warn('[Turnstile] Action mismatch', { action, expectedAction })
     return false
   }
