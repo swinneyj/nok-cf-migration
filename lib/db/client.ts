@@ -1,7 +1,7 @@
-import { sql } from '@vercel/postgres';
+import { neon } from '@neondatabase/serverless';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import type { EventSection, ParsedEvent } from '@/lib/calendarParser';
+import type { EventSection } from '@/lib/calendarParser';
 
 export interface Event {
   id: number;
@@ -20,13 +20,26 @@ export interface Event {
   raw_data?: Record<string, any>;
 }
 
+type QueryRow = Record<string, any>;
+
 let schemaEnsured = false;
+
+const getSql = () => {
+  const connectionString = process.env.POSTGRES_URL;
+
+  if (!connectionString) {
+    throw new Error('Missing POSTGRES_URL environment variable');
+  }
+
+  return neon(connectionString);
+};
 
 export async function ensureDatabaseSchema(): Promise<void> {
   if (schemaEnsured) {
     return;
   }
 
+  const sql = getSql();
   const schemaPath = path.join(process.cwd(), 'lib', 'db', 'schema.sql');
   const schema = await readFile(schemaPath, 'utf8');
   const statements = schema
@@ -35,21 +48,19 @@ export async function ensureDatabaseSchema(): Promise<void> {
     .filter(Boolean);
 
   for (const statement of statements) {
-    await sql.query(statement);
+    await sql.query(statement, []);
   }
 
   schemaEnsured = true;
 }
 
-/**
- * Get events for a single venue within a date range
- */
 export async function getEventsByVenueAndDateRange(
   venueId: string,
   startDate: Date,
   endDate: Date
 ): Promise<Event[]> {
-  const result = await sql`
+  const sql = getSql();
+  const rows = await sql`
     SELECT *
     FROM events
     WHERE venue_id = ${venueId}
@@ -58,23 +69,21 @@ export async function getEventsByVenueAndDateRange(
     ORDER BY start_time ASC
   `;
 
-  return result.rows as Event[];
+  return rows as Event[];
 }
 
 export async function getEventByEventId(eventId: string): Promise<Event | null> {
-  const result = await sql`
+  const sql = getSql();
+  const rows = await sql`
     SELECT *
     FROM events
     WHERE event_id = ${eventId}
     LIMIT 1
   `;
 
-  return (result.rows[0] as Event | undefined) ?? null;
+  return (rows[0] as Event | undefined) ?? null;
 }
 
-/**
- * Get events for multiple venues within a date range
- */
 export async function getEventsByMultipleVenues(
   venueIds: string[],
   startDate: Date,
@@ -84,14 +93,13 @@ export async function getEventsByMultipleVenues(
     return [];
   }
 
-  // Query venues with limited concurrency to avoid connection pool exhaustion
   const concurrencyLimit = 3;
   const allEvents: Event[] = [];
 
   for (let i = 0; i < venueIds.length; i += concurrencyLimit) {
     const batch = venueIds.slice(i, i + concurrencyLimit);
     const eventArrays = await Promise.all(
-      batch.map(venueId => getEventsByVenueAndDateRange(venueId, startDate, endDate))
+      batch.map((venueId) => getEventsByVenueAndDateRange(venueId, startDate, endDate))
     );
     allEvents.push(...eventArrays.flat());
   }
@@ -99,12 +107,11 @@ export async function getEventsByMultipleVenues(
   return allEvents;
 }
 
-/**
- * Insert or update an event (upsert)
- */
 export async function insertOrUpdateEvent(
   event: Omit<Event, 'id' | 'created_at' | 'updated_at' | 'synced_at'>
 ): Promise<void> {
+  const sql = getSql();
+
   await sql`
     INSERT INTO events (
       event_id, venue_id, venue_name, event_title, event_description,
@@ -136,34 +143,32 @@ export async function insertOrUpdateEvent(
   `;
 }
 
-/**
- * Store event sections and pricing tiers
- */
 export async function storeSectionsForEvent(
   eventId: string,
   sections: EventSection[]
 ): Promise<void> {
+  const sql = getSql();
+
   try {
-    // Delete existing sections for this event (CASCADE deletes tiers)
     await sql`DELETE FROM event_sections WHERE event_id = ${eventId}`;
 
-    // Insert each section and its tiers
     for (let sectionIndex = 0; sectionIndex < sections.length; sectionIndex++) {
       const section = sections[sectionIndex];
-      
-      // Insert section
-      const sectionResult = await sql`
+      const sectionRows = await sql`
         INSERT INTO event_sections (event_id, section_title, section_description, section_order)
         VALUES (${eventId}, ${section.title}, ${section.description || null}, ${sectionIndex})
         RETURNING id
       `;
-      
-      const sectionId = (sectionResult.rows[0] as any).id;
 
-      // Insert pricing tiers for this section
+      const sectionId = (sectionRows[0] as QueryRow | undefined)?.id;
+
+      if (!sectionId) {
+        throw new Error(`Failed to insert section for event ${eventId}`);
+      }
+
       for (let tierIndex = 0; tierIndex < section.tiers.length; tierIndex++) {
         const tier = section.tiers[tierIndex];
-        
+
         await sql`
           INSERT INTO pricing_tiers (section_id, tier_name, price, capacity, sold_out, tier_order)
           VALUES (${sectionId}, ${tier.name}, ${tier.price || null}, ${tier.capacity || null}, ${tier.soldOut || false}, ${tierIndex})
@@ -177,38 +182,37 @@ export async function storeSectionsForEvent(
   }
 }
 
-/**
- * Get sections and pricing tiers for an event
- */
 export async function getSectionsForEvent(eventId: string): Promise<EventSection[]> {
+  const sql = getSql();
+
   try {
-    const sectionResult = await sql`
+    const sectionRows = await sql`
       SELECT id, section_title, section_description, section_order
       FROM event_sections
       WHERE event_id = ${eventId}
       ORDER BY section_order ASC
     `;
 
-    console.log(`[DB] getSectionsForEvent("${eventId}") - found ${sectionResult.rows.length} sections`);
+    console.log(`[DB] getSectionsForEvent("${eventId}") - found ${sectionRows.length} sections`);
 
     const sections: EventSection[] = [];
 
-    for (const sectionRow of sectionResult.rows) {
-      const tierResult = await sql`
+    for (const sectionRow of sectionRows as QueryRow[]) {
+      const tierRows = await sql`
         SELECT tier_name, price, capacity, sold_out
         FROM pricing_tiers
-        WHERE section_id = ${(sectionRow as any).id}
+        WHERE section_id = ${sectionRow.id}
         ORDER BY tier_order ASC
       `;
 
       sections.push({
-        title: (sectionRow as any).section_title,
-        description: (sectionRow as any).section_description,
-        tiers: tierResult.rows.map(row => ({
-          name: (row as any).tier_name,
-          price: (row as any).price,
-          capacity: (row as any).capacity,
-          soldOut: (row as any).sold_out,
+        title: sectionRow.section_title,
+        description: sectionRow.section_description,
+        tiers: (tierRows as QueryRow[]).map((row) => ({
+          name: row.tier_name,
+          price: row.price,
+          capacity: row.capacity,
+          soldOut: row.sold_out,
         })),
       });
     }
@@ -221,15 +225,14 @@ export async function getSectionsForEvent(eventId: string): Promise<EventSection
   }
 }
 
-/**
- * Update sync status for a venue
- */
 export async function updateSyncStatus(
   venueId: string,
   success: boolean,
   eventCount?: number,
   error?: string
 ): Promise<void> {
+  const sql = getSql();
+
   await sql`
     INSERT INTO sync_status (venue_id, last_sync, last_sync_status, last_error)
     VALUES (
@@ -246,16 +249,15 @@ export async function updateSyncStatus(
   `;
 }
 
-/**
- * Delete events older than the specified date
- */
 export async function deleteOldEvents(beforeDate: Date): Promise<number> {
-  const result = await sql`
+  const sql = getSql();
+  const rows = await sql`
     DELETE FROM events
     WHERE start_time < ${beforeDate.toISOString()}
+    RETURNING id
   `;
 
-  return result.rowCount || 0;
+  return rows.length;
 }
 
 export async function deleteEventsForVenueOutsideIds(
@@ -264,43 +266,40 @@ export async function deleteEventsForVenueOutsideIds(
   endDate: Date,
   retainEventIds: string[]
 ): Promise<number> {
+  const sql = getSql();
+
   if (retainEventIds.length === 0) {
-    const result = await sql`
+    const rows = await sql`
       DELETE FROM events
       WHERE venue_id = ${venueId}
         AND start_time >= ${startDate.toISOString()}
         AND start_time < ${endDate.toISOString()}
+      RETURNING id
     `;
 
-    return result.rowCount || 0;
+    return rows.length;
   }
 
-  const result = await sql.query(
+  const rows = await sql.query(
     `
       DELETE FROM events
       WHERE venue_id = $1
         AND start_time >= $2
         AND start_time < $3
         AND NOT (event_id = ANY($4::text[]))
+      RETURNING id
     `,
-    [
-      venueId,
-      startDate.toISOString(),
-      endDate.toISOString(),
-      retainEventIds,
-    ]
+    [venueId, startDate.toISOString(), endDate.toISOString(), retainEventIds]
   );
 
-  return result.rowCount || 0;
+  return rows.length;
 }
 
-/**
- * Get sync status for a venue
- */
 export async function getSyncStatus(venueId: string) {
-  const result = await sql`
+  const sql = getSql();
+  const rows = await sql`
     SELECT * FROM sync_status WHERE venue_id = ${venueId}
   `;
 
-  return result.rows[0] || null;
+  return rows[0] || null;
 }
