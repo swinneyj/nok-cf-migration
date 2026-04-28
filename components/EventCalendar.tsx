@@ -11,11 +11,10 @@ interface Props {
   selectedEventId?: string;
 }
 
-// Helper to extract venue slug from URL path
 function getUrlPathSlug(): string {
   if (typeof window === "undefined") return "";
   const pathParts = window.location.pathname.split("/");
-  return pathParts[2] || ""; // /places/{slug}
+  return pathParts[2] || "";
 }
 
 function formatMonthKey(date: Date) {
@@ -85,15 +84,11 @@ function normalizeLabel(label: string) {
 }
 
 function getFlyerSources(imagePath?: string, sourceUrl?: string) {
-  const sources = [imagePath?.trim(), sourceUrl?.trim()].filter(
+  const directSources = [imagePath?.trim(), sourceUrl?.trim()].filter(
     (source): source is string => Boolean(source)
   );
-  const localWebpSource =
-    imagePath && imagePath.startsWith("/")
-      ? imagePath.replace(/\.(?:jpe?g|png)(?=$|\?)/i, ".webp")
-      : "";
 
-  return Array.from(new Set([localWebpSource, ...sources].filter(Boolean)));
+  return Array.from(new Set(directSources));
 }
 
 function isGenericEventName(eventName?: string) {
@@ -105,6 +100,21 @@ function isGenericEventName(eventName?: string) {
     normalized === "tba" ||
     normalized === "to be announced"
   );
+}
+
+function formatDesktopEventName(eventName: string, venueLabel: string) {
+  const splitName = eventName.split(/\s[-–—]\s/);
+  if (splitName.length < 2) return eventName;
+
+  const normalizedVenue = normalizeLabel(venueLabel);
+  const suffix = splitName[splitName.length - 1];
+  const normalizedSuffix = normalizeLabel(suffix);
+
+  if (!normalizedSuffix.includes(normalizedVenue)) {
+    return eventName;
+  }
+
+  return splitName.slice(0, -1).join(" - ");
 }
 
 function selectBestDayEvent(dayEvents: ParsedEvent[], venueLabel: string) {
@@ -136,21 +146,6 @@ function selectBestDayEvent(dayEvents: ParsedEvent[], venueLabel: string) {
   return bestEvent;
 }
 
-function formatDesktopEventName(eventName: string, venueLabel: string) {
-  const splitName = eventName.split(/\s[-–—]\s/);
-  if (splitName.length < 2) return eventName;
-
-  const normalizedVenue = normalizeLabel(venueLabel);
-  const suffix = splitName[splitName.length - 1];
-  const normalizedSuffix = normalizeLabel(suffix);
-
-  if (!normalizedSuffix.includes(normalizedVenue)) {
-    return eventName;
-  }
-
-  return splitName.slice(0, -1).join(" - ");
-}
-
 function CalendarFlyerImage({
   sources,
   alt,
@@ -173,11 +168,11 @@ function CalendarFlyerImage({
       src={src}
       alt={alt}
       fill
-      sizes="(min-width: 1024px) 148px, (min-width: 768px) 112px, 0px"
+      sizes="(min-width: 1280px) 160px, (min-width: 768px) 14vw, 0px"
       unoptimized={isRemoteSource}
       className="object-cover transition duration-300 group-hover:scale-[1.03]"
       onError={() => {
-        setSourceIndex((index) => Math.min(index + 1, sources.length));
+        setSourceIndex((index) => index + 1);
       }}
     />
   );
@@ -200,7 +195,6 @@ export default function EventCalendar({
   const [monthHasBeenLoaded, setMonthHasBeenLoaded] = useState(false);
   const [isDesktopCalendarView, setIsDesktopCalendarView] = useState(false);
 
-  // Track if we've already applied the initial dateParam
   const dateParamAppliedRef = useRef(false);
   const monthCacheRef = useRef(new Map<string, ParsedEvent[]>());
   const inflightRequestsRef = useRef(new Map<string, Promise<ParsedEvent[]>>());
@@ -266,11 +260,8 @@ export default function EventCalendar({
     return () => mediaQuery.removeListener(updateCalendarMode);
   }, []);
 
-  // Apply URL dateParam only once on initial load, then let manual navigation work freely
   useEffect(() => {
-    if (dateParamAppliedRef.current) {
-      return; // Already applied, don't interfere with manual month navigation
-    }
+    if (dateParamAppliedRef.current) return;
 
     if (!dateParam || !/^\d{4}-\d{2}-\d{2}$/.test(dateParam)) {
       return;
@@ -283,9 +274,8 @@ export default function EventCalendar({
     setHasSearchedForEvent(true);
     setMaxSearchMonth(null);
     dateParamAppliedRef.current = true;
-  }, [dateParam]); // Only depend on dateParam, NOT monthKey
+  }, [dateParam]);
 
-  // Auto-adjust month based on URL parameters (only on initial load)
   useEffect(() => {
     if (!hasSearchedForEvent && events.length > 0) {
       if (dateParam) {
@@ -293,45 +283,37 @@ export default function EventCalendar({
         return;
       }
 
-      // Only search if we have an event param and haven't found it in current month
       if (eventParam) {
-        const foundEvent = events.some(e => {
-          const eventSlug = e.eventName
+        const foundEvent = events.some((event) => {
+          const eventSlug = event.eventName
             .toLowerCase()
             .replace(/[^\w\s-]/g, "")
             .replace(/\s+/g, "-")
             .replace(/-+/g, "-")
             .replace(/^-|-$/g, "");
-          const dateMatches = !dateParam || e.dateKey === dateParam;
+          const dateMatches = !dateParam || event.dateKey === dateParam;
           return eventSlug === eventParam && dateMatches;
         });
 
         if (!foundEvent) {
-          // Event not found in current month, try next month
-          // but only if we haven't reached the max search month
           const nextMonth = new Date(visibleMonth);
           nextMonth.setMonth(nextMonth.getMonth() + 1);
 
-          // Set max search as 6 months ahead to prevent infinite searching
           if (!maxSearchMonth) {
             const maxMonth = new Date(visibleMonth);
             maxMonth.setMonth(maxMonth.getMonth() + 6);
             setMaxSearchMonth(maxMonth);
           }
 
-          // Only advance if we haven't exceeded the search limit
           if (!maxSearchMonth || nextMonth <= maxSearchMonth) {
             setVisibleMonth(nextMonth);
           } else {
-            // Reached max search, stop trying
             setHasSearchedForEvent(true);
           }
         } else {
-          // Found the event, stop searching
           setHasSearchedForEvent(true);
         }
       } else {
-        // No event param, so no need to search
         setHasSearchedForEvent(true);
       }
     }
@@ -363,10 +345,8 @@ export default function EventCalendar({
           setEvents(nextEvents);
           setMonthHasBeenLoaded(true);
 
-          // Only mark as searched if we actually got results or if no event param
           if (nextEvents.length === 0 && hasSearchedForEvent === false) {
             if (!eventParam) {
-              // No search needed, no events expected
               setHasSearchedForEvent(true);
             }
           }
@@ -389,7 +369,7 @@ export default function EventCalendar({
     return () => {
       cancelled = true;
     };
-  }, [venueSlug, monthKey, hasSearchedForEvent, eventParam, monthHasBeenLoaded]);
+  }, [venueSlug, monthKey, hasSearchedForEvent, eventParam]);
 
   useEffect(() => {
     const nextMonthKey = addMonthsToMonthKey(monthKey, 1);
@@ -403,11 +383,9 @@ export default function EventCalendar({
     });
   }, [monthKey, venueSlug]);
 
-  // Auto-select event from URL parameters
   useEffect(() => {
     if (events.length === 0 || selectedEventId) return;
 
-    // Extract venue slug from URL path
     const pathSlug = getUrlPathSlug();
     if (!pathSlug) return;
 
@@ -421,30 +399,26 @@ export default function EventCalendar({
         event?: string;
         date?: string;
       };
-      const eventParam = parsedParams.event;
+      const pendingEventParam = parsedParams.event;
       const pendingDate =
         parsedParams.date && /^\d{4}-\d{2}-\d{2}$/.test(parsedParams.date)
           ? parsedParams.date
           : null;
-      if (!eventParam) return;
+      if (!pendingEventParam) return;
 
-      // Try to find an event matching the event param (slug format)
-      // Since we don't have access to the original slug generation, we'll match by eventName
-      const matchingEvent = events.find((e) => {
-        const eventSlug = e.eventName
+      const matchingEvent = events.find((event) => {
+        const eventSlug = event.eventName
           .toLowerCase()
           .replace(/[^\w\s-]/g, "")
           .replace(/\s+/g, "-")
           .replace(/-+/g, "-")
           .replace(/^-|-$/g, "");
-        const dateMatches = !pendingDate || e.dateKey === pendingDate;
-        return eventSlug === eventParam && dateMatches;
+        const dateMatches = !pendingDate || event.dateKey === pendingDate;
+        return eventSlug === pendingEventParam && dateMatches;
       });
 
       if (matchingEvent) {
         onEventSelected(matchingEvent);
-        // Don't clear params yet - we still need section/table for StepSections
-        // Only clear event param, keep section/table for later
       }
     } catch (err) {
       console.error("Error auto-selecting event from URL:", err);
@@ -463,7 +437,6 @@ export default function EventCalendar({
   const year = visibleMonth.getFullYear();
   const monthIndex = visibleMonth.getMonth();
   const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
-  // Shift the grid to Monday-first: Monday = 0, Sunday = 6.
   const firstDayOfWeek = (new Date(year, monthIndex, 1).getDay() + 6) % 7;
 
   const calendarCells = [
@@ -484,13 +457,13 @@ export default function EventCalendar({
   const renderMobileCell = (
     day: number,
     isPastDate: boolean,
-    dayEvents: ParsedEvent[],
-    isToday: boolean
+    dayEvents: ParsedEvent[]
   ) => {
-    const hasEvents = dayEvents.length > 0;
+    const visibleDots = dayEvents.slice(0, 3);
+    const overflowCount = Math.max(0, dayEvents.length - visibleDots.length);
 
     return (
-      <div className="relative h-full">
+      <div className="relative flex h-full flex-col">
         <div
           className={`relative z-10 text-sm font-semibold ${
             isPastDate ? "text-gray-300" : "text-gray-700"
@@ -498,6 +471,25 @@ export default function EventCalendar({
         >
           {day}
         </div>
+        {dayEvents.length > 0 ? (
+          <div className="mt-auto flex items-center gap-1">
+            {visibleDots.map((event) => (
+              <button
+                key={event.id}
+                type="button"
+                onClick={(clickEvent) => {
+                  clickEvent.stopPropagation();
+                  onEventSelected(event);
+                }}
+                aria-label={`Select ${event.eventName}`}
+                className="h-2 w-2 rounded-full bg-purple-400 transition hover:scale-125 hover:bg-purple-600"
+              />
+            ))}
+            {overflowCount > 0 ? (
+              <span className="text-[10px] font-semibold text-purple-700">+{overflowCount}</span>
+            ) : null}
+          </div>
+        ) : null}
       </div>
     );
   };
@@ -525,18 +517,14 @@ export default function EventCalendar({
 
     if (!primaryEvent) {
       return (
-        <button
-          type="button"
-          className="group relative flex aspect-square w-full overflow-hidden rounded-lg border-2 border-gray-100 bg-gray-100/80 text-left text-gray-400 opacity-70 transition"
-        >
-          <div className="absolute inset-0 bg-gray-50" />
+        <div className="relative flex aspect-square w-full overflow-hidden rounded-lg border border-gray-100 bg-gray-50 text-left text-gray-400 opacity-70">
           <div className="relative z-10 flex h-full w-full flex-col justify-between p-2">
-            <div className="rounded-full bg-white/80 px-2 py-1 text-[10px] font-semibold tracking-[0.14em] text-gray-700">
+            <div className="rounded-full bg-white/80 px-2 py-1 text-[10px] font-semibold tracking-[0.14em] text-gray-500">
               {cellLabel}
             </div>
             <div className="text-sm font-semibold">{day}</div>
           </div>
-        </button>
+        </div>
       );
     }
 
@@ -552,10 +540,10 @@ export default function EventCalendar({
           isSelectedDay
             ? "border-purple-300 ring-2 ring-purple-300"
             : isToday
-            ? "border-purple-800 ring-2 ring-purple-300"
-            : hasEvents
-              ? "cursor-pointer border-purple-700 bg-purple-950 hover:border-purple-500 hover:shadow-lg"
-              : "border-gray-100 bg-gray-100/80 text-gray-400 opacity-70"
+              ? "border-purple-800 ring-2 ring-purple-300"
+              : hasEvents
+                ? "cursor-pointer border-purple-700 bg-purple-950 hover:border-purple-500 hover:shadow-lg"
+                : "border-gray-100 bg-gray-100/80 text-gray-400 opacity-70"
         }`}
       >
         {hasEvents && hasFlyer ? (
@@ -564,7 +552,7 @@ export default function EventCalendar({
               sources={flyerSources}
               alt={`${primaryEvent.eventName} flyer`}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/15" />
           </>
         ) : (
           <div
@@ -580,37 +568,47 @@ export default function EventCalendar({
 
         <div className="relative z-10 flex h-full w-full flex-col justify-between p-2">
           <div className="flex items-start justify-between gap-2">
-            <div className={`rounded-full px-2 py-1 text-[10px] font-semibold tracking-[0.14em] ${
-              hasEvents && hasFlyer
-                ? "bg-black/40 text-white backdrop-blur-sm"
-                : "bg-white/80 text-gray-700"
-            }`}>
+            <div
+              className={`rounded-full px-2 py-1 text-[10px] font-semibold tracking-[0.14em] ${
+                hasEvents && hasFlyer
+                  ? "bg-black/40 text-white backdrop-blur-sm"
+                  : "bg-white/80 text-gray-700"
+              }`}
+            >
               {cellLabel}
             </div>
 
-            {dayEvents.length > 1 && (
+            {dayEvents.length > 1 ? (
               <div className="rounded-full bg-black/50 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur-sm">
                 +{dayEvents.length - 1}
               </div>
-            )}
+            ) : null}
           </div>
 
           <div>
-            <div className={`text-sm font-semibold ${hasEvents && hasFlyer ? "text-white/90" : "text-gray-700"}`}>
+            <div
+              className={`text-sm font-semibold ${
+                hasEvents && hasFlyer ? "text-white/90" : "text-gray-700"
+              }`}
+            >
               {day}
             </div>
-            {hasEvents ? (
-              <div className="mt-1">
-                <div className={`text-[11px] font-medium ${hasEvents && hasFlyer ? "text-white/80" : "text-gray-500"}`}>
-                  {primaryEvent.timeLabel || "Event"}
-                </div>
-                <div className={`line-clamp-2 text-sm font-bold leading-tight ${hasEvents && hasFlyer ? "text-white" : "text-gray-800"}`}>
-                  {desktopEventName || primaryEvent.eventName}
-                </div>
+            <div className="mt-1">
+              <div
+                className={`text-[11px] font-medium ${
+                  hasEvents && hasFlyer ? "text-white/80" : "text-gray-500"
+                }`}
+              >
+                {primaryEvent.timeLabel || "Event"}
               </div>
-            ) : (
-              null
-            )}
+              <div
+                className={`line-clamp-2 text-sm font-bold leading-tight ${
+                  hasEvents && hasFlyer ? "text-white" : "text-gray-800"
+                }`}
+              >
+                {desktopEventName || primaryEvent.eventName}
+              </div>
+            </div>
           </div>
         </div>
       </button>
@@ -678,32 +676,32 @@ export default function EventCalendar({
 
                 const dateKey = formatDateKey(year, monthIndex, day);
                 const isPastDate = dateKey < todayKey;
-                const dayEvents = isPastDate ? [] : (eventsByDate[dateKey] || []);
+                const dayEvents = isPastDate ? [] : eventsByDate[dateKey] || [];
                 const isToday = dateKey === todayKey;
                 const isSelectedDay = dayEvents.some((event) => event.id === selectedEventId);
 
                 return (
                   <div key={dateKey} className="aspect-square w-full">
-                    {isDesktopCalendarView
-                      ? renderDesktopCell(dateKey, day, dayEvents, isPastDate, isToday, isSelectedDay)
-                      : (
-                        <div
-                          onClick={() => {
-                            if (dayEvents.length > 0) onEventSelected(dayEvents[0]);
-                          }}
-                          className={`h-full w-full rounded-lg border-2 p-2 transition ${
-                            isSelectedDay
-                              ? "border-purple-300 ring-2 ring-purple-300 bg-purple-50"
+                    {isDesktopCalendarView ? (
+                      renderDesktopCell(dateKey, day, dayEvents, isPastDate, isToday, isSelectedDay)
+                    ) : (
+                      <div
+                        onClick={() => {
+                          if (dayEvents.length > 0) onEventSelected(dayEvents[0]);
+                        }}
+                        className={`h-full w-full rounded-lg border-2 p-2 transition ${
+                          isSelectedDay
+                            ? "border-purple-300 bg-purple-50 ring-2 ring-purple-300"
                             : isToday
-                              ? "border-purple-800 ring-2 ring-purple-300 bg-white"
+                              ? "border-purple-800 bg-white ring-2 ring-purple-300"
                               : dayEvents.length > 0
                                 ? "cursor-pointer border-purple-700 bg-purple-50 hover:bg-purple-100"
                                 : "border-gray-100 bg-gray-100/80 opacity-60"
-                          }`}
-                        >
-                          {renderMobileCell(day, isPastDate, dayEvents, isToday)}
-                        </div>
-                      )}
+                        }`}
+                      >
+                        {renderMobileCell(day, isPastDate, dayEvents)}
+                      </div>
+                    )}
                   </div>
                 );
               })}
