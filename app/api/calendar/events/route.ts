@@ -11,7 +11,8 @@ const CALENDAR_CACHE_CONTROL = "public, s-maxage=300, stale-while-revalidate=360
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    const url = new URL(request.url);
+    const { searchParams } = url;
     const venue = searchParams.get("venue")?.trim();
     const month = searchParams.get("month")?.trim() || null;
 
@@ -37,7 +38,7 @@ export async function GET(request: NextRequest) {
     }
 
     console.log(`[CALENDAR-API] Fetching events for venue=${venue}, month=${month}`);
-    const events = await getCachedVenueEvents(venue, month);
+    const events = await getCachedVenueEvents(venue, month, url.origin);
     console.log(`[CALENDAR-API] Got ${events.length} events from getCachedVenueEvents`);
 
     return NextResponse.json(events, {
