@@ -2,8 +2,6 @@ import { neon } from "@neondatabase/serverless";
 import { isBooketingVenue } from "@/lib/booketingClient";
 import { parseEventDescription, type EventSection, type ParsedEvent } from "@/lib/calendarParser";
 import { filterDisplayEvents } from "@/lib/eventDeduplication";
-import fs from "node:fs";
-import path from "node:path";
 import { findBestFlyerEntry, type FlyerManifestEntry } from "@/lib/flyerMatching";
 
 type CachedDbEvent = {
@@ -83,15 +81,31 @@ function hasUsableSections(value: unknown): value is ParsedEvent["sections"] {
 }
 
 let flyerManifestCache: FlyerManifestEntry[] | null = null;
+let flyerManifestOrigin: string | null = null;
 
-function getFlyerManifest() {
-  if (flyerManifestCache) {
+async function getFlyerManifest(origin?: string) {
+  if (flyerManifestCache && flyerManifestOrigin === origin) {
+    return flyerManifestCache;
+  }
+
+  if (!origin) {
+    flyerManifestCache = [];
+    flyerManifestOrigin = origin ?? null;
     return flyerManifestCache;
   }
 
   try {
-    const manifestPath = path.join(process.cwd(), "public", "event-flyers", "manifest.json");
-    const parsed = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+    const manifestUrl = new URL("/event-flyers/manifest.json", origin).toString();
+    const response = await fetch(manifestUrl, {
+      headers: { accept: "application/json" },
+      cache: "force-cache",
+    });
+
+    if (!response.ok) {
+      throw new Error(`Manifest request failed: ${response.status}`);
+    }
+
+    const parsed = await response.json();
 
     flyerManifestCache = Array.isArray(parsed)
       ? parsed.filter(
@@ -104,9 +118,11 @@ function getFlyerManifest() {
             typeof entry.imagePath === "string"
         )
       : [];
+    flyerManifestOrigin = origin;
   } catch (error) {
-    console.warn("[FLYERS] Unable to load flyer manifest:", error);
+    console.warn("[FLYERS] Unable to fetch flyer manifest:", error);
     flyerManifestCache = [];
+    flyerManifestOrigin = origin;
   }
 
   return flyerManifestCache;
@@ -124,8 +140,12 @@ function addDaysToDateKey(dateKey: string, days: number) {
   ].join("-");
 }
 
-function findEventFlyer(venue: string, eventName: string, dateKey: string) {
-  const manifest = getFlyerManifest();
+function findEventFlyer(
+  manifest: FlyerManifestEntry[],
+  venue: string,
+  eventName: string,
+  dateKey: string
+) {
   const candidateDateKeys = [dateKey, addDaysToDateKey(dateKey, -1), addDaysToDateKey(dateKey, 1)];
 
   for (const candidateDateKey of candidateDateKeys) {
@@ -247,7 +267,8 @@ async function getVenueEventsWithSectionsFromDB(
 
 export async function getCachedVenueEvents(
   venue: string,
-  month: string | null
+  month: string | null,
+  origin?: string
 ): Promise<ParsedEvent[]> {
   if (!month) {
     return [];
@@ -255,7 +276,10 @@ export async function getCachedVenueEvents(
 
   try {
     console.log(`[API] getCachedVenueEvents called: venue=${venue}, month=${month}`);
-    const venueEvents = await getVenueEventsWithSectionsFromDB(venue, month);
+    const [venueEvents, flyerManifest] = await Promise.all([
+      getVenueEventsWithSectionsFromDB(venue, month),
+      getFlyerManifest(origin),
+    ]);
     console.log(`[API] venueEvents for ${venue}: ${venueEvents.length} events`);
 
     const parsedEvents: ParsedEvent[] = [];
@@ -320,6 +344,7 @@ export async function getCachedVenueEvents(
       }
 
       const matchedFlyer = findEventFlyer(
+        flyerManifest,
         venue,
         String(event.event_title),
         dateKey
