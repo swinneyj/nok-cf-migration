@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = url;
     const venue = searchParams.get("venue")?.trim();
     const month = searchParams.get("month")?.trim() || null;
+    const debugFlyers = searchParams.get("debugFlyers") === "1";
 
     if (!venue) {
       return NextResponse.json(
@@ -38,8 +39,24 @@ export async function GET(request: NextRequest) {
     }
 
     console.log(`[CALENDAR-API] Fetching events for venue=${venue}, month=${month}`);
-    const events = await getCachedVenueEvents(venue, month, url.origin);
+    const events = await getCachedVenueEvents(venue, month, url.origin, {
+      debugFlyers,
+    });
     console.log(`[CALENDAR-API] Got ${events.length} events from getCachedVenueEvents`);
+
+    if (debugFlyers) {
+      return NextResponse.json(
+        {
+          debug: events.debugFlyers,
+          events,
+        },
+        {
+          headers: {
+            "Cache-Control": "no-store",
+          },
+        }
+      );
+    }
 
     return NextResponse.json(events, {
       headers: {

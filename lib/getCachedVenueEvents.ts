@@ -18,6 +18,44 @@ type CachedDbEventWithSections = CachedDbEvent & {
   sections: EventSection[];
 };
 
+type FlyerManifestLoadResult = {
+  entries: FlyerManifestEntry[];
+  loaded: boolean;
+  url?: string;
+  status?: number;
+  error?: string;
+};
+
+type FlyerMatchProbe = {
+  eventName: string;
+  dateKey: string;
+  candidateDateKeys: string[];
+  sameVenueCount: number;
+  sameDateCounts: Record<string, number>;
+  matchedImagePath: string | null;
+  matchedSourceUrl: string | null;
+};
+
+type FlyerDebugInfo = {
+  origin?: string;
+  manifestUrl?: string;
+  manifestLoaded: boolean;
+  manifestStatus?: number;
+  manifestError?: string;
+  manifestCount: number;
+  sameVenueCount: number;
+  rawEventCount: number;
+  parsedEventCount: number;
+  filteredEventCount: number;
+  firstEventProbe: FlyerMatchProbe | null;
+  firstRawFlyerImagePath: string | null;
+  firstFilteredFlyerImagePath: string | null;
+};
+
+type ParsedEventsWithDebug = ParsedEvent[] & {
+  debugFlyers?: FlyerDebugInfo;
+};
+
 const getSql = () => {
   const connectionString = process.env.POSTGRES_URL;
 
@@ -80,52 +118,72 @@ function hasUsableSections(value: unknown): value is ParsedEvent["sections"] {
   );
 }
 
-let flyerManifestCache: FlyerManifestEntry[] | null = null;
-let flyerManifestOrigin: string | null = null;
+const flyerManifestCache = new Map<string, FlyerManifestLoadResult>();
 
-async function getFlyerManifest(origin?: string) {
-  if (flyerManifestCache && flyerManifestOrigin === origin) {
-    return flyerManifestCache;
-  }
+function isFlyerManifestEntry(entry: unknown): entry is FlyerManifestEntry {
+  return (
+    Boolean(entry) &&
+    typeof entry === "object" &&
+    typeof (entry as FlyerManifestEntry).venueSlug === "string" &&
+    typeof (entry as FlyerManifestEntry).eventName === "string" &&
+    typeof (entry as FlyerManifestEntry).date === "string" &&
+    typeof (entry as FlyerManifestEntry).imagePath === "string"
+  );
+}
 
+async function getFlyerManifest(origin?: string): Promise<FlyerManifestLoadResult> {
   if (!origin) {
-    flyerManifestCache = [];
-    flyerManifestOrigin = origin ?? null;
-    return flyerManifestCache;
+    return {
+      entries: [],
+      loaded: false,
+      error: "Missing request origin",
+    };
   }
 
   try {
     const manifestUrl = new URL("/event-flyers/manifest.json", origin).toString();
+    const cached = flyerManifestCache.get(manifestUrl);
+    if (cached) {
+      return cached;
+    }
+
     const response = await fetch(manifestUrl, {
       headers: { accept: "application/json" },
       cache: "force-cache",
     });
 
     if (!response.ok) {
-      throw new Error(`Manifest request failed: ${response.status}`);
+      const result = {
+        entries: [],
+        loaded: false,
+        url: manifestUrl,
+        status: response.status,
+        error: `Manifest request failed with status ${response.status}`,
+      };
+      flyerManifestCache.set(manifestUrl, result);
+      return result;
     }
 
-    const parsed = await response.json();
+    const parsed: unknown = await response.json();
+    const result = {
+      entries: Array.isArray(parsed) ? parsed.filter(isFlyerManifestEntry) : [],
+      loaded: true,
+      url: manifestUrl,
+      status: response.status,
+    };
 
-    flyerManifestCache = Array.isArray(parsed)
-      ? parsed.filter(
-          (entry): entry is FlyerManifestEntry =>
-            Boolean(entry) &&
-            typeof entry === "object" &&
-            typeof entry.venueSlug === "string" &&
-            typeof entry.eventName === "string" &&
-            typeof entry.date === "string" &&
-            typeof entry.imagePath === "string"
-        )
-      : [];
-    flyerManifestOrigin = origin;
+    flyerManifestCache.set(manifestUrl, result);
+    return result;
   } catch (error) {
-    console.warn("[FLYERS] Unable to fetch flyer manifest:", error);
-    flyerManifestCache = [];
-    flyerManifestOrigin = origin;
-  }
+    const message = error instanceof Error ? error.message : String(error);
 
-  return flyerManifestCache;
+    console.warn("[FLYERS] Unable to load flyer manifest:", error);
+    return {
+      entries: [],
+      loaded: false,
+      error: message,
+    };
+  }
 }
 
 function addDaysToDateKey(dateKey: string, days: number) {
@@ -140,13 +198,17 @@ function addDaysToDateKey(dateKey: string, days: number) {
   ].join("-");
 }
 
+function getCandidateDateKeys(dateKey: string) {
+  return [dateKey, addDaysToDateKey(dateKey, -1), addDaysToDateKey(dateKey, 1)];
+}
+
 function findEventFlyer(
   manifest: FlyerManifestEntry[],
   venue: string,
   eventName: string,
   dateKey: string
 ) {
-  const candidateDateKeys = [dateKey, addDaysToDateKey(dateKey, -1), addDaysToDateKey(dateKey, 1)];
+  const candidateDateKeys = getCandidateDateKeys(dateKey);
 
   for (const candidateDateKey of candidateDateKeys) {
     const match = findBestFlyerEntry(manifest, venue, eventName, candidateDateKey);
@@ -156,6 +218,35 @@ function findEventFlyer(
   }
 
   return null;
+}
+
+function buildFlyerMatchProbe(
+  manifest: FlyerManifestEntry[],
+  venue: string,
+  eventName: string,
+  dateKey: string,
+  matchedFlyer: FlyerManifestEntry | null
+): FlyerMatchProbe {
+  const candidateDateKeys = getCandidateDateKeys(dateKey);
+  const sameDateCounts = candidateDateKeys.reduce<Record<string, number>>(
+    (counts, candidateDateKey) => {
+      counts[candidateDateKey] = manifest.filter(
+        (entry) => entry.venueSlug === venue && entry.date === candidateDateKey
+      ).length;
+      return counts;
+    },
+    {}
+  );
+
+  return {
+    eventName,
+    dateKey,
+    candidateDateKeys,
+    sameVenueCount: manifest.filter((entry) => entry.venueSlug === venue).length,
+    sameDateCounts,
+    matchedImagePath: matchedFlyer?.imagePath ?? null,
+    matchedSourceUrl: matchedFlyer?.sourceUrl ?? null,
+  };
 }
 
 async function getVenueEventsWithSectionsFromDB(
@@ -268,21 +359,23 @@ async function getVenueEventsWithSectionsFromDB(
 export async function getCachedVenueEvents(
   venue: string,
   month: string | null,
-  origin?: string
-): Promise<ParsedEvent[]> {
+  origin?: string,
+  options: { debugFlyers?: boolean } = {}
+): Promise<ParsedEventsWithDebug> {
   if (!month) {
     return [];
   }
 
   try {
     console.log(`[API] getCachedVenueEvents called: venue=${venue}, month=${month}`);
-    const [venueEvents, flyerManifest] = await Promise.all([
+    const [venueEvents, flyerManifestResult] = await Promise.all([
       getVenueEventsWithSectionsFromDB(venue, month),
       getFlyerManifest(origin),
     ]);
     console.log(`[API] venueEvents for ${venue}: ${venueEvents.length} events`);
 
     const parsedEvents: ParsedEvent[] = [];
+    let firstEventProbe: FlyerMatchProbe | null = null;
 
     for (const event of venueEvents) {
       const startDate = new Date(event.start_time);
@@ -344,11 +437,21 @@ export async function getCachedVenueEvents(
       }
 
       const matchedFlyer = findEventFlyer(
-        flyerManifest,
+        flyerManifestResult.entries,
         venue,
         String(event.event_title),
         dateKey
       );
+
+      if (!firstEventProbe) {
+        firstEventProbe = buildFlyerMatchProbe(
+          flyerManifestResult.entries,
+          venue,
+          String(event.event_title),
+          dateKey,
+          matchedFlyer
+        );
+      }
 
       const parsedEvent: ParsedEvent = {
         id: String(event.event_id),
@@ -392,7 +495,28 @@ export async function getCachedVenueEvents(
       }
     }
 
-    return filterDisplayEvents(parsedEvents);
+    const filteredEvents = filterDisplayEvents(parsedEvents) as ParsedEventsWithDebug;
+
+    if (options.debugFlyers) {
+      filteredEvents.debugFlyers = {
+        origin,
+        manifestUrl: flyerManifestResult.url,
+        manifestLoaded: flyerManifestResult.loaded,
+        manifestStatus: flyerManifestResult.status,
+        manifestError: flyerManifestResult.error,
+        manifestCount: flyerManifestResult.entries.length,
+        sameVenueCount: flyerManifestResult.entries.filter((entry) => entry.venueSlug === venue)
+          .length,
+        rawEventCount: venueEvents.length,
+        parsedEventCount: parsedEvents.length,
+        filteredEventCount: filteredEvents.length,
+        firstEventProbe,
+        firstRawFlyerImagePath: parsedEvents[0]?.flyerImagePath ?? null,
+        firstFilteredFlyerImagePath: filteredEvents[0]?.flyerImagePath ?? null,
+      };
+    }
+
+    return filteredEvents;
   } catch (error) {
     console.error(
       `Error in getCachedVenueEvents for ${venue} ${month}:`,
