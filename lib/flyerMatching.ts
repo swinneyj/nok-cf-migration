@@ -18,10 +18,39 @@ function slugify(value: string) {
     .replace(/^-|-$/g, "");
 }
 
+function stripVenueSuffix(value: string) {
+  const original = String(value || "").trim();
+  const parts = original.split(/\s+[-–—|•]\s+/);
+
+  if (parts.length <= 1) {
+    return original;
+  }
+
+  const suffix = parts[parts.length - 1].toLowerCase();
+  const looksLikeVenue =
+    suffix.includes("nightclub") ||
+    suffix.includes("dayclub") ||
+    suffix.includes("beach club") ||
+    suffix.includes("pool") ||
+    suffix.includes("xs") ||
+    suffix.includes("drai") ||
+    suffix.includes("ebc") ||
+    suffix.includes("omnia") ||
+    suffix.includes("hakkasan") ||
+    suffix.includes("tao") ||
+    suffix.includes("marquee") ||
+    suffix.includes("zouk") ||
+    suffix.includes("liv") ||
+    suffix.includes("ayu");
+
+  return looksLikeVenue ? parts.slice(0, -1).join(" - ").trim() : original;
+}
+
 export function normalizeEventName(value: string) {
-  return String(value || "")
+  return stripVenueSuffix(value)
     .replace(/\s+/g, " ")
-    .replace(/\b(guest list|tickets|vip tables|table service)\b/gi, "")
+    .replace(/\b(guest list|tickets|vip tables|table service|bottle service)\b/gi, "")
+    .replace(/\b(special guest dj set|special guest|dj set)\b/gi, "")
     .replace(/\s*[|•].*$/g, "")
     .trim();
 }
@@ -35,17 +64,16 @@ function scoreFlyerMatch(entry: FlyerManifestEntry, targetSlug: string) {
   }
 
   if (entrySlug === targetSlug) {
-    score += 30;
+    score += 60;
   } else if (entrySlug.includes(targetSlug) || targetSlug.includes(entrySlug)) {
-    score += 18;
+    score += 35;
   }
 
   const entryWords = new Set(entrySlug.split("-").filter(Boolean));
   const targetWords = targetSlug.split("-").filter(Boolean);
   const overlap = targetWords.filter((word) => entryWords.has(word)).length;
-  score += overlap * 3;
+  score += overlap * 8;
 
-  // Prefer more specific flyers when multiple same-day entries compete.
   score += Math.min(6, Math.max(0, entryWords.size - 2));
 
   return score;
@@ -78,12 +106,11 @@ export function findBestFlyerEntry(
     }
 
     if (score === bestScore && bestEntry) {
-      // Keep the later entry on ties so a refreshed manifest wins.
       bestEntry = entry;
     }
   }
 
-  return bestScore > 0 ? bestEntry : null;
+  return bestScore >= 8 ? bestEntry : null;
 }
 
 export function buildFlyerCandidates(
