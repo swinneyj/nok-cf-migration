@@ -2,6 +2,9 @@ import { neon } from "@neondatabase/serverless";
 import { isBooketingVenue } from "@/lib/booketingClient";
 import { parseEventDescription, type EventSection, type ParsedEvent } from "@/lib/calendarParser";
 import { filterDisplayEvents } from "@/lib/eventDeduplication";
+import fs from "node:fs";
+import path from "node:path";
+import { findBestFlyerEntry, type FlyerManifestEntry } from "@/lib/flyerMatching";
 
 type CachedDbEvent = {
   event_id: string;
@@ -77,6 +80,62 @@ function hasUsableSections(value: unknown): value is ParsedEvent["sections"] {
         (section as { tiers: unknown[] }).tiers.length > 0
     )
   );
+}
+
+let flyerManifestCache: FlyerManifestEntry[] | null = null;
+
+function getFlyerManifest() {
+  if (flyerManifestCache) {
+    return flyerManifestCache;
+  }
+
+  try {
+    const manifestPath = path.join(process.cwd(), "public", "event-flyers", "manifest.json");
+    const parsed = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+
+    flyerManifestCache = Array.isArray(parsed)
+      ? parsed.filter(
+          (entry): entry is FlyerManifestEntry =>
+            Boolean(entry) &&
+            typeof entry === "object" &&
+            typeof entry.venueSlug === "string" &&
+            typeof entry.eventName === "string" &&
+            typeof entry.date === "string" &&
+            typeof entry.imagePath === "string"
+        )
+      : [];
+  } catch (error) {
+    console.warn("[FLYERS] Unable to load flyer manifest:", error);
+    flyerManifestCache = [];
+  }
+
+  return flyerManifestCache;
+}
+
+function addDaysToDateKey(dateKey: string, days: number) {
+  const [year, month, day] = dateKey.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  date.setUTCDate(date.getUTCDate() + days);
+
+  return [
+    date.getUTCFullYear(),
+    String(date.getUTCMonth() + 1).padStart(2, "0"),
+    String(date.getUTCDate()).padStart(2, "0"),
+  ].join("-");
+}
+
+function findEventFlyer(venue: string, eventName: string, dateKey: string) {
+  const manifest = getFlyerManifest();
+  const candidateDateKeys = [dateKey, addDaysToDateKey(dateKey, -1), addDaysToDateKey(dateKey, 1)];
+
+  for (const candidateDateKey of candidateDateKeys) {
+    const match = findBestFlyerEntry(manifest, venue, eventName, candidateDateKey);
+    if (match) {
+      return match;
+    }
+  }
+
+  return null;
 }
 
 async function getVenueEventsWithSectionsFromDB(
@@ -260,6 +319,12 @@ export async function getCachedVenueEvents(
         }
       }
 
+      const matchedFlyer = findEventFlyer(
+        venue,
+        String(event.event_title),
+        dateKey
+      );
+
       const parsedEvent: ParsedEvent = {
         id: String(event.event_id),
         eventName: String(event.event_title),
@@ -282,13 +347,13 @@ export async function getCachedVenueEvents(
             ? rawData.rawDescription
             : undefined,
         flyerImagePath:
-          typeof rawData?.flyerImagePath === "string"
+          typeof rawData?.flyerImagePath === "string" && rawData.flyerImagePath.trim()
             ? rawData.flyerImagePath
-            : undefined,
+            : matchedFlyer?.imagePath,
         flyerSourceUrl:
-          typeof rawData?.flyerSourceUrl === "string"
+          typeof rawData?.flyerSourceUrl === "string" && rawData.flyerSourceUrl.trim()
             ? rawData.flyerSourceUrl
-            : undefined,
+            : matchedFlyer?.sourceUrl,
         pricingNote:
           typeof rawData?.pricingNote === "string" ? rawData.pricingNote : undefined,
         minimumSpendNote:
