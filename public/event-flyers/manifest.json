@@ -824,6 +824,38 @@
     "sourceUrl": "https://venueeventartist.com/imateq/event/446/603745/40927922792/raw/40927922797.jpeg"
   },
   {
+    "venueSlug": "ayu-dayclub",
+    "venueName": "AYU Dayclub",
+    "eventName": "Ayu Afters - Special Guest",
+    "date": "2026-10-25",
+    "imagePath": "/event-flyers/ayu-dayclub/2026-10-25_ayu-afters-special-guest.jpeg",
+    "sourceUrl": "https://images.discotech.me/events/None/5fe25626-1fee-432c-a115-ca30dbfc5f30.jpeg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "ayu-dayclub",
+    "venueName": "AYU Dayclub",
+    "eventName": "Ayu Afters - Special Guest",
+    "date": "2026-10-26",
+    "imagePath": "/event-flyers/ayu-dayclub/2026-10-26_ayu-afters-special-guest.jpeg",
+    "sourceUrl": "https://images.discotech.me/events/None/5fe25626-1fee-432c-a115-ca30dbfc5f30.jpeg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "ayu-dayclub",
+    "venueName": "AYU Dayclub",
+    "eventName": "Ayu Afters - Special Guest",
+    "date": "2026-10-27",
+    "imagePath": "/event-flyers/ayu-dayclub/2026-10-27_ayu-afters-special-guest.jpeg",
+    "sourceUrl": "https://images.discotech.me/events/None/5fe25626-1fee-432c-a115-ca30dbfc5f30.jpeg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "ayu-dayclub",
+    "venueName": "AYU Dayclub",
+    "eventName": "Ayu Afters - Special Guest",
+    "date": "2026-10-28",
+    "imagePath": "/event-flyers/ayu-dayclub/2026-10-28_ayu-afters-special-guest.jpeg",
+    "sourceUrl": "https://images.discotech.me/events/None/5fe25626-1fee-432c-a115-ca30dbfc5f30.jpeg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
     "venueSlug": "drais-after-hours",
     "venueName": "Drai's After Hours: North Strip",
     "eventName": "After Hours",
@@ -7477,6 +7509,102 @@
     "eventName": "Mustard",
     "date": "2026-10-24",
     "imagePath": "/event-flyers/hakkasan-nightclub/2026-10-24_mustard.webp",
+    "sourceUrl": "https://images.discotech.me/events/38138004/828cef39-f04a-4ede-b17b-fc8b291270d1.webp?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "hakkasan-nightclub",
+    "venueName": "Hakkasan: South Strip",
+    "eventName": "Benny Benassi",
+    "date": "2026-10-25",
+    "imagePath": "/event-flyers/hakkasan-nightclub/2026-10-25_benny-benassi.webp",
+    "sourceUrl": "https://images.discotech.me/events/38167941/5e6a4cd8-7c44-4f2e-86fa-e58ab27cb83c.webp?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "hakkasan-nightclub",
+    "venueName": "Hakkasan: South Strip",
+    "eventName": "Deorro",
+    "date": "2026-10-25",
+    "imagePath": "/event-flyers/hakkasan-nightclub/2026-10-25_deorro.webp",
+    "sourceUrl": "https://images.discotech.me/events/38177694/0b2030e5-e3ce-4339-8563-f41cac4270bd.webp?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "hakkasan-nightclub",
+    "venueName": "Hakkasan: South Strip",
+    "eventName": "Mustard",
+    "date": "2026-10-25",
+    "imagePath": "/event-flyers/hakkasan-nightclub/2026-10-25_mustard.webp",
+    "sourceUrl": "https://images.discotech.me/events/38138004/828cef39-f04a-4ede-b17b-fc8b291270d1.webp?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "hakkasan-nightclub",
+    "venueName": "Hakkasan: South Strip",
+    "eventName": "Benny Benassi",
+    "date": "2026-10-26",
+    "imagePath": "/event-flyers/hakkasan-nightclub/2026-10-26_benny-benassi.webp",
+    "sourceUrl": "https://images.discotech.me/events/38167941/5e6a4cd8-7c44-4f2e-86fa-e58ab27cb83c.webp?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "hakkasan-nightclub",
+    "venueName": "Hakkasan: South Strip",
+    "eventName": "Deorro",
+    "date": "2026-10-26",
+    "imagePath": "/event-flyers/hakkasan-nightclub/2026-10-26_deorro.webp",
+    "sourceUrl": "https://images.discotech.me/events/38177694/0b2030e5-e3ce-4339-8563-f41cac4270bd.webp?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "hakkasan-nightclub",
+    "venueName": "Hakkasan: South Strip",
+    "eventName": "Mustard",
+    "date": "2026-10-26",
+    "imagePath": "/event-flyers/hakkasan-nightclub/2026-10-26_mustard.webp",
+    "sourceUrl": "https://images.discotech.me/events/38138004/828cef39-f04a-4ede-b17b-fc8b291270d1.webp?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "hakkasan-nightclub",
+    "venueName": "Hakkasan: South Strip",
+    "eventName": "Benny Benassi",
+    "date": "2026-10-27",
+    "imagePath": "/event-flyers/hakkasan-nightclub/2026-10-27_benny-benassi.webp",
+    "sourceUrl": "https://images.discotech.me/events/38167941/5e6a4cd8-7c44-4f2e-86fa-e58ab27cb83c.webp?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "hakkasan-nightclub",
+    "venueName": "Hakkasan: South Strip",
+    "eventName": "Deorro",
+    "date": "2026-10-27",
+    "imagePath": "/event-flyers/hakkasan-nightclub/2026-10-27_deorro.webp",
+    "sourceUrl": "https://images.discotech.me/events/38177694/0b2030e5-e3ce-4339-8563-f41cac4270bd.webp?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "hakkasan-nightclub",
+    "venueName": "Hakkasan: South Strip",
+    "eventName": "Mustard",
+    "date": "2026-10-27",
+    "imagePath": "/event-flyers/hakkasan-nightclub/2026-10-27_mustard.webp",
+    "sourceUrl": "https://images.discotech.me/events/38138004/828cef39-f04a-4ede-b17b-fc8b291270d1.webp?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "hakkasan-nightclub",
+    "venueName": "Hakkasan: South Strip",
+    "eventName": "Benny Benassi",
+    "date": "2026-10-28",
+    "imagePath": "/event-flyers/hakkasan-nightclub/2026-10-28_benny-benassi.webp",
+    "sourceUrl": "https://images.discotech.me/events/38167941/5e6a4cd8-7c44-4f2e-86fa-e58ab27cb83c.webp?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "hakkasan-nightclub",
+    "venueName": "Hakkasan: South Strip",
+    "eventName": "Deorro",
+    "date": "2026-10-28",
+    "imagePath": "/event-flyers/hakkasan-nightclub/2026-10-28_deorro.webp",
+    "sourceUrl": "https://images.discotech.me/events/38177694/0b2030e5-e3ce-4339-8563-f41cac4270bd.webp?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "hakkasan-nightclub",
+    "venueName": "Hakkasan: South Strip",
+    "eventName": "Mustard",
+    "date": "2026-10-28",
+    "imagePath": "/event-flyers/hakkasan-nightclub/2026-10-28_mustard.webp",
     "sourceUrl": "https://images.discotech.me/events/38138004/828cef39-f04a-4ede-b17b-fc8b291270d1.webp?auto=format&w=360&q=65&fit=crop"
   },
   {
@@ -19360,6 +19488,206 @@
     "sourceUrl": "https://venueeventartist.com/imateq/event/446/1121561/40861713769/raw/40903822899.png"
   },
   {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
+    "eventName": "Adriatique",
+    "date": "2026-10-25",
+    "imagePath": "/event-flyers/liv-nightclub/2026-10-25_adriatique.png",
+    "sourceUrl": "https://venueeventartist.com/imateq/event/446/1121561/40861713796/raw/40877360432.png"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
+    "eventName": "Crankdat",
+    "date": "2026-10-25",
+    "imagePath": "/event-flyers/liv-nightclub/2026-10-25_crankdat.png",
+    "sourceUrl": "https://venueeventartist.com/imateq/event/446/1121561/40861713796/raw/40877360432.png"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
+    "eventName": "Kettama",
+    "date": "2026-10-25",
+    "imagePath": "/event-flyers/liv-nightclub/2026-10-25_kettama.png",
+    "sourceUrl": "https://venueeventartist.com/imateq/event/446/1121561/40861713796/raw/40877360432.png"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
+    "eventName": "Layton Giordani",
+    "date": "2026-10-25",
+    "imagePath": "/event-flyers/liv-nightclub/2026-10-25_layton-giordani.png",
+    "sourceUrl": "https://venueeventartist.com/imateq/event/446/1121561/40861713796/raw/40877360432.png"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
+    "eventName": "Max Styler",
+    "date": "2026-10-25",
+    "imagePath": "/event-flyers/liv-nightclub/2026-10-25_max-styler.png",
+    "sourceUrl": "https://venueeventartist.com/imateq/event/446/1121561/40861713796/raw/40877360432.png"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
+    "eventName": "Sam Feldt",
+    "date": "2026-10-25",
+    "imagePath": "/event-flyers/liv-nightclub/2026-10-25_sam-feldt.png",
+    "sourceUrl": "https://venueeventartist.com/imateq/event/446/1121561/40861713796/raw/40877360432.png"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
+    "eventName": "Special Guest",
+    "date": "2026-10-25",
+    "imagePath": "/event-flyers/liv-nightclub/2026-10-25_special-guest.png",
+    "sourceUrl": "https://venueeventartist.com/imateq/event/446/1121561/40861713796/raw/40877360432.png"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
+    "eventName": "Adriatique",
+    "date": "2026-10-26",
+    "imagePath": "/event-flyers/liv-nightclub/2026-10-26_adriatique.png",
+    "sourceUrl": "https://images.discotech.me/events/38112602/1bbad00a-e761-42f3-a1cf-3b30f8089040.png?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
+    "eventName": "Crankdat",
+    "date": "2026-10-26",
+    "imagePath": "/event-flyers/liv-nightclub/2026-10-26_crankdat.jpg",
+    "sourceUrl": "https://images.discotech.me/events/38117354/23a809b9-4503-41ac-85dc-43e49411a804.jpg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
+    "eventName": "Kettama",
+    "date": "2026-10-26",
+    "imagePath": "/event-flyers/liv-nightclub/2026-10-26_kettama.jpg",
+    "sourceUrl": "https://images.discotech.me/events/38135417/bdd7d5b6-80d1-4b06-9fbd-3039e7da5284.jpg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
+    "eventName": "Layton Giordani",
+    "date": "2026-10-26",
+    "imagePath": "/event-flyers/liv-nightclub/2026-10-26_layton-giordani.jpg",
+    "sourceUrl": "https://images.discotech.me/events/38112620/42cab649-ff71-44c6-aea4-73969c79af4e.jpg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
+    "eventName": "Max Styler",
+    "date": "2026-10-26",
+    "imagePath": "/event-flyers/liv-nightclub/2026-10-26_max-styler.jpg",
+    "sourceUrl": "https://images.discotech.me/events/38123050/2d32b9c9-a8db-4292-876e-342262fdcef7.jpg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
+    "eventName": "Sam Feldt",
+    "date": "2026-10-26",
+    "imagePath": "/event-flyers/liv-nightclub/2026-10-26_sam-feldt.jpg",
+    "sourceUrl": "https://images.discotech.me/events/38128789/29dfbd0e-1c95-481d-92a0-da15eeaf0dc9.jpg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
+    "eventName": "Adriatique",
+    "date": "2026-10-27",
+    "imagePath": "/event-flyers/liv-nightclub/2026-10-27_adriatique.png",
+    "sourceUrl": "https://images.discotech.me/events/38112602/1bbad00a-e761-42f3-a1cf-3b30f8089040.png?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
+    "eventName": "Crankdat",
+    "date": "2026-10-27",
+    "imagePath": "/event-flyers/liv-nightclub/2026-10-27_crankdat.jpg",
+    "sourceUrl": "https://images.discotech.me/events/38117354/23a809b9-4503-41ac-85dc-43e49411a804.jpg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
+    "eventName": "Kettama",
+    "date": "2026-10-27",
+    "imagePath": "/event-flyers/liv-nightclub/2026-10-27_kettama.jpg",
+    "sourceUrl": "https://images.discotech.me/events/38135417/bdd7d5b6-80d1-4b06-9fbd-3039e7da5284.jpg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
+    "eventName": "Layton Giordani",
+    "date": "2026-10-27",
+    "imagePath": "/event-flyers/liv-nightclub/2026-10-27_layton-giordani.jpg",
+    "sourceUrl": "https://images.discotech.me/events/38112620/42cab649-ff71-44c6-aea4-73969c79af4e.jpg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
+    "eventName": "Max Styler",
+    "date": "2026-10-27",
+    "imagePath": "/event-flyers/liv-nightclub/2026-10-27_max-styler.jpg",
+    "sourceUrl": "https://images.discotech.me/events/38123050/2d32b9c9-a8db-4292-876e-342262fdcef7.jpg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
+    "eventName": "Sam Feldt",
+    "date": "2026-10-27",
+    "imagePath": "/event-flyers/liv-nightclub/2026-10-27_sam-feldt.jpg",
+    "sourceUrl": "https://images.discotech.me/events/38128789/29dfbd0e-1c95-481d-92a0-da15eeaf0dc9.jpg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
+    "eventName": "Adriatique",
+    "date": "2026-10-28",
+    "imagePath": "/event-flyers/liv-nightclub/2026-10-28_adriatique.png",
+    "sourceUrl": "https://images.discotech.me/events/38112602/1bbad00a-e761-42f3-a1cf-3b30f8089040.png?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
+    "eventName": "Crankdat",
+    "date": "2026-10-28",
+    "imagePath": "/event-flyers/liv-nightclub/2026-10-28_crankdat.jpg",
+    "sourceUrl": "https://images.discotech.me/events/38117354/23a809b9-4503-41ac-85dc-43e49411a804.jpg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
+    "eventName": "Kettama",
+    "date": "2026-10-28",
+    "imagePath": "/event-flyers/liv-nightclub/2026-10-28_kettama.jpg",
+    "sourceUrl": "https://images.discotech.me/events/38135417/bdd7d5b6-80d1-4b06-9fbd-3039e7da5284.jpg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
+    "eventName": "Layton Giordani",
+    "date": "2026-10-28",
+    "imagePath": "/event-flyers/liv-nightclub/2026-10-28_layton-giordani.jpg",
+    "sourceUrl": "https://images.discotech.me/events/38112620/42cab649-ff71-44c6-aea4-73969c79af4e.jpg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
+    "eventName": "Max Styler",
+    "date": "2026-10-28",
+    "imagePath": "/event-flyers/liv-nightclub/2026-10-28_max-styler.jpg",
+    "sourceUrl": "https://images.discotech.me/events/38123050/2d32b9c9-a8db-4292-876e-342262fdcef7.jpg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "liv-nightclub",
+    "venueName": "LIV",
+    "eventName": "Sam Feldt",
+    "date": "2026-10-28",
+    "imagePath": "/event-flyers/liv-nightclub/2026-10-28_sam-feldt.jpg",
+    "sourceUrl": "https://images.discotech.me/events/38128789/29dfbd0e-1c95-481d-92a0-da15eeaf0dc9.jpg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
     "venueSlug": "marquee-dayclub",
     "venueName": "Marquee Dayclub: North Strip",
     "eventName": "D-Miles",
@@ -23704,6 +24032,38 @@
     "sourceUrl": "https://images.discotech.me/events/38174718/5dcc4ce5-b75d-4199-a528-81ba5e65bd74.webp?auto=format&w=360&q=65&fit=crop"
   },
   {
+    "venueSlug": "marquee-nightclub",
+    "venueName": "Marquee Nightclub: North Strip",
+    "eventName": "Steve Aoki",
+    "date": "2026-10-25",
+    "imagePath": "/event-flyers/marquee-nightclub/2026-10-25_steve-aoki.webp",
+    "sourceUrl": "https://images.discotech.me/events/38174718/5dcc4ce5-b75d-4199-a528-81ba5e65bd74.webp?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "marquee-nightclub",
+    "venueName": "Marquee Nightclub: North Strip",
+    "eventName": "Steve Aoki",
+    "date": "2026-10-26",
+    "imagePath": "/event-flyers/marquee-nightclub/2026-10-26_steve-aoki.webp",
+    "sourceUrl": "https://images.discotech.me/events/38174718/5dcc4ce5-b75d-4199-a528-81ba5e65bd74.webp?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "marquee-nightclub",
+    "venueName": "Marquee Nightclub: North Strip",
+    "eventName": "Steve Aoki",
+    "date": "2026-10-27",
+    "imagePath": "/event-flyers/marquee-nightclub/2026-10-27_steve-aoki.webp",
+    "sourceUrl": "https://images.discotech.me/events/38174718/5dcc4ce5-b75d-4199-a528-81ba5e65bd74.webp?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "marquee-nightclub",
+    "venueName": "Marquee Nightclub: North Strip",
+    "eventName": "Steve Aoki",
+    "date": "2026-10-28",
+    "imagePath": "/event-flyers/marquee-nightclub/2026-10-28_steve-aoki.webp",
+    "sourceUrl": "https://images.discotech.me/events/38174718/5dcc4ce5-b75d-4199-a528-81ba5e65bd74.webp?auto=format&w=360&q=65&fit=crop"
+  },
+  {
     "venueSlug": "omnia-dayclub",
     "venueName": "OMNIA Dayclub",
     "eventName": "Fisher - Grand Opening Weekend",
@@ -27125,7 +27485,7 @@
     "eventName": "Martin Garrix w/ Justin Mylo",
     "date": "2026-10-24",
     "imagePath": "/event-flyers/omnia-nightclub/2026-10-24_martin-garrix-w-justin-mylo.jpeg",
-    "sourceUrl": "https://venueeventartist.com/imateq/event/446/1089/40934806102/300SC0/40934836053.jpeg"
+    "sourceUrl": "https://venueeventartist.com/imateq/event/446/1089/40934806102/raw/40934836053.jpeg"
   },
   {
     "venueSlug": "omnia-nightclub",
@@ -27133,7 +27493,7 @@
     "eventName": "Tiësto",
     "date": "2026-10-24",
     "imagePath": "/event-flyers/omnia-nightclub/2026-10-24_tiesto.jpeg",
-    "sourceUrl": "https://venueeventartist.com/imateq/event/446/1089/40934806102/300SC0/40934836053.jpeg"
+    "sourceUrl": "https://venueeventartist.com/imateq/event/446/1089/40934806102/raw/40934836053.jpeg"
   },
   {
     "venueSlug": "omnia-nightclub",
@@ -27141,7 +27501,71 @@
     "eventName": "Zedd",
     "date": "2026-10-24",
     "imagePath": "/event-flyers/omnia-nightclub/2026-10-24_zedd.jpeg",
-    "sourceUrl": "https://venueeventartist.com/imateq/event/446/1089/40934806102/300SC0/40934836053.jpeg"
+    "sourceUrl": "https://venueeventartist.com/imateq/event/446/1089/40934806102/raw/40934836053.jpeg"
+  },
+  {
+    "venueSlug": "omnia-nightclub",
+    "venueName": "Omnia: South Strip",
+    "eventName": "Martin Garrix w/ Justin Mylo",
+    "date": "2026-10-25",
+    "imagePath": "/event-flyers/omnia-nightclub/2026-10-25_martin-garrix-w-justin-mylo.webp",
+    "sourceUrl": "https://images.discotech.me/events/38171204/2f999e0d-8854-4b77-beaf-7d43b03edcef.webp?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "omnia-nightclub",
+    "venueName": "Omnia: South Strip",
+    "eventName": "Tiësto",
+    "date": "2026-10-25",
+    "imagePath": "/event-flyers/omnia-nightclub/2026-10-25_tiesto.webp",
+    "sourceUrl": "https://images.discotech.me/events/38134516/7f84684a-cbf5-458a-af40-bc2d33b2e91e.webp?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "omnia-nightclub",
+    "venueName": "Omnia: South Strip",
+    "eventName": "Martin Garrix w/ Justin Mylo",
+    "date": "2026-10-26",
+    "imagePath": "/event-flyers/omnia-nightclub/2026-10-26_martin-garrix-w-justin-mylo.webp",
+    "sourceUrl": "https://images.discotech.me/events/38171204/2f999e0d-8854-4b77-beaf-7d43b03edcef.webp?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "omnia-nightclub",
+    "venueName": "Omnia: South Strip",
+    "eventName": "Tiësto",
+    "date": "2026-10-26",
+    "imagePath": "/event-flyers/omnia-nightclub/2026-10-26_tiesto.webp",
+    "sourceUrl": "https://images.discotech.me/events/38134516/7f84684a-cbf5-458a-af40-bc2d33b2e91e.webp?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "omnia-nightclub",
+    "venueName": "Omnia: South Strip",
+    "eventName": "Martin Garrix w/ Justin Mylo",
+    "date": "2026-10-27",
+    "imagePath": "/event-flyers/omnia-nightclub/2026-10-27_martin-garrix-w-justin-mylo.webp",
+    "sourceUrl": "https://images.discotech.me/events/38171204/2f999e0d-8854-4b77-beaf-7d43b03edcef.webp?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "omnia-nightclub",
+    "venueName": "Omnia: South Strip",
+    "eventName": "Tiësto",
+    "date": "2026-10-27",
+    "imagePath": "/event-flyers/omnia-nightclub/2026-10-27_tiesto.webp",
+    "sourceUrl": "https://images.discotech.me/events/38134516/7f84684a-cbf5-458a-af40-bc2d33b2e91e.webp?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "omnia-nightclub",
+    "venueName": "Omnia: South Strip",
+    "eventName": "Martin Garrix w/ Justin Mylo",
+    "date": "2026-10-28",
+    "imagePath": "/event-flyers/omnia-nightclub/2026-10-28_martin-garrix-w-justin-mylo.webp",
+    "sourceUrl": "https://images.discotech.me/events/38171204/2f999e0d-8854-4b77-beaf-7d43b03edcef.webp?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "omnia-nightclub",
+    "venueName": "Omnia: South Strip",
+    "eventName": "Tiësto",
+    "date": "2026-10-28",
+    "imagePath": "/event-flyers/omnia-nightclub/2026-10-28_tiesto.webp",
+    "sourceUrl": "https://images.discotech.me/events/38134516/7f84684a-cbf5-458a-af40-bc2d33b2e91e.webp?auto=format&w=360&q=65&fit=crop"
   },
   {
     "venueSlug": "palm-tree-beach-club",
@@ -36733,7 +37157,7 @@
     "eventName": "Ian Asher",
     "date": "2026-10-24",
     "imagePath": "/event-flyers/zouk-nightclub/2026-10-24_ian-asher.jpeg",
-    "sourceUrl": "https://venueeventartist.com/imateq/event/446/505115/40919385045/raw/40940903525.jpeg"
+    "sourceUrl": "https://venueeventartist.com/imateq/event/446/505115/40919385045/300SC0/40940903525.jpeg"
   },
   {
     "venueSlug": "zouk-nightclub",
@@ -36741,6 +37165,94 @@
     "eventName": "Special Guest",
     "date": "2026-10-24",
     "imagePath": "/event-flyers/zouk-nightclub/2026-10-24_special-guest.jpeg",
-    "sourceUrl": "https://venueeventartist.com/imateq/event/446/505115/40919385045/raw/40940903525.jpeg"
+    "sourceUrl": "https://venueeventartist.com/imateq/event/446/505115/40919385045/300SC0/40940903525.jpeg"
+  },
+  {
+    "venueSlug": "zouk-nightclub",
+    "venueName": "Zouk: North Strip",
+    "eventName": "Ian Asher",
+    "date": "2026-10-25",
+    "imagePath": "/event-flyers/zouk-nightclub/2026-10-25_ian-asher.jpeg",
+    "sourceUrl": "https://images.discotech.me/events/38106741/274012c7-1f86-428e-8258-b1005c727edc.jpeg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "zouk-nightclub",
+    "venueName": "Zouk: North Strip",
+    "eventName": "Special Guest",
+    "date": "2026-10-25",
+    "imagePath": "/event-flyers/zouk-nightclub/2026-10-25_special-guest.jpeg",
+    "sourceUrl": "https://images.discotech.me/events/None/7b0aba93-b33e-4409-b094-36e58339c474.jpeg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "zouk-nightclub",
+    "venueName": "Zouk: North Strip",
+    "eventName": "Ian Asher",
+    "date": "2026-10-26",
+    "imagePath": "/event-flyers/zouk-nightclub/2026-10-26_ian-asher.jpeg",
+    "sourceUrl": "https://images.discotech.me/events/38106741/274012c7-1f86-428e-8258-b1005c727edc.jpeg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "zouk-nightclub",
+    "venueName": "Zouk: North Strip",
+    "eventName": "Ray Volpe",
+    "date": "2026-10-26",
+    "imagePath": "/event-flyers/zouk-nightclub/2026-10-26_ray-volpe.jpeg",
+    "sourceUrl": "https://images.discotech.me/events/38122076/8447dc7b-6145-4242-a456-7fa892824d41.jpeg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "zouk-nightclub",
+    "venueName": "Zouk: North Strip",
+    "eventName": "Special Guest",
+    "date": "2026-10-26",
+    "imagePath": "/event-flyers/zouk-nightclub/2026-10-26_special-guest.jpeg",
+    "sourceUrl": "https://images.discotech.me/events/None/7b0aba93-b33e-4409-b094-36e58339c474.jpeg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "zouk-nightclub",
+    "venueName": "Zouk: North Strip",
+    "eventName": "Ian Asher",
+    "date": "2026-10-27",
+    "imagePath": "/event-flyers/zouk-nightclub/2026-10-27_ian-asher.jpeg",
+    "sourceUrl": "https://images.discotech.me/events/38106741/274012c7-1f86-428e-8258-b1005c727edc.jpeg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "zouk-nightclub",
+    "venueName": "Zouk: North Strip",
+    "eventName": "Ray Volpe",
+    "date": "2026-10-27",
+    "imagePath": "/event-flyers/zouk-nightclub/2026-10-27_ray-volpe.jpeg",
+    "sourceUrl": "https://images.discotech.me/events/38122076/8447dc7b-6145-4242-a456-7fa892824d41.jpeg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "zouk-nightclub",
+    "venueName": "Zouk: North Strip",
+    "eventName": "Special Guest",
+    "date": "2026-10-27",
+    "imagePath": "/event-flyers/zouk-nightclub/2026-10-27_special-guest.jpeg",
+    "sourceUrl": "https://images.discotech.me/events/None/7b0aba93-b33e-4409-b094-36e58339c474.jpeg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "zouk-nightclub",
+    "venueName": "Zouk: North Strip",
+    "eventName": "Ian Asher",
+    "date": "2026-10-28",
+    "imagePath": "/event-flyers/zouk-nightclub/2026-10-28_ian-asher.jpeg",
+    "sourceUrl": "https://images.discotech.me/events/38106741/274012c7-1f86-428e-8258-b1005c727edc.jpeg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "zouk-nightclub",
+    "venueName": "Zouk: North Strip",
+    "eventName": "Ray Volpe",
+    "date": "2026-10-28",
+    "imagePath": "/event-flyers/zouk-nightclub/2026-10-28_ray-volpe.jpeg",
+    "sourceUrl": "https://images.discotech.me/events/38122076/8447dc7b-6145-4242-a456-7fa892824d41.jpeg?auto=format&w=360&q=65&fit=crop"
+  },
+  {
+    "venueSlug": "zouk-nightclub",
+    "venueName": "Zouk: North Strip",
+    "eventName": "Special Guest",
+    "date": "2026-10-28",
+    "imagePath": "/event-flyers/zouk-nightclub/2026-10-28_special-guest.jpeg",
+    "sourceUrl": "https://images.discotech.me/events/None/7b0aba93-b33e-4409-b094-36e58339c474.jpeg?auto=format&w=360&q=65&fit=crop"
   }
 ]
