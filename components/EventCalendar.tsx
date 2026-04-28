@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState, useRef } from "react";
-import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { ParsedEvent } from "@/lib/calendarParser";
+import { findBestFlyerEntry, type FlyerManifestEntry } from "@/lib/flyerMatching";
 
 interface Props {
   venueSlug: string;
@@ -91,6 +91,38 @@ function getFlyerSources(imagePath?: string, sourceUrl?: string) {
   return Array.from(new Set(directSources));
 }
 
+function addDaysToDateKey(dateKey: string, days: number) {
+  const [year, month, day] = dateKey.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  date.setUTCDate(date.getUTCDate() + days);
+
+  return [
+    date.getUTCFullYear(),
+    String(date.getUTCMonth() + 1).padStart(2, "0"),
+    String(date.getUTCDate()).padStart(2, "0"),
+  ].join("-");
+}
+
+function findCalendarFlyer(
+  manifest: FlyerManifestEntry[],
+  venueSlug: string,
+  eventName: string,
+  dateKey: string
+) {
+  const candidateDateKeys = [
+    dateKey,
+    addDaysToDateKey(dateKey, -1),
+    addDaysToDateKey(dateKey, 1),
+  ];
+
+  for (const candidateDateKey of candidateDateKeys) {
+    const match = findBestFlyerEntry(manifest, venueSlug, eventName, candidateDateKey);
+    if (match) return match;
+  }
+
+  return null;
+}
+
 function isGenericEventName(eventName?: string) {
   const normalized = normalizeLabel(String(eventName || ""));
   return (
@@ -117,7 +149,12 @@ function formatDesktopEventName(eventName: string, venueLabel: string) {
   return splitName.slice(0, -1).join(" - ");
 }
 
-function selectBestDayEvent(dayEvents: ParsedEvent[], venueLabel: string) {
+function selectBestDayEvent(
+  dayEvents: ParsedEvent[],
+  venueLabel: string,
+  venueSlug: string,
+  flyerManifest: FlyerManifestEntry[]
+) {
   if (dayEvents.length === 0) return undefined;
   if (dayEvents.length === 1) return dayEvents[0];
 
@@ -125,7 +162,16 @@ function selectBestDayEvent(dayEvents: ParsedEvent[], venueLabel: string) {
   let bestScore = -1;
 
   for (const event of dayEvents) {
-    const flyerSources = getFlyerSources(event.flyerImagePath, event.flyerSourceUrl);
+    const manifestFlyer = findCalendarFlyer(
+      flyerManifest,
+      venueSlug,
+      event.eventName,
+      event.dateKey
+    );
+    const flyerSources = getFlyerSources(
+      event.flyerImagePath || manifestFlyer?.imagePath,
+      event.flyerSourceUrl || manifestFlyer?.sourceUrl
+    );
     const hasFlyer = flyerSources.length > 0;
     const cleanedName = formatDesktopEventName(event.eventName, venueLabel);
     const genericNamePenalty = isGenericEventName(cleanedName) ? -25 : 0;
@@ -155,7 +201,6 @@ function CalendarFlyerImage({
 }) {
   const [sourceIndex, setSourceIndex] = useState(0);
   const src = sources[sourceIndex] || "";
-  const isRemoteSource = /^https?:\/\//i.test(src);
 
   useEffect(() => {
     setSourceIndex(0);
@@ -164,15 +209,14 @@ function CalendarFlyerImage({
   if (!src) return null;
 
   return (
-    <Image
+    <img
       src={src}
       alt={alt}
-      fill
-      sizes="(min-width: 1280px) 160px, (min-width: 768px) 14vw, 0px"
-      unoptimized={isRemoteSource}
-      className="object-cover transition duration-300 group-hover:scale-[1.03]"
+      className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
       onError={() => {
-        setSourceIndex((index) => index + 1);
+        setSourceIndex((index) =>
+          index < sources.length - 1 ? index + 1 : index
+        );
       }}
     />
   );
@@ -194,6 +238,7 @@ export default function EventCalendar({
   const [maxSearchMonth, setMaxSearchMonth] = useState<Date | null>(null);
   const [monthHasBeenLoaded, setMonthHasBeenLoaded] = useState(false);
   const [isDesktopCalendarView, setIsDesktopCalendarView] = useState(false);
+  const [flyerManifest, setFlyerManifest] = useState<FlyerManifestEntry[]>([]);
 
   const dateParamAppliedRef = useRef(false);
   const monthCacheRef = useRef(new Map<string, ParsedEvent[]>());
@@ -258,6 +303,39 @@ export default function EventCalendar({
 
     mediaQuery.addListener(updateCalendarMode);
     return () => mediaQuery.removeListener(updateCalendarMode);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadFlyerManifest() {
+      try {
+        const response = await fetch("/event-flyers/manifest.json", {
+          cache: "force-cache",
+        });
+
+        if (!response.ok) {
+          throw new Error(`Flyer manifest request failed: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (!cancelled) {
+          setFlyerManifest(Array.isArray(data) ? data : []);
+        }
+      } catch (error) {
+        console.warn("Error loading calendar flyer manifest:", error);
+        if (!cancelled) {
+          setFlyerManifest([]);
+        }
+      }
+    }
+
+    loadFlyerManifest();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -503,12 +581,21 @@ export default function EventCalendar({
     isSelectedDay: boolean
   ) => {
     const hasEvents = dayEvents.length > 0;
-    const primaryEvent = selectBestDayEvent(dayEvents, venueLabel) ?? dayEvents[0];
+    const primaryEvent =
+      selectBestDayEvent(dayEvents, venueLabel, venueSlug, flyerManifest) ?? dayEvents[0];
     const cellDate = new Date(`${dateKey}T12:00:00`);
     const cellLabel = formatCellLabel(cellDate);
+    const manifestFlyer = primaryEvent
+      ? findCalendarFlyer(
+          flyerManifest,
+          venueSlug,
+          primaryEvent.eventName,
+          primaryEvent.dateKey
+        )
+      : null;
     const flyerSources = getFlyerSources(
-      primaryEvent?.flyerImagePath,
-      primaryEvent?.flyerSourceUrl
+      primaryEvent?.flyerImagePath || manifestFlyer?.imagePath,
+      primaryEvent?.flyerSourceUrl || manifestFlyer?.sourceUrl
     );
     const hasFlyer = flyerSources.length > 0;
     const desktopEventName = primaryEvent?.eventName
