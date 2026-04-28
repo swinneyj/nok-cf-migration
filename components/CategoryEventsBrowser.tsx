@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -481,12 +482,15 @@ export default function CategoryEventsBrowser({
                           className="group flex overflow-hidden rounded-[20px] border border-white/10 bg-night-800/85 transition hover:border-gold-500/30 hover:bg-night-800"
                         >
                           <div className="h-[116px] w-[100px] shrink-0 overflow-hidden sm:h-[132px] sm:w-[180px] lg:h-[140px] lg:w-[190px]">
-                            <img
-                              src={event.imagePath}
-                              alt={`${event.eventName} flyer`}
-                              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                              loading="lazy"
-                            />
+                            <div className="relative h-full w-full">
+                              <Image
+                                src={event.imagePath}
+                                alt={`${event.eventName} flyer`}
+                                fill
+                                sizes="(min-width: 1024px) 190px, (min-width: 640px) 180px, 100px"
+                                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                              />
+                            </div>
                           </div>
 
                           <div className="flex min-w-0 flex-1 items-center justify-between gap-4 p-4 sm:gap-6 sm:p-6">
